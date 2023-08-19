@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home_nav_graph"
+    app:startDestination="@id/mapsFragment">
+
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.InfoFragment"
+        android:label="fragment_info"
+        tools:layout="@layout/fragment_info" >
+        <action
+            android:id="@+id/action_infoFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_routesFragment"
+            app:destination="@id/routesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/routesFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.RoutesFragment"
+        android:label="fragment_routes"
+        tools:layout="@layout/fragment_routes" >
+        <action
+            android:id="@+id/action_routesFragment_to_stopsFragment"
+            app:destination="@id/stopsFragment" />
+        <action
+            android:id="@+id/action_routesFragment_to_routesMapFragment"
+            app:destination="@id/routesMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/stopsFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.StopsFragment"
+        android:label="fragment_stops"
+        tools:layout="@layout/fragment_stops" >
+        <action
+            android:id="@+id/action_stopsFragment_to_infoFragment"
+            app:destination="@id/infoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/routesMapFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.RoutesMapFragment"
+        android:label="fragment_routes_map"
+        tools:layout="@layout/fragment_routes_map" >
+        <action
+            android:id="@+id/action_routesMapFragment_to_routesFragment"
+            app:popUpTo="@id/routesFragment" />
+    </fragment>
+</navigation>

@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
     android:orientation="vertical"
-    tools:context=".presentation.views.fragments.main.LoginFragment">
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -192,7 +192,7 @@
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         android:background="@drawable/ic_background_button"
-        android:text="Sign In"
+        android:text="Verify"
         android:layout_marginTop="@dimen/_45sdp"
         android:textAllCaps="false"
         android:textColor="@color/white"

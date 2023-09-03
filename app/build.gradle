@@ -99,4 +99,7 @@ dependencies {
 
     implementation ("com.pixplicity.easyprefs:EasyPrefs:1.10.0")
     implementation ("com.github.GoodieBag:Pinview:v1.5")
+
+    implementation 'com.hbb20:ccp:2.7.0'
+
 }

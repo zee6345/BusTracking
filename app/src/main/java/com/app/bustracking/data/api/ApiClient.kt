@@ -9,15 +9,37 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    private const val baseUrl = ""
+    private const val baseUrl = "https://seentul.com/api/"
 
 
     fun createService(): Retrofit {
-        return Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okhttpClient())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+      return  retrofit
+    }
+
+    fun createService(token:String):Retrofit{
+        val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logger)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer $token") // Add the auth header here
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        return retrofit
     }
 
     private fun okhttpClient(): OkHttpClient {

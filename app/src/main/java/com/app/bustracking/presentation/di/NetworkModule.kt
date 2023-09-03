@@ -15,9 +15,18 @@ class NetworkModule {
 
     @Provides
     @Singleton
+
     fun provideClient(): ApiService {
         return ApiClient.createService().create(ApiService::class.java)
     }
+
+
+//    @Provides
+//    @Singleton
+//    @ApiServiceWithAuth
+//    fun provideClient(token:String):ApiService{
+//        return ApiClient.createService(token).create(ApiService::class.java)
+//    }
 
     @Provides
     @Singleton

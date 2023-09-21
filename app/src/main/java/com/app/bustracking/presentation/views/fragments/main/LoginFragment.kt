@@ -42,6 +42,10 @@ class LoginFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonLogin.setOnClickListener {
+
+            navController.navigate(R.id.action_loginFragment_to_verifyOTP)
+
+
             //navController.navigate(R.id.action_loginFragment_to_selectNetwrokFragment)
             val progressDialog = ProgressDialog(requireContext())
 //            progressDialog.setTitle("Loading")

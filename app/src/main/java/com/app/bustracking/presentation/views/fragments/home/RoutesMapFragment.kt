@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
@@ -24,34 +23,18 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
-import com.mapbox.geojson.utils.PolylineUtils
 import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.LayerPosition
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.StyleContract
-import com.mapbox.maps.extension.style.StyleInterface
-import com.mapbox.maps.extension.style.layers.addLayer
-import com.mapbox.maps.extension.style.layers.generated.LineLayer
 import com.mapbox.maps.extension.style.layers.generated.lineLayer
 import com.mapbox.maps.extension.style.layers.properties.generated.LineCap
 import com.mapbox.maps.extension.style.layers.properties.generated.LineJoin
-import com.mapbox.maps.extension.style.sources.addSource
-import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
 import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
 import com.mapbox.maps.extension.style.style
-import com.mapbox.maps.extension.style.utils.ColorUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.InputStream
-import java.util.Scanner
 
 private const val GEOJSON_SOURCE_ID = "line"
-private const val ZOOM = 14.0
+private const val ZOOM = 16.0
+
 class RoutesMapFragment : BaseFragment() {
 
     private lateinit var navController: NavController
@@ -59,7 +42,7 @@ class RoutesMapFragment : BaseFragment() {
     private lateinit var routeMapModalSheet: RouteMapModalSheet
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var annotationsAdded = false
-    var mContext:Context? =null
+    var mContext: Context? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -88,7 +71,7 @@ class RoutesMapFragment : BaseFragment() {
         routeMapModalSheet = RouteMapModalSheet(data)
         routeMapModalSheet.show(requireActivity().supportFragmentManager, routeMapModalSheet.tag)
 
-          binding.mapView.getMapboxMap()
+        binding.mapView.getMapboxMap()
 
         binding.mapView.setOnClickListener {
             if (!routeMapModalSheet.isVisible) {
@@ -99,7 +82,7 @@ class RoutesMapFragment : BaseFragment() {
             }
         }
 
-       // getRoute()
+        // getRoute()
     }
 
     private fun checkPermissions(): Boolean {
@@ -116,6 +99,7 @@ class RoutesMapFragment : BaseFragment() {
         }
         return false
     }
+
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(
             requireActivity(),
@@ -126,6 +110,7 @@ class RoutesMapFragment : BaseFragment() {
             1010
         )
     }
+
     @SuppressLint("MissingSuperCall")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -147,10 +132,11 @@ class RoutesMapFragment : BaseFragment() {
         )
     }
 
-    var latitude:Double = 0.0
-    var longitude:Double = 0.0
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
     var mLocationRequest: com.google.android.gms.location.LocationRequest? = null
     var mLocationCallback: LocationCallback? = null
+
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getLocation() {
         if (checkPermissions()) {
@@ -158,7 +144,7 @@ class RoutesMapFragment : BaseFragment() {
                 locationrequestfunct()
                 mLocationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult) {
-                        latitude =locationResult.lastLocation!!.latitude
+                        latitude = locationResult.lastLocation!!.latitude
                         longitude = locationResult.lastLocation!!.longitude
 
 
@@ -168,11 +154,17 @@ class RoutesMapFragment : BaseFragment() {
                         }
                     }
                 }
-                mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-                mFusedLocationClient.requestLocationUpdates(mLocationRequest!!, mLocationCallback!!, Looper.myLooper());
+                mFusedLocationClient =
+                    LocationServices.getFusedLocationProviderClient(requireActivity())
+                mFusedLocationClient.requestLocationUpdates(
+                    mLocationRequest!!,
+                    mLocationCallback!!,
+                    Looper.myLooper()
+                );
 
             } else {
-                Toast.makeText(requireContext(), "Please turn on location", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Please turn on location", Toast.LENGTH_LONG)
+                    .show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
@@ -185,12 +177,13 @@ class RoutesMapFragment : BaseFragment() {
         mLocationRequest = com.google.android.gms.location.LocationRequest()
         mLocationRequest!!.interval = 30000
         mLocationRequest!!.fastestInterval = 10000
-        mLocationRequest!!.priority = com.google.android.gms.location.LocationRequest.PRIORITY_LOW_POWER
+        mLocationRequest!!.priority =
+            com.google.android.gms.location.LocationRequest.PRIORITY_LOW_POWER
     }
 
-    private fun drawPolylineOnMap(){
+    private fun drawPolylineOnMap() {
 //        DrawGeoJson(this,mContext!!).execute()
-         DrawGeoJson()
+        DrawGeoJson()
 
     }
 
@@ -203,6 +196,7 @@ class RoutesMapFragment : BaseFragment() {
                 )
             ).zoom(ZOOM).build()
         )
+
         binding.mapView.getMapboxMap().loadStyle(
             (
                     style(styleUri = Style.MAPBOX_STREETS) {

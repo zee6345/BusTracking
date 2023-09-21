@@ -1,19 +1,18 @@
 package com.app.bustracking.presentation.ui
 
 import android.graphics.Color
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.databinding.ItemRouteBinding
-
-import com.app.bustracking.presentation.model.Routes
+import java.util.Random
 
 class RoutesAdapter(
-    private val itemList: List<Routes>,
-    val onItemClick: (routes: Routes, position: Int) -> Unit
+    private val itemList: List<Route>,
+    val onItemClick: (routes: Route, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
 
@@ -28,38 +27,47 @@ class RoutesAdapter(
         }
 
 
-        fun bind(routes: Routes, onItemClick: (Routes) -> Unit) {
+        fun bind(routes: Route, onItemClick: (Route) -> Unit) {
 
+            _binding.tvTitle.text = routes.route_title
+            _binding.tvText.text = routes.description
+            _binding.ivMsgIcon.visibility =
+                if (routes.description.isEmpty()) View.GONE else View.VISIBLE
+            _binding.lvMsg.visibility =
+                if (routes.description.isEmpty()) View.GONE else View.VISIBLE
 
-            // Generate a random color
-            val randomColor = Color.rgb(
-                (0..255).random(),
-                (0..255).random(),
-                (0..255).random()
-            )
+            val title = routes.route_title
+            if (title.isNotEmpty()) {
+                val firstChar = title[0]
+                val lastChar = title[title.length - 1]
+                _binding.ivIcon.text = "$firstChar$lastChar"
+            }
+            try {
+                val drawable = generateRandomColor()
+                _binding.ivIcon.background = drawable
+                _binding.ivMsgIcon.background = drawable
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
-            // Create a ColorDrawable with the random color
-            val ovalShape = OvalShape()
-            val shapeDrawable = ShapeDrawable(ovalShape)
-            shapeDrawable.paint.color = randomColor
-
-
-            val parts = routes.header.split("-")
-            val extractedValue = parts.firstOrNull() ?: ""
-
-
-            _binding.ivIcon.background = shapeDrawable
-            _binding.ivIcon.text = extractedValue
-            _binding.tvTitle.text = routes.header
-            _binding.tvText.text = routes.msg
-            _binding.ivMsgIcon.visibility = if (routes.msgIcon == 0) View.GONE else View.VISIBLE
-            _binding.ivMsgIcon.background = shapeDrawable
-            _binding.lvMsg.visibility = if (routes.msg.isEmpty()) View.GONE else View.VISIBLE
 
             _binding.root.setOnClickListener {
                 onItemClick(routes)
             }
 
+        }
+
+
+        private fun generateRandomColor(): ColorDrawable {
+            val random = Random()
+            val red = random.nextInt(256) // Random value between 0 and 255 for red
+            val green = random.nextInt(256) // Random value between 0 and 255 for green
+            val blue = random.nextInt(256) // Random value between 0 and 255 for blue
+
+            val backgroundColor = Color.rgb(red, green, blue)
+
+            // Create and return the random color
+            return ColorDrawable(backgroundColor)
         }
 
     }

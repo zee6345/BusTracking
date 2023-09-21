@@ -6,7 +6,7 @@ import com.pixplicity.easyprefs.library.Prefs
 
 object AppPreference {
 
-    fun Preference(context:Context){
+    fun Preference(context: Context) {
         Prefs.Builder()
             .setContext(context)
             .setMode(ContextWrapper.MODE_PRIVATE)
@@ -15,11 +15,27 @@ object AppPreference {
             .build()
     }
 
-    fun setToken(token:String){
-        Prefs.putString("token",token)
+    fun putString(key: String, value: String) {
+        Prefs.putString(key, value)
     }
 
-    fun getToken():String{
-        return Prefs.getString("token","")
+    fun getString(key: String): String {
+        return Prefs.getString(key) ?: ""
+    }
+
+    fun putInt(key: String, value: Int) {
+        Prefs.putInt(key, value)
+    }
+
+    fun getInt(key: String): Int {
+        return Prefs.getInt(key, 0)
+    }
+
+    fun setToken(token: String) {
+        Prefs.putString("token", token)
+    }
+
+    fun getToken(): String {
+        return Prefs.getString("token", "")
     }
 }

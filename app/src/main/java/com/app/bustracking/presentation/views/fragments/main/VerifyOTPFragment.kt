@@ -33,8 +33,13 @@ class VerifyOTPFragment  : BaseFragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
 
-            val argValue = it.getString("number")
-            number = argValue!!
+            try{
+                val argValue = it.getString("number")
+                number = argValue!!
+            } catch (e:Exception){
+                e.printStackTrace()
+            }
+
         }
     }
 
@@ -68,6 +73,11 @@ class VerifyOTPFragment  : BaseFragment() {
 
 
         binding.buttonLogin.setOnClickListener {
+
+            //clear back stack
+//            navController.navigate(R.id.action_loginFragment_to_selectNetwrokFragment)
+            navController.navigate(R.id.action_verifyOTPFragment_to_selectNetwrokFragment)
+
             val progressDialog = ProgressDialog(requireContext())
             progressDialog.setTitle("Loading")
             val pin = binding.pinview.value
@@ -85,7 +95,12 @@ class VerifyOTPFragment  : BaseFragment() {
                         if (response.code() == 200){
                             val model = response.body() as VerifyOTPModel
                             Toast.makeText(requireContext(),model.message,Toast.LENGTH_SHORT).show()
-                            navController.navigate(R.id.action_loginFragment_to_selectNetwrokFragment)
+
+                            //clear back stack
+                            navController.popBackStack(R.id.selectNetwrokFragment, false)
+
+                            //navigate to new screen
+                            navController.navigate(R.id.action_verifyOTPFragment_to_selectNetwrokFragment)
                         }else{
 //                            val model = response.body() as VerifyOTPModel
                            Toast.makeText(requireContext(),"Failed",Toast.LENGTH_SHORT).show()

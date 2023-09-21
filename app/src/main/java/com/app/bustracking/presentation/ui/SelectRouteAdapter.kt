@@ -1,17 +1,24 @@
 package com.app.bustracking.presentation.ui
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.ItemSelectRouteBinding
-import com.app.bustracking.presentation.model.SelectNetwork
+import java.util.Random
 
-class SelectRouteAdapter(private val itemList: List<SelectNetwork>, val onItemClick: (selectNetwork: SelectNetwork, position:Int) -> Unit) :
+
+class SelectRouteAdapter(
+    private val itemList: List<Travel>,
+    val onItemClick: (selectNetwork: Travel, position: Int) -> Unit
+) :
     RecyclerView.Adapter<SelectRouteAdapter.ViewHolder>() {
 
     class ViewHolder(
         binding: ItemSelectRouteBinding,
-        ) : RecyclerView.ViewHolder(binding.root) {
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private val _binding: ItemSelectRouteBinding
 
@@ -20,13 +27,42 @@ class SelectRouteAdapter(private val itemList: List<SelectNetwork>, val onItemCl
         }
 
 
-        fun bind(selectNetwork: SelectNetwork, onItemClick: (selectNetwork: SelectNetwork) -> Unit) {
+        fun bind(selectNetwork: Travel, onItemClick: (selectNetwork: Travel) -> Unit) {
 
-//            _binding.tvTitle.text = selectNetwork.title
+
+            _binding.tvTitle.text = selectNetwork.travel_name
+            _binding.tvText.text = selectNetwork.travel_description
+
+
+            val title = selectNetwork.travel_name
+            if (title.isNotEmpty()) {
+                val firstChar = title[0]
+                val lastChar = title[title.length - 1]
+                _binding.ivIcon.text = "$firstChar$lastChar"
+            }
+
+            try {
+                _binding.ivIcon.background = generateRandomColor()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
             _binding.root.setOnClickListener {
                 onItemClick(selectNetwork)
             }
 
+        }
+
+        private fun generateRandomColor(): ColorDrawable {
+            val random = Random()
+            val red = random.nextInt(256) // Random value between 0 and 255 for red
+            val green = random.nextInt(256) // Random value between 0 and 255 for green
+            val blue = random.nextInt(256) // Random value between 0 and 255 for blue
+
+            val backgroundColor = Color.rgb(red, green, blue)
+
+            // Create and return the random color
+            return ColorDrawable(backgroundColor)
         }
 
     }
@@ -41,8 +77,10 @@ class SelectRouteAdapter(private val itemList: List<SelectNetwork>, val onItemCl
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position]){
+        holder.bind(itemList[position]) {
             onItemClick(it, position)
         }
     }
+
+
 }

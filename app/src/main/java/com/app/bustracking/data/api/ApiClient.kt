@@ -46,7 +46,7 @@ object ApiClient {
         return OkHttpClient.Builder()
             .writeTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(interceptor())
             .build()
     }

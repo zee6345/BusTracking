@@ -3,11 +3,12 @@ package com.app.bustracking.presentation.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.app.BusTracking
+import com.app.bustracking.data.responseModel.Agency
 import com.app.bustracking.databinding.ItemSelectNetworkBinding
+import com.bumptech.glide.Glide
 
-import com.app.bustracking.presentation.model.SelectNetwork
-
-class SelectNetworkAdapter(private val itemList: List<SelectNetwork>, val onItemClick: (selectNetwork: SelectNetwork, position:Int) -> Unit) :
+class SelectNetworkAdapter(private val itemList: List<Agency>, val onItemClick: (selectNetwork: Agency, position:Int) -> Unit) :
     RecyclerView.Adapter<SelectNetworkAdapter.ViewHolder>() {
 
     class ViewHolder(
@@ -20,10 +21,14 @@ class SelectNetworkAdapter(private val itemList: List<SelectNetwork>, val onItem
             _binding = binding
         }
 
+        fun bind(selectNetwork: Agency, onItemClick: (selectNetwork: Agency) -> Unit) {
 
-        fun bind(selectNetwork: SelectNetwork, onItemClick: (selectNetwork: SelectNetwork) -> Unit) {
+            _binding.tvTitle.text = selectNetwork.name
+            Glide.with(BusTracking.context)
+                .load(selectNetwork.photo)
+                .into(_binding.ivIcon)
 
-            _binding.tvTitle.text = selectNetwork.title
+
             _binding.root.setOnClickListener {
                 onItemClick(selectNetwork)
             }

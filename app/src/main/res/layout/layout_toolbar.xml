@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:layout_marginHorizontal="10dp"
         android:src="@drawable/ic_ham_burger"
+        android:visibility="gone"
         app:tint="@color/white" />
 
     <TextView
@@ -18,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text=""
+        android:id="@+id/tvTitle"
         android:textAlignment="center"
         android:textColor="@color/white"
         android:textSize="@dimen/_16sdp" />
@@ -26,6 +28,7 @@
         android:layout_width="@dimen/_26sdp"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
+        android:id="@+id/ivSearch"
         android:layout_marginHorizontal="10dp"
         android:src="@drawable/ic_search"
         app:tint="@color/white" />

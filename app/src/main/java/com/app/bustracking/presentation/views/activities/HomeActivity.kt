@@ -32,8 +32,7 @@ class HomeActivity : AppCompatActivity() {
 //
 //        Log.e(TAG, "onCreate: $agentId")
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fl_container_02) as NavHostFragment?
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fl_container_02) as NavHostFragment?
         if (navHostFragment != null) {
             val navController = navHostFragment.navController
             setupWithNavController(binding.bottomNav, navController)

@@ -1,6 +1,7 @@
 package com.app.bustracking.presentation.views.fragments.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.viewmodel.AppViewModel
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Converter
 import com.app.bustracking.utils.Progress
 import com.app.bustracking.utils.SharedModel
 
@@ -53,6 +55,9 @@ class RoutesFragment : BaseFragment() {
         progress = Progress(requireActivity()).showProgress()
         binding.rvLines.setHasFixedSize(true)
 
+        binding.toolbar.tvTitle.text = "Routes"
+        binding.toolbar.ivSearch.visibility = View.GONE
+
         val agentId = AppPreference.getInt("agent_route_id")
         data.getTravelRouteList(RouteRequest(agentId))
 
@@ -76,10 +81,10 @@ class RoutesFragment : BaseFragment() {
                         binding.rvLines.adapter =
                             RoutesAdapter(data.route_list) { route, position ->
 
-
+                                val json = Converter.toJson(route)
 
                                 val args = Bundle()
-                                args.putSerializable(ARGS, route)
+                                args.putString(ARGS, json)
                                 navController.navigate(
                                     R.id.action_routesFragment_to_routesMapFragment,
                                     args

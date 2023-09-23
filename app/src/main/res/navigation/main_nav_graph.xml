@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/selectNetwrokFragment">
 
     <fragment
         android:id="@+id/selectNetwrokFragment"
@@ -22,40 +22,5 @@
         <action
             android:id="@+id/action_selectRoutesFragment_to_selectNetwrokFragment"
             app:popUpTo="@id/selectNetwrokFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.app.bustracking.presentation.views.fragments.main.LoginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_loginFragment_to_signUpFragment"
-            app:destination="@id/signUpFragment" />
-        <action
-            android:id="@+id/action_loginFragment_to_verifyOTP"
-            app:destination="@id/verifyOTPFragment" />
-
-<!--        <argument-->
-<!--            android:name="number"-->
-<!--            app:argType="string" />-->
-
-    </fragment>
-    <fragment
-        android:id="@+id/signUpFragment"
-        android:name="com.app.bustracking.presentation.views.fragments.main.SignUpFragment"
-        android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" >
-        <action
-            android:id="@+id/action_signUpFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/verifyOTPFragment"
-        android:name="com.app.bustracking.presentation.views.fragments.main.VerifyOTPFragment"
-        android:label="fragment_verify_o_t_p"
-        tools:layout="@layout/fragment_verify_o_t_p" >
-        <action
-            android:id="@+id/action_verifyOTPFragment_to_selectNetwrokFragment"
-            app:destination="@id/selectNetwrokFragment" />
     </fragment>
 </navigation>

@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.app.bustracking.R
+import com.app.bustracking.data.preference.AppPreference
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,7 +27,15 @@ abstract class BaseFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initNavigation(NavHostFragment.findNavController(this))
+        val controller = NavHostFragment.findNavController(this)
+        initNavigation(controller)
+
+        val isLogin = AppPreference.getBoolean("isLogin")
+        if (isLogin){
+//            controller.navigate(R.id.selectNetwrokFragment)
+        }
+
+
 
     }
 }

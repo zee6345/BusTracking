@@ -8,42 +8,46 @@
 
     tools:context=".presentation.views.fragments.home.ProfileFragment">
 
-    <RelativeLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/theme_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        android:background="@color/theme_color"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
 
-        <ImageView
-            android:layout_width="@dimen/_26sdp"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="10dp"
-            android:src="@drawable/ic_ham_burger"
-            app:tint="@color/white" />
+<!--        <ImageView-->
+<!--            android:layout_width="@dimen/_26sdp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            tools:viewBindingType=""-->
+<!--            android:src="@drawable/ic_ham_burger"-->
+<!--            app:tint="@color/white" />-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text=""
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_16sdp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:text="Profile"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="@dimen/_16sdp" />-->
 
-        <ImageView
-            android:layout_width="@dimen/_26sdp"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_marginHorizontal="10dp"
-            android:src="@drawable/ic_search"
-            android:visibility="invisible"
-            app:tint="@color/white" />
+<!--        <ImageView-->
+<!--            android:layout_width="@dimen/_26sdp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:src="@drawable/ic_search"-->
+<!--            android:visibility="invisible"-->
+<!--            app:tint="@color/white" />-->
 
 
-    </RelativeLayout>
+<!--    </RelativeLayout>-->
+
+    <include layout="@layout/layout_toolbar"
+        android:id="@+id/toolbar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -76,6 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_15sdp"
+        android:id="@+id/llChangeNetwork"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
 
@@ -128,6 +133,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_15sdp"
+        android:id="@+id/llInformation"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
 
@@ -206,6 +212,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_15sdp"
+        android:id="@+id/llLogout"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
 

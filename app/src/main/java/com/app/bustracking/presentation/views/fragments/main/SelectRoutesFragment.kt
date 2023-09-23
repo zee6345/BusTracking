@@ -4,6 +4,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +17,11 @@ import com.app.bustracking.R
 import com.app.bustracking.data.preference.AppPreference
 import com.app.bustracking.data.requestModel.RouteRequest
 import com.app.bustracking.data.requestModel.TravelRequest
+import com.app.bustracking.data.responseModel.Agency
 import com.app.bustracking.data.responseModel.DataState
 import com.app.bustracking.data.responseModel.GetTravelList
 import com.app.bustracking.data.responseModel.GetTravelRoutes
+import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.FragmentSelectRoutesBinding
 import com.app.bustracking.databinding.NoRouteDialogBinding
 
@@ -33,11 +38,10 @@ class SelectRoutesFragment : BaseFragment() {
 
     private lateinit var binding: FragmentSelectRoutesBinding
     private lateinit var navController: NavController
-
-    //    private val data: SelectRouteViewModel by viewModels()
     private val data: AppViewModel by viewModels()
-
     private lateinit var progress: AlertDialog
+    private var isSearchable = false
+    private val dataList = mutableListOf<Travel>()
 
     override fun initNavigation(navController: NavController) {
         this.navController = navController
@@ -54,14 +58,61 @@ class SelectRoutesFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        progress = Progress(requireActivity()).showProgress()
-
+        //fetch api
         val agentId = requireArguments().getInt("agent_id") ?: 0
-        binding.rvRoute.setHasFixedSize(true)
-
         data.getTravels(TravelRequest(agentId))
 
 
+        progress = Progress(requireActivity()).showProgress()
+
+
+        binding.rvRoute.setHasFixedSize(true)
+        val adapter = SelectRouteAdapter { travel, _ ->
+            //save id
+            AppPreference.putInt("agent_route_id", travel.id)
+
+            //network call
+            data.getTravelRouteList(RouteRequest(travel.id))
+        }
+        binding.rvRoute.adapter = adapter
+
+
+        binding.ivSearch.setOnClickListener {
+            isSearchable = !isSearchable
+
+            if (isSearchable){
+                binding.searchBar.visibility = View.VISIBLE
+            } else {
+                binding.searchBar.visibility = View.GONE
+            }
+        }
+
+
+
+        binding.searchView.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                //ignore
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val filterList = ArrayList<Travel>()
+                dataList.forEach {
+                    if (it.travel_name.lowercase().contains(p0.toString())){
+                        filterList.add(it)
+                    }
+                }
+
+                adapter.setList(filterList)
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                //ignore
+            }
+
+        })
+
+
+        //update ui
         data.getTravelList.observe(viewLifecycleOwner) {
             when (it) {
                 is DataState.Loading -> {
@@ -80,15 +131,14 @@ class SelectRoutesFragment : BaseFragment() {
                     if (response.travel_list.isEmpty()) {
                         showNoRouteDialog(true)
                     } else {
-                        binding.rvRoute.adapter =
-                            SelectRouteAdapter(response.travel_list) { travel, _ ->
 
-                                //save id
-                                AppPreference.putInt("agent_route_id", travel.id)
+                        dataList.apply {
+                            clear()
+                            addAll(response.travel_list)
+                        }
 
-                                //network call
-                                data.getTravelRouteList(RouteRequest(travel.id))
-                            }
+                        adapter.setList(response.travel_list)
+
                     }
                 }
 

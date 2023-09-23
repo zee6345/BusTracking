@@ -9,16 +9,22 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
+import com.app.bustracking.data.responseModel.Route
+import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.FragmentRoutesMapBinding
 import com.app.bustracking.presentation.model.Routes
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet
+import com.app.bustracking.utils.Converter
+import com.app.bustracking.utils.SharedModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
@@ -34,15 +40,17 @@ import com.mapbox.maps.extension.style.style
 
 private const val GEOJSON_SOURCE_ID = "line"
 private const val ZOOM = 16.0
-
+private val TAG = RoutesMapFragment::class.simpleName.toString()
 class RoutesMapFragment : BaseFragment() {
 
     private lateinit var navController: NavController
     private lateinit var binding: FragmentRoutesMapBinding
     private lateinit var routeMapModalSheet: RouteMapModalSheet
+    private val sharedModel:SharedModel by viewModels()
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var annotationsAdded = false
     var mContext: Context? = null
+    private val stopList = mutableListOf<Stop>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -65,22 +73,32 @@ class RoutesMapFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val data = requireArguments().getSerializable(ARGS) as Routes
+        val data = requireArguments().getString(ARGS)
+        val route = Converter.fromJson(data!!, Route::class.java)
+
+        route.stop.forEach {
+            stopList.apply {
+                clear()
+                addAll(route.stop)
+            }
+        }
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         getLocation()
-        routeMapModalSheet = RouteMapModalSheet(data)
+        routeMapModalSheet = RouteMapModalSheet(route)
         routeMapModalSheet.show(requireActivity().supportFragmentManager, routeMapModalSheet.tag)
+
 
         binding.mapView.getMapboxMap()
 
-        binding.mapView.setOnClickListener {
-            if (!routeMapModalSheet.isVisible) {
-                routeMapModalSheet.show(
-                    requireActivity().supportFragmentManager,
-                    routeMapModalSheet.tag
-                )
-            }
-        }
+//        binding.mapView.setOnClickListener {
+//            if (!routeMapModalSheet.isVisible) {
+//                routeMapModalSheet.show(
+//                    requireActivity().supportFragmentManager,
+//                    routeMapModalSheet.tag
+//                )
+//            }
+//        }
 
         // getRoute()
     }

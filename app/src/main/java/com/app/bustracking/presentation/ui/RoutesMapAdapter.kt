@@ -3,12 +3,13 @@ package com.app.bustracking.presentation.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.ItemRouteMapBinding
 import com.app.bustracking.presentation.model.MapRoutes
 
 class RoutesMapAdapter(
-    private val itemList: List<MapRoutes>,
-    val onItemClick: (routes: MapRoutes, position: Int) -> Unit
+    private val itemList: List<Stop>,
+    val onItemClick: (routes: Stop, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesMapAdapter.ViewHolder>() {
 
@@ -22,8 +23,9 @@ class RoutesMapAdapter(
             _binding = binding
         }
 
+        fun bind(routes: Stop, onItemClick: (Stop) -> Unit) {
 
-        fun bind(routes: MapRoutes, onItemClick: (MapRoutes) -> Unit) {
+            _binding.tvMapRoute.text = routes.stop_title
 
             _binding.root.setOnClickListener {
                 onItemClick(routes)

@@ -29,6 +29,9 @@ class InfoFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.toolbar.tvTitle.text = "Information"
+        binding.toolbar.ivSearch.visibility = View.GONE
+
     }
 
 

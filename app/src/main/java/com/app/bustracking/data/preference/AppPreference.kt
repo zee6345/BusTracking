@@ -31,11 +31,23 @@ object AppPreference {
         return Prefs.getInt(key, 0)
     }
 
+    fun putBoolean(key: String, value: Boolean) {
+        Prefs.putBoolean(key, value)
+    }
+
+    fun getBoolean(key: String): Boolean {
+        return Prefs.getBoolean(key, false)
+    }
+
     fun setToken(token: String) {
         Prefs.putString("token", token)
     }
 
     fun getToken(): String {
         return Prefs.getString("token", "")
+    }
+
+    fun clear(){
+        Prefs.clear()
     }
 }

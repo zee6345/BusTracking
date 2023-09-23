@@ -11,10 +11,17 @@ import java.util.Random
 
 
 class SelectRouteAdapter(
-    private val itemList: List<Travel>,
+
     val onItemClick: (selectNetwork: Travel, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<SelectRouteAdapter.ViewHolder>() {
+
+    private var _itemList: List<Travel> = ArrayList()
+
+    fun setList(itemList: List<Travel>){
+        _itemList = itemList
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(
         binding: ItemSelectRouteBinding,
@@ -73,11 +80,11 @@ class SelectRouteAdapter(
     }
 
     override fun getItemCount(): Int {
-        return itemList.size
+        return _itemList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position]) {
+        holder.bind(_itemList[position]) {
             onItemClick(it, position)
         }
     }

@@ -2,14 +2,24 @@ package com.app.bustracking.presentation.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.app.bustracking.app.BusTracking
 import com.app.bustracking.data.responseModel.Agency
 import com.app.bustracking.databinding.ItemSelectNetworkBinding
 import com.bumptech.glide.Glide
 
-class SelectNetworkAdapter(private val itemList: List<Agency>, val onItemClick: (selectNetwork: Agency, position:Int) -> Unit) :
-    RecyclerView.Adapter<SelectNetworkAdapter.ViewHolder>() {
+class SelectNetworkAdapter(val onItemClick: (selectNetwork: Agency, position:Int) -> Unit) : RecyclerView.Adapter<SelectNetworkAdapter.ViewHolder>()
+    {
+
+    private var _itemList: List<Agency> = ArrayList()
+    private var filteredList: List<Agency> = _itemList
+
+    fun setList(itemList: List<Agency>){
+        _itemList = itemList
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(
         binding: ItemSelectNetworkBinding,
@@ -43,12 +53,13 @@ class SelectNetworkAdapter(private val itemList: List<Agency>, val onItemClick: 
     }
 
     override fun getItemCount(): Int {
-        return itemList.size
+        return _itemList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position]){
+        holder.bind(_itemList[position]){
             onItemClick(it, position)
         }
     }
+
 }

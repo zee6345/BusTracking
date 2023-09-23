@@ -5,11 +5,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,6 @@ import androidx.navigation.NavController
 import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.FragmentRoutesMapBinding
-import com.app.bustracking.presentation.model.Routes
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet
 import com.app.bustracking.utils.Converter
@@ -29,28 +29,38 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.layers.generated.lineLayer
-import com.mapbox.maps.extension.style.layers.properties.generated.LineCap
-import com.mapbox.maps.extension.style.layers.properties.generated.LineJoin
-import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
-import com.mapbox.maps.extension.style.style
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.layers.LineLayer
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 
-private const val GEOJSON_SOURCE_ID = "line"
-private const val ZOOM = 16.0
+
 private val TAG = RoutesMapFragment::class.simpleName.toString()
-class RoutesMapFragment : BaseFragment() {
+
+class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
 
     private lateinit var navController: NavController
     private lateinit var binding: FragmentRoutesMapBinding
     private lateinit var routeMapModalSheet: RouteMapModalSheet
-    private val sharedModel:SharedModel by viewModels()
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var annotationsAdded = false
     var mContext: Context? = null
     private val stopList = mutableListOf<Stop>()
+
+    private val SOURCE_ID = "SOURCE_ID"
+    private val ICON_ID = "ICON_ID"
+    private val LAYER_ID = "LAYER_ID"
+    private val LINE_SOURCE_ID = "LINE_SOURCE_ID"
+    private val LINE_LAYER_ID = "LINE_LAYER_ID"
+    private val symbolLayerIconFeatureList: MutableList<Feature> = ArrayList()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -76,12 +86,13 @@ class RoutesMapFragment : BaseFragment() {
         val data = requireArguments().getString(ARGS)
         val route = Converter.fromJson(data!!, Route::class.java)
 
-        route.stop.forEach {
-            stopList.apply {
-                clear()
-                addAll(route.stop)
-            }
+        binding.mapView.getMapAsync(this)
+
+        stopList.apply {
+            clear()
+            addAll(route.stop)
         }
+
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         getLocation()
@@ -89,7 +100,7 @@ class RoutesMapFragment : BaseFragment() {
         routeMapModalSheet.show(requireActivity().supportFragmentManager, routeMapModalSheet.tag)
 
 
-        binding.mapView.getMapboxMap()
+//        binding.mapView.getMapboxMap()
 
 //        binding.mapView.setOnClickListener {
 //            if (!routeMapModalSheet.isVisible) {
@@ -101,21 +112,41 @@ class RoutesMapFragment : BaseFragment() {
 //        }
 
         // getRoute()
+
+        val routeData = route
+        val points = ArrayList<Point>()
+
+        for (stop in routeData.stop) {
+            val lat = stop.lat.toDouble()
+            val lng = stop.lng.toDouble()
+            points.add(Point.fromLngLat(lng, lat))
+        }
+
+//        val lineString = LineString.fromLngLats(points)
+
+//        binding.mapboxMap?.addPolyline(
+//            LineOptions()
+//                .withLatLngs(lineString.coordinates)
+//                .withLineColor(Color.parseColor("#FF5733")) // Set the color of the polyline
+//        )
+
+        val lineString = LineString.fromLngLats(
+            symbolLayerIconFeatureList.map { feature ->
+                feature.geometry() as Point
+            }
+        )
+
     }
 
     private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true
-        }
-        return false
+        return ActivityCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermissions() {
@@ -129,6 +160,7 @@ class RoutesMapFragment : BaseFragment() {
         )
     }
 
+    @Deprecated("Deprecated in Java")
     @SuppressLint("MissingSuperCall")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -201,36 +233,89 @@ class RoutesMapFragment : BaseFragment() {
 
     private fun drawPolylineOnMap() {
 //        DrawGeoJson(this,mContext!!).execute()
-        DrawGeoJson()
+//        DrawGeoJson()
 
     }
 
-    private fun DrawGeoJson() {
-        binding.mapView.getMapboxMap().setCamera(
-            CameraOptions.Builder().center(
-                Point.fromLngLat(
-                    longitude,
-                    latitude
-                )
-            ).zoom(ZOOM).build()
+    override fun onMapReady(mapboxMap: MapboxMap) {
+
+        symbolLayerIconFeatureList.add(
+            Feature.fromGeometry(
+                Point.fromLngLat(-57.225365, -33.213144)
+            )
+        )
+        symbolLayerIconFeatureList.add(
+            Feature.fromGeometry(
+                Point.fromLngLat(-54.14164, -33.981818)
+            )
+        )
+        symbolLayerIconFeatureList.add(
+            Feature.fromGeometry(
+                Point.fromLngLat(-56.990533, -30.583266)
+            )
         )
 
-        binding.mapView.getMapboxMap().loadStyle(
-            (
-                    style(styleUri = Style.MAPBOX_STREETS) {
-                        +geoJsonSource(GEOJSON_SOURCE_ID) {
-                            url("asset://from_crema_to_council_crest.geojson")
-                        }
-                        +lineLayer("linelayer", GEOJSON_SOURCE_ID) {
-                            lineCap(LineCap.ROUND)
-                            lineJoin(LineJoin.ROUND)
-                            lineOpacity(0.7)
-                            lineWidth(8.0)
-                            lineColor("#C50000")
-                        }
-                    }
+
+//        val lineString = LineString.fromLngLats(symbolLayerIconFeatureList.map { feature -> feature.geometry() as Point })
+
+        val coordinates = mutableListOf(
+            LatLng(-33.213144, -57.225365),
+            LatLng(-33.981818, -54.14164),
+            LatLng(-30.583266, -56.990533)
+        )
+
+        // Convert the LatLng coordinates to Point objects
+        val points = coordinates.map { Point.fromLngLat(it.longitude, it.latitude) }
+
+        // Create a LineString from the list of points
+        val lineString = LineString.fromLngLats(points)
+
+        try {
+
+
+            mapboxMap.setStyle(
+                Style.Builder()
+                    .fromUri("mapbox://styles/mapbox/cjf4m44iw0uza2spb3q0a7s41") // Add the SymbolLayer icon image to the map style
+                    .withImage(
+                        ICON_ID,
+                        BitmapFactory.decodeResource(
+                            requireActivity().resources,
+                            com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
+                        )
                     )
-        )
+                    // Adding a GeoJson source for the SymbolLayer icons.
+                    .withSource(GeoJsonSource(SOURCE_ID, FeatureCollection.fromFeatures(symbolLayerIconFeatureList)))
+                    .withLayer(
+                        SymbolLayer(LAYER_ID, SOURCE_ID)
+                            .withProperties(
+                                PropertyFactory.iconImage(ICON_ID),
+                                PropertyFactory.iconAllowOverlap(true),
+                                PropertyFactory.iconIgnorePlacement(true)
+                            )
+                    )
+
+                    //poly line
+                    .withSource(GeoJsonSource(LINE_SOURCE_ID, Feature.fromGeometry(lineString)))
+                    .withLayer(
+                        LineLayer(LINE_LAYER_ID, LINE_SOURCE_ID)
+                            .withProperties(
+                                PropertyFactory.lineColor(Color.parseColor("#e55e5e")),
+                                PropertyFactory.lineWidth(2f)
+                            )
+                    )
+
+            ) {
+                // Map is set up and the style has loaded. Now you can add additional data or make other map adjustments.
+
+            }
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
+
+
 
 }

@@ -5,19 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import com.app.bustracking.R
 import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.databinding.FragmentRouteMapModalSheetBinding
 import com.app.bustracking.presentation.ui.RoutesMapAdapter
-import com.app.bustracking.presentation.viewmodel.RoutesMapViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class RouteMapModalSheet(private val route: Route?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentRouteMapModalSheetBinding
-    private val data: RoutesMapViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

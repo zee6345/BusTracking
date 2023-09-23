@@ -14,12 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.mapbox.maps.MapView
+        <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            mapbox:mapbox_cameraTargetLat="40.7128"
-            mapbox:mapbox_cameraTargetLng="-74.0060"
+            mapbox:mapbox_cameraTargetLat="-33.213144"
+            mapbox:mapbox_cameraTargetLng="-57.225365"
             mapbox:mapbox_cameraZoom="9.0" />
 
         <LinearLayout

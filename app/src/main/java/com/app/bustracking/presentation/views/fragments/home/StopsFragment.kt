@@ -16,34 +16,33 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import com.app.bustracking.databinding.FragmentStopsBinding
-import com.app.bustracking.presentation.model.Routes
 import com.app.bustracking.presentation.views.fragments.BaseFragment
-import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import com.mapbox.geojson.Point
-import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.layers.generated.lineLayer
-import com.mapbox.maps.extension.style.layers.properties.generated.LineCap
-import com.mapbox.maps.extension.style.layers.properties.generated.LineJoin
-import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
-import com.mapbox.maps.extension.style.style
+
+//import com.mapbox.maps.CameraOptions
+//import com.mapbox.maps.Style
+//import com.mapbox.maps.extension.style.layers.generated.lineLayer
+//import com.mapbox.maps.extension.style.layers.properties.generated.LineCap
+//import com.mapbox.maps.extension.style.layers.properties.generated.LineJoin
+//import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
+//import com.mapbox.maps.extension.style.style
 
 
 private const val GEOJSON_SOURCE_ID = "line"
 private const val ZOOM = 14.0
+
 class StopsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentStopsBinding
     private lateinit var navController: NavController
 
-//    private lateinit var routeMapModalSheet: RouteMapModalSheet
+    //    private lateinit var routeMapModalSheet: RouteMapModalSheet
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var annotationsAdded = false
-    var mContext: Context? =null
+    var mContext: Context? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -70,7 +69,7 @@ class StopsFragment : BaseFragment() {
 //        routeMapModalSheet = RouteMapModalSheet(data)
 //        routeMapModalSheet.show(requireActivity().supportFragmentManager, routeMapModalSheet.tag)
 
-        binding.mapView.getMapboxMap()
+//        binding.mapView.getMapboxMap()
 
 //        binding.mapView.setOnClickListener {
 //            if (!routeMapModalSheet.isVisible) {
@@ -97,6 +96,7 @@ class StopsFragment : BaseFragment() {
         }
         return false
     }
+
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(
             requireActivity(),
@@ -107,6 +107,8 @@ class StopsFragment : BaseFragment() {
             1010
         )
     }
+
+    @Deprecated("Deprecated in Java")
     @SuppressLint("MissingSuperCall")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -128,10 +130,11 @@ class StopsFragment : BaseFragment() {
         )
     }
 
-    var latitude:Double = 0.0
-    var longitude:Double = 0.0
+    var latitude: Double = 0.0
+    var longitude: Double = 0.0
     var mLocationRequest: com.google.android.gms.location.LocationRequest? = null
     var mLocationCallback: LocationCallback? = null
+
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getLocation() {
         if (checkPermissions()) {
@@ -139,7 +142,7 @@ class StopsFragment : BaseFragment() {
                 locationrequestfunct()
                 mLocationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult) {
-                        latitude =locationResult.lastLocation!!.latitude
+                        latitude = locationResult.lastLocation!!.latitude
                         longitude = locationResult.lastLocation!!.longitude
 
 
@@ -149,11 +152,17 @@ class StopsFragment : BaseFragment() {
                         }
                     }
                 }
-                mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-                mFusedLocationClient.requestLocationUpdates(mLocationRequest!!, mLocationCallback!!, Looper.myLooper());
+                mFusedLocationClient =
+                    LocationServices.getFusedLocationProviderClient(requireActivity())
+                mFusedLocationClient.requestLocationUpdates(
+                    mLocationRequest!!,
+                    mLocationCallback!!,
+                    Looper.myLooper()
+                );
 
             } else {
-                Toast.makeText(requireContext(), "Please turn on location", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Please turn on location", Toast.LENGTH_LONG)
+                    .show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
@@ -166,40 +175,41 @@ class StopsFragment : BaseFragment() {
         mLocationRequest = com.google.android.gms.location.LocationRequest()
         mLocationRequest!!.interval = 30000
         mLocationRequest!!.fastestInterval = 10000
-        mLocationRequest!!.priority = com.google.android.gms.location.LocationRequest.PRIORITY_LOW_POWER
+        mLocationRequest!!.priority =
+            com.google.android.gms.location.LocationRequest.PRIORITY_LOW_POWER
     }
 
-    private fun drawPolylineOnMap(){
+    private fun drawPolylineOnMap() {
 //        DrawGeoJson(this,mContext!!).execute()
-        DrawGeoJson()
+//        DrawGeoJson()
 
     }
 
-    private fun DrawGeoJson() {
-        binding.mapView.getMapboxMap().setCamera(
-            CameraOptions.Builder().center(
-                Point.fromLngLat(
-                    longitude,
-                    latitude
-                )
-            ).zoom(ZOOM).build()
-        )
-        binding.mapView.getMapboxMap().loadStyle(
-            (
-                    style(styleUri = Style.MAPBOX_STREETS) {
-                        +geoJsonSource(GEOJSON_SOURCE_ID) {
-                            url("asset://from_crema_to_council_crest.geojson")
-                        }
-                        +lineLayer("linelayer", GEOJSON_SOURCE_ID) {
-                            lineCap(LineCap.ROUND)
-                            lineJoin(LineJoin.ROUND)
-                            lineOpacity(0.7)
-                            lineWidth(8.0)
-                            lineColor("#C50000")
-                        }
-                    }
-                    )
-        )
-    }
+//    private fun DrawGeoJson() {
+//        binding.mapView.getMapboxMap().setCamera(
+//            CameraOptions.Builder().center(
+//                Point.fromLngLat(
+//                    longitude,
+//                    latitude
+//                )
+//            ).zoom(ZOOM).build()
+//        )
+//        binding.mapView.getMapboxMap().loadStyle(
+//            (
+//                    style(styleUri = Style.MAPBOX_STREETS) {
+//                        +geoJsonSource(GEOJSON_SOURCE_ID) {
+//                            url("asset://from_crema_to_council_crest.geojson")
+//                        }
+//                        +lineLayer("linelayer", GEOJSON_SOURCE_ID) {
+//                            lineCap(LineCap.ROUND)
+//                            lineJoin(LineJoin.ROUND)
+//                            lineOpacity(0.7)
+//                            lineWidth(8.0)
+//                            lineColor("#C50000")
+//                        }
+//                    }
+//                    )
+//        )
+//    }
 
 }

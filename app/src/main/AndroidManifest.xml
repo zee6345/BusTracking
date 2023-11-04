@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+
 
     <application
         android:name=".app.BusTracking"
@@ -17,6 +21,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BusTracking"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
         <activity
@@ -36,6 +41,12 @@
         <activity
             android:name=".presentation.views.activities.HomeActivity"
             android:exported="false" />
+
+        <service android:name=".app.AppService"
+            android:enabled="true"
+            android:exported="false"
+            android:directBootAware="true"/>
+
     </application>
 
 </manifest>

@@ -8,9 +8,11 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
+import com.app.bustracking.app.AppService
 import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.FragmentRoutesMapBinding
@@ -33,7 +36,10 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
@@ -41,7 +47,13 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-
+import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
+import com.pusher.client.channel.PusherEvent
+import com.pusher.client.channel.SubscriptionEventListener
+import com.pusher.client.connection.ConnectionEventListener
+import com.pusher.client.connection.ConnectionState
+import com.pusher.client.connection.ConnectionStateChange
 
 private val TAG = RoutesMapFragment::class.simpleName.toString()
 
@@ -53,14 +65,28 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var annotationsAdded = false
     var mContext: Context? = null
-    private val stopList = mutableListOf<Stop>()
+//    private val stopList = mutableListOf<Stop>()
 
     private val SOURCE_ID = "SOURCE_ID"
     private val ICON_ID = "ICON_ID"
     private val LAYER_ID = "LAYER_ID"
     private val LINE_SOURCE_ID = "LINE_SOURCE_ID"
     private val LINE_LAYER_ID = "LINE_LAYER_ID"
-    private val symbolLayerIconFeatureList: MutableList<Feature> = ArrayList()
+
+    //    private val symbolLayerIconFeatureList: MutableList<Feature> = ArrayList()
+    private val symbolLayerIconFeatureList: ArrayList<Feature> = ArrayList()
+    private val coordinatesList: ArrayList<LatLng> = ArrayList()
+
+//    val PUSHER_APP_ID = 1695142
+//    val PUSHER_APP_KEY = "1f3eac61c1534d7ca731"
+//    val PUSHER_APP_SECRET = "820dcb7d16632e710184"
+//
+//    val pusherOptions by lazy {
+//        PusherOptions().setCluster("ap2")
+//    }
+//    val pusher by lazy {
+//        Pusher(PUSHER_APP_KEY, pusherOptions)
+//    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -86,12 +112,35 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
         val data = requireArguments().getString(ARGS)
         val route = Converter.fromJson(data!!, Route::class.java)
 
+        Mapbox.getInstance(
+            requireActivity(),
+            getString(com.app.bustracking.R.string.mapbox_access_token)
+        )
         binding.mapView.getMapAsync(this)
 
-        stopList.apply {
-            clear()
-            addAll(route.stop)
-        }
+//        stopList.apply {
+//            clear()
+//            addAll(route.stop)
+//        }
+
+
+//        pusher.connect(this, ConnectionState.ALL)
+////        val channel = pusher.subscribe("220.location")
+//        val channel = pusher.subscribe("seentul-tracking")
+//        channel.bind(route.bus_id.toString(), this)
+
+
+//        if (!AppService.alreadyRunning) {
+            val intent = Intent(requireActivity(), AppService::class.java)
+//            intent.action = "com.app.tracking"
+            intent.putExtra("bus_id", route.bus_id.toString())
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                requireActivity().startForegroundService(intent)
+//            } else {
+                requireActivity().startService(intent)
+//            }
+//        }
+
 
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -113,28 +162,34 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
 
         // getRoute()
 
-        val routeData = route
-        val points = ArrayList<Point>()
 
-        for (stop in routeData.stop) {
-            val lat = stop.lat.toDouble()
-            val lng = stop.lng.toDouble()
-            points.add(Point.fromLngLat(lng, lat))
+//        val routeData = route
+//        val points = ArrayList<Point>()
+//
+//        for (stop in routeData.stop) {
+//            val lat = stop.lat.toDouble()
+//            val lng = stop.lng.toDouble()
+//            points.add(Point.fromLngLat(lng, lat))
+//        }
+
+
+        route.stop.forEach { stop ->
+            symbolLayerIconFeatureList.add(
+                Feature.fromGeometry(
+                    Point.fromLngLat(
+                        stop.lng.toDouble(),
+                        stop.lat.toDouble()
+                    )
+                )
+            )
+            coordinatesList.add(
+                LatLng(
+                    stop.lng.toDouble(),
+                    stop.lat.toDouble()
+                )
+            )
         }
 
-//        val lineString = LineString.fromLngLats(points)
-
-//        binding.mapboxMap?.addPolyline(
-//            LineOptions()
-//                .withLatLngs(lineString.coordinates)
-//                .withLineColor(Color.parseColor("#FF5733")) // Set the color of the polyline
-//        )
-
-        val lineString = LineString.fromLngLats(
-            symbolLayerIconFeatureList.map { feature ->
-                feature.geometry() as Point
-            }
-        )
 
     }
 
@@ -239,33 +294,8 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(mapboxMap: MapboxMap) {
 
-        symbolLayerIconFeatureList.add(
-            Feature.fromGeometry(
-                Point.fromLngLat(-57.225365, -33.213144)
-            )
-        )
-        symbolLayerIconFeatureList.add(
-            Feature.fromGeometry(
-                Point.fromLngLat(-54.14164, -33.981818)
-            )
-        )
-        symbolLayerIconFeatureList.add(
-            Feature.fromGeometry(
-                Point.fromLngLat(-56.990533, -30.583266)
-            )
-        )
-
-
-//        val lineString = LineString.fromLngLats(symbolLayerIconFeatureList.map { feature -> feature.geometry() as Point })
-
-        val coordinates = mutableListOf(
-            LatLng(-33.213144, -57.225365),
-            LatLng(-33.981818, -54.14164),
-            LatLng(-30.583266, -56.990533)
-        )
-
         // Convert the LatLng coordinates to Point objects
-        val points = coordinates.map { Point.fromLngLat(it.longitude, it.latitude) }
+        val points = coordinatesList.map { Point.fromLngLat(it.longitude, it.latitude) }
 
         // Create a LineString from the list of points
         val lineString = LineString.fromLngLats(points)
@@ -284,7 +314,12 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
                         )
                     )
                     // Adding a GeoJson source for the SymbolLayer icons.
-                    .withSource(GeoJsonSource(SOURCE_ID, FeatureCollection.fromFeatures(symbolLayerIconFeatureList)))
+                    .withSource(
+                        GeoJsonSource(
+                            SOURCE_ID,
+                            FeatureCollection.fromFeatures(symbolLayerIconFeatureList)
+                        )
+                    )
                     .withLayer(
                         SymbolLayer(LAYER_ID, SOURCE_ID)
                             .withProperties(
@@ -304,11 +339,28 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
                             )
                     )
 
+
+
             ) {
                 // Map is set up and the style has loaded. Now you can add additional data or make other map adjustments.
 
+                val builder = LatLngBounds.Builder()
+                for (latLng in coordinatesList) {
+                    builder.include(latLng)
+                }
+                val bounds = builder.build()
+                // Padding to control the space around the bounds (in pixels)
+                val padding = 100
+                mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+
             }
 
+
+            mapboxMap.addOnMapClickListener { point ->
+                Log.e("mmmTAG", "" + point)
+                routeMapModalSheet.show(requireActivity().supportFragmentManager, routeMapModalSheet.tag)
+                true
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -316,6 +368,23 @@ class RoutesMapFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
+//    override fun onConnectionStateChange(change: ConnectionStateChange?) {
+//        Log.e("Pusher", "State changed from " + change!!.getPreviousState() + " to " + change!!.getCurrentState())
+//
+//
+//    }
+//
+//    override fun onError(message: String?, code: String?, e: Exception?) {
+//        Log.e("Pusher", "There was a problem connecting! " +
+//                "\ncode: " + code +
+//                "\nmessage: " + message +
+//                "\nException: " + e
+//        )
+//    }
+//
+//    override fun onEvent(event: PusherEvent?) {
+//        Log.e("Pusher", "Received event with data: " + event.toString());
+//    }
 
 
 }

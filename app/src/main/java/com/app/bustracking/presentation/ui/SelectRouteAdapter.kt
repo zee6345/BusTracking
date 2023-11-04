@@ -48,6 +48,8 @@ class SelectRouteAdapter(
                 _binding.ivIcon.text = "$firstChar$lastChar"
             }
 
+            _binding.tvText.text = "Start: ${selectNetwork.travel_departure_time} : Arrive: ${selectNetwork.travel_arrival_time}"
+
             try {
                 _binding.ivIcon.background = generateRandomColor()
             } catch (e: Exception) {

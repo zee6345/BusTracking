@@ -5,7 +5,7 @@ import android.content.Context
 import com.app.bustracking.R
 import com.app.bustracking.data.preference.AppPreference
 import com.mapbox.mapboxsdk.Mapbox
-//import com.mapbox.maps.plugin.Plugin
+
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -22,7 +22,7 @@ class BusTracking : Application() {
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
 
-//        Plugin.Mapbox(getString(R.string.mapbox_access_token))
+
         AppPreference.Preference(this)
 
     }

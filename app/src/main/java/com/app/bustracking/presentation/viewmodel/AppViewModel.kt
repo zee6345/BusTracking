@@ -44,54 +44,54 @@ class AppViewModel @Inject constructor(private val appUseCase: AppUseCase) : Vie
         }
     }
 
-    fun getTravels(travelRequest: TravelRequest){
+    fun getTravels(travelRequest: TravelRequest) {
         _getTravelList.value = DataState.Loading
 
         viewModelScope.launch {
             try {
                 val response = appUseCase.getTravelList(travelRequest)
-                if (response.isSuccessful && response.body() != null){
+                if (response.isSuccessful && response.body() != null) {
                     _getTravelList.value = DataState.Success(response.body()!!)
                 } else {
                     _getTravelList.value = DataState.Error(response.errorBody()!!.string())
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 _getTravelList.value = DataState.Error(e.message.toString())
             }
         }
     }
 
-    fun getBusses(travelRequest: TravelRequest){
+    fun getBusses(travelRequest: TravelRequest) {
         _getBusList.value = DataState.Loading
 
         viewModelScope.launch {
             try {
                 val response = appUseCase.getBusList(travelRequest)
-                if (response.isSuccessful && response.body() != null){
+                if (response.isSuccessful && response.body() != null) {
                     _getBusList.value = DataState.Success(response.body()!!)
                 } else {
                     _getBusList.value = DataState.Error(response.errorBody()!!.string())
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 _getBusList.value = DataState.Error(e.message.toString())
             }
         }
     }
 
-    fun getTravelRouteList(travelRequest: RouteRequest){
+    fun getTravelRouteList(travelRequest: RouteRequest) {
         _getTravelRoutes.value = DataState.Loading
 
         viewModelScope.launch {
             try {
                 val response = appUseCase.getTravelRoutes(travelRequest)
-                if (response.isSuccessful && response.body() != null){
+                if (response.isSuccessful && response.body() != null) {
                     _getTravelRoutes.value = DataState.Success(response.body()!!)
                 } else {
                     _getTravelRoutes.value = DataState.Error(response.errorBody()!!.string())
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 _getTravelRoutes.value = DataState.Error(e.message.toString())
             }

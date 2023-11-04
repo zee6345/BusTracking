@@ -62,6 +62,7 @@ class RoutesFragment : BaseFragment() {
         data.getTravelRouteList(RouteRequest(agentId))
 
 
+
         data.getTravelRoutes.observe(viewLifecycleOwner) {
             when (it) {
                 is DataState.Loading -> {
@@ -76,6 +77,8 @@ class RoutesFragment : BaseFragment() {
                     progress.dismiss()
 
                     val data = it.data as GetTravelRoutes
+
+
 
                     if (data.route_list.isNotEmpty()) {
                         binding.rvLines.adapter =

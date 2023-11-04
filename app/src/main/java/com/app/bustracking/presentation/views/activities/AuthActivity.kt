@@ -10,7 +10,7 @@ import com.app.bustracking.databinding.ActivityHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AuthActivity : AppCompatActivity() {
+class AuthActivity : BaseActivity() {
 
     private val binding: ActivityAuthBinding by lazy {
         ActivityAuthBinding.inflate(layoutInflater)

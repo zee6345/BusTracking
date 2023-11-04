@@ -29,6 +29,7 @@ import com.app.bustracking.presentation.ui.SelectRouteAdapter
 import com.app.bustracking.presentation.viewmodel.AppViewModel
 import com.app.bustracking.presentation.views.activities.HomeActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Converter
 
 import com.app.bustracking.utils.Progress
 
@@ -74,6 +75,9 @@ class SelectRoutesFragment : BaseFragment() {
             //network call
             data.getTravelRouteList(RouteRequest(travel.id))
         }
+
+
+
         binding.rvRoute.adapter = adapter
 
 
@@ -128,6 +132,9 @@ class SelectRoutesFragment : BaseFragment() {
 
                     val response = it.data as GetTravelList
 
+                    AppPreference.putString("travelList", Converter.toJson(response)!!)
+
+
                     if (response.travel_list.isEmpty()) {
                         showNoRouteDialog(true)
                     } else {
@@ -138,6 +145,7 @@ class SelectRoutesFragment : BaseFragment() {
                         }
 
                         adapter.setList(response.travel_list)
+
 
                     }
                 }
@@ -163,6 +171,8 @@ class SelectRoutesFragment : BaseFragment() {
                     progress.dismiss()
 
                     val data = it.data as GetTravelRoutes
+
+                    AppPreference.putString("routeList", Converter.toJson(data)!!)
 
                     if (data.route_list.isEmpty()) {
                         showNoRouteDialog(false)

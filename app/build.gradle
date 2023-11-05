@@ -25,6 +25,18 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    def project = "SeentulBus"
+                    def SEP = "-"
+                    def version = variant.versionName
+                    def date = new Date()
+                    def formattedDate = date.format('dd-MM-yyyy')
+                    outputFileName = new File(project + SEP + version + SEP + formattedDate + ".apk")
+                }
+            }
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17

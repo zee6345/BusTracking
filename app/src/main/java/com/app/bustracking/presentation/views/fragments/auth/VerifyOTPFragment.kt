@@ -31,7 +31,6 @@ class VerifyOTPFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
 
-
             try {
                 val argValue = it.getString("number")
                 number = argValue!!
@@ -79,10 +78,8 @@ class VerifyOTPFragment : BaseFragment() {
         binding.buttonLogin.setOnClickListener {
 
             //clear back stack
-            AppPreference.putBoolean("isLogin", true)
-            val intent = Intent(requireActivity(), MainActivity::class.java)
-            startActivity(intent)
-            (requireActivity() as AppCompatActivity).finish()
+//            AppPreference.putBoolean("isLogin", true)
+
 
 
             //api call
@@ -102,17 +99,18 @@ class VerifyOTPFragment : BaseFragment() {
                         ) {
                             progressDialog.dismiss()
                             if (response.code() == 200) {
+
                                 val model = response.body() as VerifyOTPModel
                                 Toast.makeText(requireContext(), model.message, Toast.LENGTH_SHORT)
                                     .show()
 
-                                //clear back stack
-//                            navController.popBackStack(R.id.selectNetwrokFragment, false)
-//
-//                            //navigate to new screen
-//                            navController.navigate(R.id.action_verifyOTPFragment_to_selectNetwrokFragment)
+
+                                val intent = Intent(requireActivity(), MainActivity::class.java)
+                                startActivity(intent)
+                                (requireActivity() as AppCompatActivity).finish()
+
+
                             } else {
-//                            val model = response.body() as VerifyOTPModel
                                 Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT)
                                     .show()
                             }

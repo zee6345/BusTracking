@@ -88,7 +88,7 @@
         app:cursorVisible="false"
         app:forceKeyboard="true"
         app:hint="0"
-        app:inputType="text"
+        app:inputType="number"
         app:password="false"
         app:pinBackground="@drawable/example_drawable"
         app:pinHeight="40dp"

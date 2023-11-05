@@ -15,7 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.app.bustracking.R
+import com.app.bustracking.presentation.model.LocationEvent
 import com.app.bustracking.presentation.views.activities.MainActivity
+import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.PusherEvent
@@ -157,5 +159,32 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
 
     override fun onEvent(event: PusherEvent?) {
         Log.e("Pusher", "Received event with data: " + event.toString());
+
+//        val withoutslashes = removeBackslashes(event.toString())
+//        val gson = Gson()
+//        val locationEvent = gson.fromJson(withoutslashes, LocationEvent::class.java)
+//
+//        println("Event: ${locationEvent.event}")
+//        println("Channel: ${locationEvent.channel}")
+//        println("Latitude: ${locationEvent.data.location.lat}")
+//        println("Longitude: ${locationEvent.data.location.long}")
+//        println("Bus ID: ${locationEvent.data.location.bus_id}")
+//
+////        val json = Gson().toJson(locationData)
+//
+//        val intent = Intent("My_Action_Event")
+//        intent.putExtra("json_data", withoutslashes)
+//        sendBroadcast(intent)
+        val jsonString = event.toString()
+        if (jsonString.isNotEmpty()) {
+            val intent = Intent("My_Action_Event")
+            intent.putExtra("json_data", jsonString)
+            sendBroadcast(intent)
+        }
+    }
+
+    fun removeBackslashes(jsonString: String): String {
+        // Use regular expression to remove backslashes
+        return jsonString.replace("\\\\", "")
     }
 }

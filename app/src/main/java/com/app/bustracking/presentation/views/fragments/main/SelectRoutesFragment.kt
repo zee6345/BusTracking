@@ -182,6 +182,7 @@ class SelectRoutesFragment : BaseFragment() {
                         val intent = Intent(requireActivity(), HomeActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
+
                     }
 
                 }

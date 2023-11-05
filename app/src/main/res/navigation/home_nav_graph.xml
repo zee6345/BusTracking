@@ -42,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/stopsFragment"
-        android:name="com.app.bustracking.presentation.views.fragments.home.StopsFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.StopsJFragment"
         android:label="fragment_stops"
         tools:layout="@layout/fragment_stops" >
         <action
@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/routesMapFragment"
-        android:name="com.app.bustracking.presentation.views.fragments.home.RoutesMapFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.RoutesMapJFragment"
         android:label="fragment_routes_map"
         tools:layout="@layout/fragment_routes_map" >
         <action

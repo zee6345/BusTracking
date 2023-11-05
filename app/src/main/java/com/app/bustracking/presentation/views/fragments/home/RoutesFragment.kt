@@ -85,6 +85,7 @@ class RoutesFragment : BaseFragment() {
                             RoutesAdapter(data.route_list) { route, position ->
 
                                 val json = Converter.toJson(route)
+                                AppPreference.putString("route", json.toString())
 
                                 val args = Bundle()
                                 args.putString(ARGS, json)

@@ -17,6 +17,12 @@
         <item name="android:colorBackground">@android:color/transparent</item>
     </style>
 
+    <style name="TransparentAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item> <!-- To dim the background -->
+        <!-- Add other theme attributes as needed -->
+    </style>
+
 
 
 </resources>

@@ -129,5 +129,13 @@ dependencies {
     implementation 'com.hbb20:ccp:2.7.0'
     implementation 'com.pusher:pusher-java-client:2.4.2'
 
+    //prefers
+    implementation 'com.pixplicity.easyprefs:EasyPrefs:1.10.0'
+
+    //progress
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+
+//    implementation 'com.kaopiz:kprogresshud:1.2.0'
+
 
 }

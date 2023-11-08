@@ -1,13 +1,13 @@
 package com.app.bustracking.presentation.views.fragments.main
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import com.app.bustracking.R
@@ -18,7 +18,6 @@ import com.app.bustracking.databinding.FragmentSelectNetwrokBinding
 import com.app.bustracking.presentation.ui.SelectNetworkAdapter
 import com.app.bustracking.presentation.viewmodel.AppViewModel
 import com.app.bustracking.presentation.views.fragments.BaseFragment
-import com.app.bustracking.utils.Progress
 
 private val TAG: String = SelectNetworkFragment::class.simpleName.toString()
 
@@ -27,7 +26,8 @@ class SelectNetworkFragment : BaseFragment() {
     private lateinit var binding: FragmentSelectNetwrokBinding
     private lateinit var navController: NavController
     private val data: AppViewModel by viewModels()
-    private lateinit var progress: AlertDialog
+
+    //    private lateinit var progress: AlertDialog
     private val dataList = mutableListOf<Agency>()
 
     override fun initNavigation(navController: NavController) {
@@ -52,14 +52,18 @@ class SelectNetworkFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        progress = Progress(requireActivity()).showProgress()
+        val dialog = showProgress()
+
         binding.rvNetwork.setHasFixedSize(true)
         val selectNetworkAdapter = SelectNetworkAdapter { obj, _ ->
-            val bundle = Bundle()
-            bundle.putInt("agent_id", obj.id)
-            navController.navigate(
-                R.id.action_selectNetwrokFragment_to_selectRoutesFragment, bundle
-            )
+//            Handler(Looper.getMainLooper()).postDelayed({
+                val bundle = Bundle()
+                bundle.putInt("agent_id", obj.id)
+                navController.navigate(
+                    R.id.action_selectNetwrokFragment_to_selectRoutesFragment, bundle
+                )
+//            }, 500)
+
         }
         binding.rvNetwork.adapter = selectNetworkAdapter
 
@@ -92,19 +96,18 @@ class SelectNetworkFragment : BaseFragment() {
         data.getAgenciesList.observe(viewLifecycleOwner) {
             when (it) {
                 is DataState.Loading -> {
-                    progress.show()
+                    dialog.show()
                 }
 
                 is DataState.Error -> {
-                    progress.dismiss()
-                    Log.e(TAG, "onViewCreated: ${it.errorMessage}")
+                    dialog.dismiss()
+                    showMessage("something went wrong!")
                 }
 
                 is DataState.Success -> {
-                    progress.dismiss()
+                    dialog.dismiss()
 
                     val agency = it.data as GetAgenciesList
-
 
                     dataList.apply {
                         clear()

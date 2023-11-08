@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_verifyOTP"
-            app:destination="@id/verifyOTPFragment" />
+            app:destination="@id/verifyOTPFragment"
+            app:enterAnim="@anim/slide_in_from_left"
+            app:exitAnim="@android:anim/slide_out_right" />
 
 <!--        <argument-->
 <!--            android:name="number"-->

@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_select_netwrok" >
         <action
             android:id="@+id/action_selectNetwrokFragment_to_selectRoutesFragment"
-            app:destination="@id/selectRoutesFragment" />
+            app:destination="@id/selectRoutesFragment"
+            app:enterAnim="@anim/slide_in_from_left"
+            app:exitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/selectRoutesFragment"

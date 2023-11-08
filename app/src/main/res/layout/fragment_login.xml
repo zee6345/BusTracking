@@ -20,10 +20,12 @@
     </RelativeLayout>
 
     <ImageView
-        android:layout_width="@dimen/_150sdp"
-        android:layout_height="@dimen/_110sdp"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
         android:layout_gravity="center"
-        android:background="#D9D9D9" />
+        android:id="@+id/imageView"
+        android:src="@drawable/app_icon"
+        />
 
 
     <TextView
@@ -32,10 +34,11 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:padding="@dimen/_10sdp"
         android:text="Welcome!"
+        android:fontFamily="@font/roboto_bold"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="@dimen/_16sdp"
-        android:textStyle="bold" />
+        android:textSize="@dimen/_18sdp"
+         />
 
 
     <TextView
@@ -43,20 +46,21 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_10sdp"
         android:padding="@dimen/_10sdp"
-        android:text="Login to your existing account of"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Login to your existing account"
         android:textAlignment="center"
         android:textColor="#464646"
-        android:textSize="@dimen/_16sdp" />
+        android:textSize="@dimen/_14sdp" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_50sdp"
+        android:layout_height="?attr/actionBarSize"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
-
         android:background="@drawable/ic_input_background"
         android:gravity="center"
+        android:layout_marginTop="@dimen/_40sdp"
         android:orientation="horizontal"
         android:paddingStart="@dimen/_10sdp"
         android:paddingEnd="@dimen/_10sdp">
@@ -66,7 +70,8 @@
             android:layout_width="@dimen/_26sdp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:src="@drawable/ic_contact" />
+            android:src="@drawable/ic_contact"
+            app:tint="@color/black" />
 
         <com.hbb20.CountryCodePicker
             android:id="@+id/ccp"
@@ -81,9 +86,11 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:text=""
             android:hint="Number"
             android:inputType="phone"
             android:padding="@dimen/_3sdp"
+            android:fontFamily="@font/roboto_medium"
             android:singleLine="true" />
 
 
@@ -183,12 +190,13 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_45sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         android:background="@drawable/ic_background_button"
         android:text="Sign In"
         android:textAllCaps="false"
+        android:fontFamily="@font/roboto_bold"
         android:textColor="@color/white"
         android:textSize="@dimen/_14sdp" />
 

@@ -17,8 +17,10 @@ import com.app.bustracking.data.responseModel.VerifyOTPModel
 import com.app.bustracking.databinding.FragmentVerifyOTPBinding
 import com.app.bustracking.presentation.views.activities.MainActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Constants
 
 import com.goodiebag.pinview.Pinview
+import com.pixplicity.easyprefs.library.Prefs
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -105,12 +107,17 @@ class VerifyOTPFragment : BaseFragment() {
                                     .show()
 
 
+                                Prefs.putBoolean(Constants.isLogin, true)
+
                                 val intent = Intent(requireActivity(), MainActivity::class.java)
                                 startActivity(intent)
                                 (requireActivity() as AppCompatActivity).finish()
 
 
                             } else {
+
+                                Prefs.putBoolean(Constants.isLogin, false)
+
                                 Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT)
                                     .show()
                             }
@@ -120,6 +127,9 @@ class VerifyOTPFragment : BaseFragment() {
                             progressDialog.dismiss()
                             t.printStackTrace()
                             Toast.makeText(requireContext(), "Failed", Toast.LENGTH_SHORT).show()
+
+                            Prefs.putBoolean(Constants.isLogin, false)
+
                         }
 
                     })

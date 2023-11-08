@@ -101,7 +101,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
         mapView.onCreate(savedInstanceState);
 
 
-        binding.toolbar.tvTitle.setText("Maps");
+        binding.tvTitle.setText("Maps");
 
         String data = AppPreference.INSTANCE.getString("routeList");
         stopsList = Converter.INSTANCE.fromJson(data, GetTravelRoutes.class);

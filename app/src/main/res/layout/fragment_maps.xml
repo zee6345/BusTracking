@@ -7,8 +7,22 @@
     android:orientation="vertical"
     tools:context=".presentation.views.fragments.home.MapsFragment">
 
-    <include layout="@layout/layout_toolbar"
-        android:id="@+id/toolbar"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/theme_color"
+        android:layout_height="?attr/actionBarSize">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text=""
+            android:id="@+id/tvTitle"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sdp" />
+
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -24,25 +38,27 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:layout_gravity="bottom"
             android:background="@color/white"
+            android:paddingHorizontal="@dimen/_10sdp"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/_5sdp"
-            android:paddingTop="@dimen/_20sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_20sdp">
+            >
 
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_18sdp"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_gravity="center"
                 android:layout_margin="@dimen/_3sdp"
                 android:src="@drawable/ic_map_select" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_gravity="center"
+                android:textSize="@dimen/_9sdp"
                 android:layout_margin="@dimen/_3sdp"
                 android:text="Click on a stop or a line to access real - time information" />
 

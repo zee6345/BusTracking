@@ -9,16 +9,18 @@
     android:layout_marginBottom="@dimen/_3sdp"
     app:cardCornerRadius="@dimen/_10sdp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/_10sdp">
-
+        android:orientation="horizontal"
+        android:padding="@dimen/_8sdp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivIcon"
-            android:layout_width="@dimen/_26sdp"
-            android:layout_height="@dimen/_26sdp"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/_8sdp"
             android:src="@drawable/ic_select_network_01"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -27,12 +29,16 @@
 
         <TextView
             android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_28sdp"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:layout_gravity="center"
             android:text="A Citadina"
-            android:textSize="@dimen/_14sdp"
-            android:textStyle="bold"
+            android:fontFamily="@font/roboto_medium"
+            android:textSize="@dimen/_16sdp"
+            android:singleLine="true"
+            android:ellipsize="marquee"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/ivIcon"
             app:layout_constraintTop_toTopOf="parent"
@@ -41,7 +47,9 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/_20sdp"
+            android:padding="@dimen/_4sdp"
+            android:layout_gravity="center"
             android:layout_marginHorizontal="@dimen/_5sdp"
             android:src="@drawable/ic_arrow_forward"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,6 +57,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

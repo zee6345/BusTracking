@@ -48,6 +48,6 @@ object AppPreference {
     }
 
     fun clear(){
-        Prefs.clear()
+        Prefs.getAll().clear()
     }
 }

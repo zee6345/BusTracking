@@ -79,10 +79,8 @@ class RoutesFragment : BaseFragment() {
                     val data = it.data as GetTravelRoutes
 
 
-
                     if (data.route_list.isNotEmpty()) {
-                        binding.rvLines.adapter =
-                            RoutesAdapter(data.route_list) { route, position ->
+                        binding.rvLines.adapter = RoutesAdapter(data.route_list) { route, position ->
 
                                 val json = Converter.toJson(route)
                                 AppPreference.putString("route", json.toString())

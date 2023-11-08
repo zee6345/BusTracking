@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,21 +16,19 @@ import com.app.bustracking.R
 import com.app.bustracking.data.preference.AppPreference
 import com.app.bustracking.data.requestModel.RouteRequest
 import com.app.bustracking.data.requestModel.TravelRequest
-import com.app.bustracking.data.responseModel.Agency
 import com.app.bustracking.data.responseModel.DataState
 import com.app.bustracking.data.responseModel.GetTravelList
 import com.app.bustracking.data.responseModel.GetTravelRoutes
 import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.FragmentSelectRoutesBinding
 import com.app.bustracking.databinding.NoRouteDialogBinding
-
 import com.app.bustracking.presentation.ui.SelectRouteAdapter
 import com.app.bustracking.presentation.viewmodel.AppViewModel
 import com.app.bustracking.presentation.views.activities.HomeActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Constants
 import com.app.bustracking.utils.Converter
-
-import com.app.bustracking.utils.Progress
+import com.pixplicity.easyprefs.library.Prefs
 
 private val TAG = SelectRoutesFragment::class.simpleName.toString()
 
@@ -40,7 +37,8 @@ class SelectRoutesFragment : BaseFragment() {
     private lateinit var binding: FragmentSelectRoutesBinding
     private lateinit var navController: NavController
     private val data: AppViewModel by viewModels()
-    private lateinit var progress: AlertDialog
+
+    //    private lateinit var progress: AlertDialog
     private var isSearchable = false
     private val dataList = mutableListOf<Travel>()
 
@@ -60,11 +58,11 @@ class SelectRoutesFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //fetch api
-        val agentId = requireArguments().getInt("agent_id") ?: 0
+        val agentId = Prefs.getInt(Constants.agencyId)
         data.getTravels(TravelRequest(agentId))
 
 
-        progress = Progress(requireActivity()).showProgress()
+        val progress = showProgress()
 
 
         binding.rvRoute.setHasFixedSize(true)
@@ -84,7 +82,7 @@ class SelectRoutesFragment : BaseFragment() {
         binding.ivSearch.setOnClickListener {
             isSearchable = !isSearchable
 
-            if (isSearchable){
+            if (isSearchable) {
                 binding.searchBar.visibility = View.VISIBLE
             } else {
                 binding.searchBar.visibility = View.GONE
@@ -93,7 +91,7 @@ class SelectRoutesFragment : BaseFragment() {
 
 
 
-        binding.searchView.addTextChangedListener(object :TextWatcher{
+        binding.searchView.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 //ignore
             }
@@ -101,7 +99,7 @@ class SelectRoutesFragment : BaseFragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val filterList = ArrayList<Travel>()
                 dataList.forEach {
-                    if (it.travel_name.lowercase().contains(p0.toString())){
+                    if (it.travel_name.lowercase().contains(p0.toString())) {
                         filterList.add(it)
                     }
                 }
@@ -191,6 +189,7 @@ class SelectRoutesFragment : BaseFragment() {
             }
 
         }
+
     }
 
     private fun showNoRouteDialog(isBackEnable: Boolean) {

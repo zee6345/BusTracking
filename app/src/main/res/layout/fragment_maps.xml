@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,65 +8,103 @@
     android:orientation="vertical"
     tools:context=".presentation.views.fragments.home.MapsFragment">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/theme_color"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text=""
-            android:id="@+id/tvTitle"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_16sdp" />
-
-    </RelativeLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.mapbox.mapboxsdk.maps.MapView
-            android:id="@+id/mapBoxView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            mapbox:mapbox_cameraTargetLat="-33.213144"
-            mapbox:mapbox_cameraTargetLng="-57.225365"
-            mapbox:mapbox_cameraZoom="9.0" />
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="bottom"
-            android:background="@color/white"
-            android:paddingHorizontal="@dimen/_10sdp"
-            android:orientation="horizontal"
-            >
-
-
-            <ImageView
-                android:layout_width="@dimen/_18sdp"
-                android:layout_height="@dimen/_18sdp"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/_3sdp"
-                android:src="@drawable/ic_map_select" />
+            android:background="@color/theme_color">
 
             <TextView
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_gravity="center"
-                android:textSize="@dimen/_9sdp"
-                android:layout_margin="@dimen/_3sdp"
-                android:text="Click on a stop or a line to access real - time information" />
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/roboto_bold"
+                android:text="Maps"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_16sdp" />
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.mapbox.mapboxsdk.maps.MapView
+                android:id="@+id/mapBoxView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                mapbox:mapbox_cameraTargetLat="-33.213144"
+                mapbox:mapbox_cameraTargetLng="-57.225365"
+                mapbox:mapbox_cameraZoom="9.0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="bottom"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/_10sdp">
 
 
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="@dimen/_18sdp"
+                    android:layout_height="@dimen/_18sdp"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:src="@drawable/ic_map_select" />
 
-    </FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="Click on a stop or a line to access real - time information"
+                    android:textSize="@dimen/_9sdp" />
 
 
-</LinearLayout>
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        app:elevation="0dp"
+        android:id="@+id/fabCameraView"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:importantForAccessibility="no"
+        app:maxImageSize="@dimen/_14sdp"
+        android:src="@drawable/ic_map_select"
+        app:backgroundTint="@color/white_90"
+        app:borderWidth="0dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        app:fabSize="mini"
+        app:elevation="0dp"
+        android:visibility="gone"
+        app:maxImageSize="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_90sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_location"
+        app:backgroundTint="@color/white_90"
+        app:borderWidth="0dp" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

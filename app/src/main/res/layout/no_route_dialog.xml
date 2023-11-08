@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/_5sdp"
+    app:cardElevation="@dimen/_10sdp"
     app:cardCornerRadius="@dimen/_10sdp">
 
     <LinearLayout
@@ -24,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Routes"
-            android:layout_marginTop="@dimen/_50sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:layout_marginTop="@dimen/_40sdp"
             android:textColor="@color/theme_color"
             android:textSize="@dimen/_18sdp"
             android:textStyle="bold" />
@@ -34,9 +36,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_gravity="center"
-            android:textStyle="bold"
+            android:padding="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_bold"
             android:text="The Agency have no routes available"
-            android:textSize="@dimen/_16sdp" />
+            android:textSize="@dimen/_14sdp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
@@ -44,7 +47,8 @@
             android:background="@drawable/ic_background_button"
             android:text="Got it"
             android:textSize="@dimen/_16sdp"
-            android:layout_marginTop="@dimen/_50sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:layout_marginTop="@dimen/_30sdp"
             android:textAllCaps="false"
             android:id="@+id/buttonDismiss"
             android:textColor="@color/white"

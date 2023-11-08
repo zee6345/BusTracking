@@ -27,15 +27,10 @@ import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
 import com.app.bustracking.app.AppService;
-import com.app.bustracking.data.preference.AppPreference;
-import com.app.bustracking.data.responseModel.GetTravelRoutes;
-import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
-import com.app.bustracking.databinding.FragmentRoutesMapBinding;
 import com.app.bustracking.databinding.FragmentStopsBinding;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
 import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet;
-import com.app.bustracking.utils.Converter;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -86,7 +81,7 @@ public class StopsJFragment extends BaseFragment implements OnMapReadyCallback, 
     private FragmentStopsBinding binding;
 
 
-    private GetTravelRoutes stopsList;
+    private List<Stop> stopsList;
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
@@ -153,9 +148,13 @@ public class StopsJFragment extends BaseFragment implements OnMapReadyCallback, 
 
 
 
-        String data = AppPreference.INSTANCE.getString("routeList");
-        stopsList = Converter.INSTANCE.fromJson(data, GetTravelRoutes.class);
-        Route route = stopsList.getRoute_list().get(0);
+//        String data = AppPreference.INSTANCE.getString("routeList");
+//        stopsList = Converter.INSTANCE.fromJson(data, GetTravelRoutes.class);
+//        Route route = stopsList.getRoute_list().get(0);
+
+
+        String data = readFromFile(requireActivity().getFilesDir().getAbsolutePath() + "/stops.txt");
+        stopsList = parseStopsFromString(data);
 
         Mapbox.getInstance(
                 requireActivity(),
@@ -167,9 +166,9 @@ public class StopsJFragment extends BaseFragment implements OnMapReadyCallback, 
         mapView = binding.mapView;
 
         //
-        Intent intent = new Intent(requireActivity(), AppService.class);
-        intent.putExtra("bus_id", route.getBus_id() + "");
-        requireActivity().startService(intent);
+//        Intent intent = new Intent(requireActivity(), AppService.class);
+//        intent.putExtra("bus_id", route.getBus_id() + "");
+//        requireActivity().startService(intent);
 
 
         //
@@ -178,7 +177,7 @@ public class StopsJFragment extends BaseFragment implements OnMapReadyCallback, 
 
 
         //
-        for (Stop stop : route.getStop()) {
+        for (Stop stop : stopsList) {
             symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
         }

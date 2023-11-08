@@ -10,9 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import com.app.bustracking.R
 import com.app.bustracking.data.preference.AppPreference
-import com.app.bustracking.data.requestModel.RouteRequest
-import com.app.bustracking.data.responseModel.DataState
-import com.app.bustracking.data.responseModel.GetTravelRoutes
+import com.app.bustracking.data.responseModel.GetTravelList
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.viewmodel.AppViewModel
@@ -20,6 +18,7 @@ import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Converter
 import com.app.bustracking.utils.Progress
 import com.app.bustracking.utils.SharedModel
+import com.pixplicity.easyprefs.library.Prefs
 
 const val ARGS = "data"
 
@@ -58,49 +57,72 @@ class RoutesFragment : BaseFragment() {
         binding.toolbar.tvTitle.text = "Routes"
         binding.toolbar.ivSearch.visibility = View.GONE
 
-        val agentId = AppPreference.getInt("agent_route_id")
-        data.getTravelRouteList(RouteRequest(agentId))
+
+        val data = Prefs.getString("travelList")
+        val routes = Converter.fromJson(data, GetTravelList::class.java)
 
 
+        Log.e("mTAG", routes.toString())
 
-        data.getTravelRoutes.observe(viewLifecycleOwner) {
-            when (it) {
-                is DataState.Loading -> {
-                    progress.show()
-                }
-
-                is DataState.Error -> {
-                    progress.dismiss()
-                }
-
-                is DataState.Success -> {
-                    progress.dismiss()
-
-                    val data = it.data as GetTravelRoutes
+        if (routes.travel_list.isNotEmpty()) {
 
 
-                    if (data.route_list.isNotEmpty()) {
-                        binding.rvLines.adapter = RoutesAdapter(data.route_list) { route, position ->
+            binding.rvLines.adapter = RoutesAdapter(routes.travel_list) { route, position ->
 
-                                val json = Converter.toJson(route)
-                                AppPreference.putString("route", json.toString())
+                val json = Converter.toJson(route)
+                AppPreference.putString("route", json.toString())
 
-                                val args = Bundle()
-                                args.putString(ARGS, json)
-                                navController.navigate(
-                                    R.id.action_routesFragment_to_routesMapFragment,
-                                    args
-                                )
-
-                            }
-                    }
-
-                }
-
-                else -> {}
+                val args = Bundle()
+                args.putString(ARGS, json)
+                navController.navigate(
+                    R.id.action_routesFragment_to_routesMapFragment,
+                    args
+                )
             }
 
         }
+
+
+//        val agentId = Prefs.getInt(Constants.agencyId)
+//        data.getTravels(TravelRequest(agentId))
+
+
+//        data.getTravelRoutes.observe(viewLifecycleOwner) {
+//            when (it) {
+//                is DataState.Loading -> {
+//                    progress.show()
+//                }
+//
+//                is DataState.Error -> {
+//                    progress.dismiss()
+//                }
+//
+//                is DataState.Success -> {
+//                    progress.dismiss()
+//
+//                    val data = it.data as GetTravelRoutes
+//
+//                    if (data.route_list.isNotEmpty()) {
+//                        binding.rvLines.adapter = RoutesAdapter(data.route_list) { route, position ->
+//
+////                                val json = Converter.toJson(route)
+////                                AppPreference.putString("route", json.toString())
+////
+////                                val args = Bundle()
+////                                args.putString(ARGS, json)
+////                                navController.navigate(
+////                                    R.id.action_routesFragment_to_routesMapFragment,
+////                                    args
+////                                )
+//
+//                            }
+//                    }
+//
+//                }
+//
+//                else -> {}
+//            }
+//
 
 
         binding.ivExpandFav.setOnClickListener {

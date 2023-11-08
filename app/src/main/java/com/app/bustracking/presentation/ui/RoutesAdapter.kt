@@ -6,13 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.bustracking.data.responseModel.Route
+import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.ItemRouteBinding
 import java.util.Random
 
 class RoutesAdapter(
-    private val itemList: List<Route>,
-    val onItemClick: (routes: Route, position: Int) -> Unit
+    private val itemList: List<Travel>,
+    val onItemClick: (travel: Travel, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
 
@@ -27,32 +27,29 @@ class RoutesAdapter(
         }
 
 
-        fun bind(routes: Route, onItemClick: (Route) -> Unit) {
+        fun bind(travel: Travel, onItemClick: (Travel) -> Unit) {
 
-            _binding.tvTitle.text = routes.route_title
-            _binding.tvText.text = routes.description
-            _binding.ivMsgIcon.visibility =
-                if (routes.description.isEmpty()) View.GONE else View.VISIBLE
-            _binding.lvMsg.visibility =
-                if (routes.description.isEmpty()) View.GONE else View.VISIBLE
+            _binding.tvTitle.text = "${travel.travel_name}"
+//            _binding.tvText.text = travel.travel_description
+//            _binding.ivMsgIcon.visibility = if (travel.travel_description.isEmpty()) View.GONE else View.VISIBLE
+//            _binding.lvMsg.visibility = if (travel.travel_description.isEmpty()) View.GONE else View.VISIBLE
 
-            val title = routes.route_title
-            if (title.isNotEmpty()) {
-                val firstChar = title[0]
-                val lastChar = title[title.length - 1]
-                _binding.ivIcon.text = "$firstChar$lastChar"
-            }
-            try {
-                val drawable = generateRandomColor()
-                _binding.ivIcon.background = drawable
-                _binding.ivMsgIcon.background = drawable
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
+//            val title = travel.travel_name
+//            if (title.isNotEmpty()) {
+//                val firstChar = title[0]
+//                val lastChar = title[title.length - 1]
+//                _binding.ivIcon.text = "$firstChar$lastChar"
+//            }
+//            try {
+//                val drawable = generateRandomColor()
+//                _binding.ivIcon.background = drawable
+//                _binding.ivMsgIcon.background = drawable
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
 
             _binding.root.setOnClickListener {
-                onItemClick(routes)
+                onItemClick(travel)
             }
 
         }

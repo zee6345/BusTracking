@@ -170,7 +170,7 @@ class SelectRoutesFragment : BaseFragment() {
 
                     val data = it.data as GetTravelRoutes
 
-                    AppPreference.putString("routeList", Converter.toJson(data)!!)
+//                    AppPreference.putString("routeList", Converter.toJson(data)!!)
 
                     if (data.route_list.isEmpty()) {
                         showNoRouteDialog(false)

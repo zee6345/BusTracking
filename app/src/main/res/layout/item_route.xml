@@ -25,7 +25,8 @@
             android:gravity="center"
             android:text="L3"
             android:textAlignment="center"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:visibility="gone" />
 
     </androidx.cardview.widget.CardView>
 
@@ -43,10 +44,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_2sdp"
             android:ellipsize="marquee"
+            android:fontFamily="@font/roboto_regular"
             android:gravity="start"
             android:singleLine="true"
             android:text="Ligne 3 Bressuire-Hospital CHNDS"
-            android:textSize="@dimen/_14sdp"
+            android:textSize="@dimen/_12sdp"
             app:layout_constraintBottom_toTopOf="@id/tvText"
             app:layout_constraintEnd_toStartOf="@id/ivCheck"
             app:layout_constraintHorizontal_bias="0.0"
@@ -60,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
@@ -101,8 +103,8 @@
 
     <ImageView
         android:id="@+id/ivCheck"
-        android:layout_width="@dimen/_22sdp"
-        android:layout_height="@dimen/_22sdp"
+        android:layout_width="@dimen/_18sdp"
+        android:layout_height="@dimen/_18sdp"
         android:layout_gravity="center_vertical"
         android:src="@drawable/ic_check_unfilled" />
 

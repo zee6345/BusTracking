@@ -26,7 +26,7 @@ open class BaseActivity:AppCompatActivity() {
         if (!checkPermissions()) {
             requestPermissions()
         } else{
-            enableLocation()
+//            enableLocation()
         }
 
     }
@@ -75,7 +75,7 @@ open class BaseActivity:AppCompatActivity() {
         if (requestCode == 1010) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 //                getLocation()
-                enableLocation()
+//                enableLocation()
             }
         } else {
             Toast.makeText(

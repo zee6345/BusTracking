@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import com.app.bustracking.R
+import com.app.bustracking.data.preference.AppPreference
 import com.app.bustracking.data.responseModel.Agency
 import com.app.bustracking.data.responseModel.DataState
 import com.app.bustracking.data.responseModel.GetAgenciesList
@@ -56,6 +57,7 @@ class SelectNetworkFragment : BaseFragment() {
         binding.rvNetwork.setHasFixedSize(true)
         val selectNetworkAdapter = SelectNetworkAdapter { obj, _ ->
             val bundle = Bundle()
+            AppPreference.savedAgency(obj.id)
             bundle.putInt("agent_id", obj.id)
             navController.navigate(
                 R.id.action_selectNetwrokFragment_to_selectRoutesFragment, bundle
@@ -119,8 +121,6 @@ class SelectNetworkFragment : BaseFragment() {
 
                 }
             }
-
-
         }
 
 

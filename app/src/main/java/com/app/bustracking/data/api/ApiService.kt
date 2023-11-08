@@ -10,6 +10,7 @@ import com.app.bustracking.data.responseModel.LoginModel
 import com.app.bustracking.data.responseModel.LogoutModel
 import com.app.bustracking.data.responseModel.VerifyOTPModel
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
@@ -53,4 +54,13 @@ interface ApiService {
         @Body travelRequest: RouteRequest
     ):Response<GetTravelRoutes>
 
+    @POST("get_agency_travel_list")
+     fun getTravelListMain(
+        @Body travelRequest: TravelRequest
+    ):Call<GetTravelList>
+
+    @POST("get_travel_route_list")
+        suspend fun getTravelRoutesMain(
+        @Body travelRequest: RouteRequest
+    ):Response<GetTravelRoutes>
 }

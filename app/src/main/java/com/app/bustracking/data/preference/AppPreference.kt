@@ -47,6 +47,14 @@ object AppPreference {
         return Prefs.getString("token", "")
     }
 
+    fun savedAgency(agency_id_selected:Int){
+        Prefs.putInt("agency_id",agency_id_selected)
+    }
+
+    fun getSavedAgency():Int{
+        return  Prefs.getInt("agency_id")
+    }
+
     fun clear(){
         Prefs.clear()
     }

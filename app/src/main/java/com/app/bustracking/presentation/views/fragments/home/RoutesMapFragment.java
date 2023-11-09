@@ -152,6 +152,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         IntentFilter filter = new IntentFilter("My_Action_Event");
         requireActivity().registerReceiver(broadcastReceiver, filter);
 
+
         String data = requireArguments().getString(RoutesFragmentKt.ARGS);
         Route route = Converter.INSTANCE.fromJson(data, Route.class);
 
@@ -165,9 +166,9 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         mapView = binding.mapView;
 
         //
-        Intent intent = new Intent(requireActivity(), AppService.class);
-        intent.putExtra("bus_id", route.getBus_id() + "");
-        requireActivity().startService(intent);
+//        Intent intent = new Intent(requireActivity(), AppService.class);
+//        intent.putExtra("bus_id", route.getBus_id() + "");
+//        requireActivity().startService(intent);
 
 
         //

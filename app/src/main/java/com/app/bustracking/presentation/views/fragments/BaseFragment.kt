@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.app.bustracking.R
+import com.app.bustracking.data.cache.AppDB
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.presentation.views.activities.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,7 +63,7 @@ abstract class BaseFragment : Fragment() {
     fun writeToFile(fileName: String, content: String) {
         try {
             // Create a File object
-            val file = File(fileName)
+            val file = File(getFileName(fileName))
 
             // Create a FileWriter and BufferedWriter to write to the file
             val fileWriter = FileWriter(file)
@@ -126,6 +127,14 @@ abstract class BaseFragment : Fragment() {
         }
 
         return stopList
+    }
+
+    private fun getFileName(str:String): String {
+        return "${requireActivity().filesDir.absolutePath}/$str"
+    }
+
+    fun getDb(): AppDB {
+        return AppDB.init(requireActivity())
     }
 
 }

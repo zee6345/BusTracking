@@ -3,6 +3,8 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        //noinspection JcenterRepositoryObsolete
+        jcenter()
     }
 }
 dependencyResolutionManagement {
@@ -24,6 +26,8 @@ dependencyResolutionManagement {
             }
         }
         maven { url 'https://jitpack.io' }
+        //noinspection JcenterRepositoryObsolete
+        jcenter()
     }
 }
 rootProject.name = "bustracking"

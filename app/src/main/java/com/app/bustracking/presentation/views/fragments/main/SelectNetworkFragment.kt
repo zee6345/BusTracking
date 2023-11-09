@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
+import com.app.bustracking.data.cache.AppDB
 import com.app.bustracking.data.requestModel.RouteRequest
 import com.app.bustracking.data.requestModel.TravelRequest
 import com.app.bustracking.data.responseModel.Agency
@@ -35,6 +36,7 @@ class SelectNetworkFragment : BaseFragment() {
     private val dataList = mutableListOf<Agency>()
     private val stopsList = mutableListOf<Stop>()
 
+
     override fun initNavigation(navController: NavController) {
         this.navController = navController
     }
@@ -58,9 +60,9 @@ class SelectNetworkFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //if agency already selected, route to main
-        if (Prefs.getInt(Constants.agencyId) != 0) {
-            routeScreen<HomeActivity>()
-        }
+//        if (Prefs.getInt(Constants.agencyId) != 0) {
+//            routeScreen<HomeActivity>()
+//        }
 
         val dialog = showProgress()
 
@@ -136,6 +138,7 @@ class SelectNetworkFragment : BaseFragment() {
 
         }
 
+//        val travelEntity = getDb().travelDao()
 
         //for other
         //update ui
@@ -153,9 +156,19 @@ class SelectNetworkFragment : BaseFragment() {
                     dialog.dismiss()
 
                     val response = it.data as GetTravelList
-                    Prefs.putString("travelList", Converter.toJson(response)!!)
 
-                    //fetch data for all travel lists
+                    //insert into db
+//                    travelEntity.insertTravel(getTravelList)
+
+
+//                    response.travel_list.forEach { travel ->
+//                        travelEntity.insertTravel(travel)
+//                    }
+
+
+                    Prefs.putString(Constants.travelList, Converter.toJson(response)!!)
+
+//                    fetch data for all travel lists
                     response.travel_list.forEach { travel ->
                         data.getTravelRouteList(RouteRequest(travel.id))
                     }
@@ -182,8 +195,11 @@ class SelectNetworkFragment : BaseFragment() {
 
                     val routesWithStops = it.data as GetTravelRoutes
 
+                    writeToFile("routes.txt", routesWithStops.toString())
+
                     //success
                     routesWithStops.route_list.forEach { route ->
+
                         if (route.stop.isNotEmpty()) {
                             stopsList.addAll(route.stop)
                         }
@@ -192,12 +208,13 @@ class SelectNetworkFragment : BaseFragment() {
                     if (stopsList.isNotEmpty()) {
                         //write data to file
                         writeToFile(
-                            requireActivity().filesDir.absolutePath + "/stops.txt",
+                            "stops.txt",
                             stopsList.toString()
                         )
 
                         //start new activity
                         routeScreen<HomeActivity>()
+//                        requireActivity().finish()
 
                     } else {
                         showMessage("No route found for this Agency!")

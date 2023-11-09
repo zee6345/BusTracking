@@ -207,7 +207,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
 //
                                 LocationComponent locationComponent = mapboxMap.getLocationComponent();
                                 locationComponent.activateLocationComponent(requireActivity(), style);
-                                locationComponent.setLocationComponentEnabled(true);
+//                                locationComponent.setLocationComponentEnabled(true);
                                 locationComponent.setCameraMode(CameraMode.TRACKING);
                                 locationComponent.setRenderMode(RenderMode.NORMAL);
                             }

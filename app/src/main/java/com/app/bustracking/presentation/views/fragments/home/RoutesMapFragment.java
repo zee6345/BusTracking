@@ -1,6 +1,5 @@
 package com.app.bustracking.presentation.views.fragments.home;
 
-import static com.app.bustracking.app.BusTracking.context;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
@@ -30,13 +29,11 @@ import com.app.bustracking.app.AppService;
 import com.app.bustracking.data.local.RoutesDao;
 import com.app.bustracking.data.local.StopsDao;
 import com.app.bustracking.data.local.TravelDao;
-import com.app.bustracking.data.responseModel.GetTravelRoutes;
 import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentRoutesMapBinding;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
 import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet;
-import com.app.bustracking.utils.Converter;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -47,13 +44,10 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.LocationComponentOptions;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -81,13 +75,8 @@ import retrofit2.Response;
 
 public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallback, PermissionsListener {
 
-    public static String ARGS = "data";
-
     private NavController navController;
     private FragmentRoutesMapBinding binding;
-
-
-    private GetTravelRoutes stopsList;
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
@@ -96,16 +85,17 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     private String LAYER_ID = "LAYER_ID";
     private List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
     private List<LatLng> coordinatesList = new ArrayList<>();
-    List<Marker> markers = new ArrayList<>();
+    //    List<Marker> markers = new ArrayList<>();
     SymbolManager symbolManager;
     Symbol locationMarker;
-    DirectionsRoute directionsRoute;
+    //    DirectionsRoute directionsRoute;
     RouteMapModalSheet routeMapModalSheet;
-    Style styless;
+    //    Style styless;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
     Double latitude = 0.0;
     Double longitude = 0.0;
+    private String routeColor;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -125,7 +115,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
                         locationMarker.setLatLng(new LatLng(lat, lon));
                         symbolManager.update(locationMarker);
-
 
 
                     } catch (JSONException e) {
@@ -165,7 +154,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         //fetch data from db
         int travelId = requireArguments().getInt(RoutesFragmentKt.ARGS);
         Route route = routesDao.fetchRoute(travelId);
-
+        routeColor = route.getColor();
 
 
         //map box
@@ -271,7 +260,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                             locationComponent.setRenderMode(RenderMode.NORMAL);
 
 
-
                         }
                     }
 
@@ -296,7 +284,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
                 Log.e("mmmTAG", "" + point);
 
-                if (coordinatesList.contains(point)){
+                if (coordinatesList.contains(point)) {
                     Log.e("mmmTAG", "" + point + ":: matched");
                 } else {
 
@@ -320,8 +308,9 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             Toast.makeText(requireActivity(), "No route found!", Toast.LENGTH_SHORT).show();
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                requireActivity().finish();
+                navController.popBackStack();
             }, 500);
+
         }
 
     }
@@ -344,54 +333,11 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         style.addSource(geoJsonSource);
 
         style.addLayer(new LineLayer("route-layer", "route-source").withProperties(
-                PropertyFactory.lineColor(Color.RED),
+//                PropertyFactory.lineColor(Color.RED),
+                PropertyFactory.lineColor(Color.parseColor(routeColor)),
                 PropertyFactory.lineWidth(3f)
         ));
 
-
-    }
-
-    @SuppressWarnings({"MissingPermission"})
-    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(requireActivity())) {
-
-            // Enable the most basic pulsing styling by ONLY using
-            // the `.pulseEnabled()` method
-            LocationComponentOptions customLocationComponentOptions = LocationComponentOptions.builder(requireActivity())
-                    .pulseEnabled(true)
-                    .build();
-
-            // Get an instance of the component
-            LocationComponent locationComponent = mapboxMap.getLocationComponent();
-
-            // Activate with options
-            locationComponent.activateLocationComponent(
-                    LocationComponentActivationOptions.builder(requireActivity(), loadedMapStyle)
-                            .locationComponentOptions(customLocationComponentOptions)
-                            .build());
-
-            // Enable to make component visible
-            //  locationComponent.setLocationComponentEnabled(true);
-
-
-            // Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING);
-
-            // Set the component's render mode
-            locationComponent.setRenderMode(RenderMode.NORMAL);
-
-
-            //foreground service
-            Intent serviceIntent = new Intent(requireActivity(), AppService.class);
-            serviceIntent.putExtra("track", "");
-            context.startService(serviceIntent);
-
-
-        } else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(requireActivity());
-        }
     }
 
     @Override
@@ -442,7 +388,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     public void onDestroy() {
 
         mapView.onDestroy();
-
 
 
         super.onDestroy();

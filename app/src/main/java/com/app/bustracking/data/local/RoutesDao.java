@@ -22,4 +22,7 @@ public interface RoutesDao {
     @Query("select * from route where travel_id=:travelId")
     Route fetchRoute(int travelId);
 
+    @Query("select color from route where travel_id=:travelId")
+    String fetchRouteColor(int travelId);
+
 }

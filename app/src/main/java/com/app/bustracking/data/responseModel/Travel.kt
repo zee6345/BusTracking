@@ -23,4 +23,5 @@ data class Travel(
     val trip_id: String? = null,
     val updated_at: String? = null,
     val user_id: String? = null,
+    val isFavourite:Boolean = false
 )

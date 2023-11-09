@@ -18,4 +18,6 @@ public interface TravelDao {
     @Query("select * from Travel")
     List<Travel> fetchTravels();
 
+    @Query("update travel set isFavourite=:favourite where travelId=:travelId and isFavourite=0")
+    void updateFavourite(int travelId, int favourite);
 }

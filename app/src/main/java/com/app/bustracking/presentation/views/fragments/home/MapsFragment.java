@@ -21,9 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
-import com.app.bustracking.data.local.RoutesDao;
 import com.app.bustracking.data.local.StopsDao;
-import com.app.bustracking.data.local.TravelDao;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentMapsBinding;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
@@ -112,15 +110,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
         binding.tvTitle.setText("Maps");
 
         //fetch data from db
-        RoutesDao routesDao = appDb().routesDao();
         StopsDao stopsDao = appDb().stopsDao();
-        TravelDao travelDao = appDb().travelDao();
-
         stopsList = stopsDao.fetchStops();
-
-
-
-
 
 
         initRouteLists();
@@ -191,7 +182,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
                             )
                     );
 
-//                     Use Mapbox Directions API to create a route
+                    //Use Mapbox Directions API to create a route
                     MapboxDirections directionsClient = MapboxDirections.builder()
                             .origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude()))
                             .destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude()))
@@ -201,8 +192,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
                             .profile("driving-traffic")
                             .steps(true)
                             .build();
-//
-////                     Draw the route on the map
+
+                    //Draw the route on the map
                     directionsClient.enqueueCall(new Callback<>() {
                         @SuppressLint("MissingPermission")
                         @Override
@@ -248,9 +239,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
             });
 
         } else {
-
             //when coordinate list is empty
-
             Toast.makeText(requireActivity(), "No route found!", Toast.LENGTH_SHORT).show();
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -279,54 +268,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
 
         style.addLayer(new LineLayer("route-layer", "route-source").withProperties(
                 PropertyFactory.lineColor(Color.RED),
-                PropertyFactory.lineWidth(5f)
+                PropertyFactory.lineWidth(3f)
         ));
-    }
-
-    @SuppressWarnings({"MissingPermission"})
-    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        // Check if permissions are enabled and if not request
-        if (PermissionsManager.areLocationPermissionsGranted(requireActivity())) {
-
-            // Enable the most basic pulsing styling by ONLY using
-            // the `.pulseEnabled()` method
-            LocationComponentOptions customLocationComponentOptions = LocationComponentOptions.builder(requireActivity())
-                    .pulseEnabled(true)
-                    .build();
-
-            // Get an instance of the component
-            LocationComponent locationComponent = mapboxMap.getLocationComponent();
-
-            // Activate with options
-            locationComponent.activateLocationComponent(
-                    LocationComponentActivationOptions.builder(requireActivity(), loadedMapStyle)
-                            .locationComponentOptions(customLocationComponentOptions)
-                            .build());
-
-            // Enable to make component visible
-            //  locationComponent.setLocationComponentEnabled(true);
-
-
-            // Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING);
-
-            // Set the component's render mode
-            locationComponent.setRenderMode(RenderMode.NORMAL);
-
-
-//            Intent serviceIntent = new Intent(requireActivity(), LocationUpdateService.class);
-//            serviceIntent.putExtra("track", "");
-////            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-////                context.startForegroundService(serviceIntent);
-////            } else {
-//            context.startService(serviceIntent);
-//            }
-
-
-        } else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(requireActivity());
-        }
     }
 
     @Override

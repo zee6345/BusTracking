@@ -3,15 +3,17 @@ package com.app.bustracking.presentation.ui
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.R
+import com.app.bustracking.data.local.TravelDao
 import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.ItemRouteBinding
 import java.util.Random
 
 class RoutesAdapter(
     private val itemList: List<Travel>,
+    private val travelDao: TravelDao,
     val onItemClick: (travel: Travel, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
@@ -21,32 +23,24 @@ class RoutesAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val _binding: ItemRouteBinding
+        private var isFavourite = false
 
         init {
             _binding = binding
         }
 
 
-        fun bind(travel: Travel, onItemClick: (Travel) -> Unit) {
+        fun bind(travel: Travel, travelDao: TravelDao, onItemClick: (Travel) -> Unit) {
 
             _binding.tvTitle.text = "${travel.travel_name}"
-//            _binding.tvText.text = travel.travel_description
-//            _binding.ivMsgIcon.visibility = if (travel.travel_description.isEmpty()) View.GONE else View.VISIBLE
-//            _binding.lvMsg.visibility = if (travel.travel_description.isEmpty()) View.GONE else View.VISIBLE
 
-//            val title = travel.travel_name
-//            if (title.isNotEmpty()) {
-//                val firstChar = title[0]
-//                val lastChar = title[title.length - 1]
-//                _binding.ivIcon.text = "$firstChar$lastChar"
-//            }
-//            try {
-//                val drawable = generateRandomColor()
-//                _binding.ivIcon.background = drawable
-//                _binding.ivMsgIcon.background = drawable
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
+
+            _binding.ivCheck.setOnClickListener {
+                isFavourite = !isFavourite
+
+                travelDao.updateFavourite(travel.travelId, if (isFavourite) 1 else 0)
+                _binding.ivCheck.setImageResource(if (isFavourite) R.drawable.ic_favrotie else R.drawable.ic_check_unfilled)
+            }
 
             _binding.root.setOnClickListener {
                 onItemClick(travel)
@@ -79,7 +73,7 @@ class RoutesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position]) {
+        holder.bind(itemList[position], travelDao) {
             onItemClick(it, position)
         }
     }

@@ -38,6 +38,9 @@
         <action
             android:id="@+id/action_routesFragment_to_allStopsFragment"
             app:destination="@id/allStopsFragment" />
+        <action
+            android:id="@+id/action_routesFragment_to_routesMapFragment"
+            app:destination="@id/routesMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/stopsFragment"
@@ -56,7 +59,7 @@
         android:label="fragment_stops"
         tools:layout="@layout/fragment_stops_all">
         <action
-            android:id="@+id/action_stopsFragment2_to_infoFragment"
+            android:id="@+id/action_allStopsFragment_to_infoFragment"
             app:destination="@id/infoFragment" />
     </fragment>
 </navigation>

@@ -11,112 +11,127 @@
     <include layout="@layout/layout_toolbar"
         android:id="@+id/toolbar"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/ivExpandFav"
-            android:padding="@dimen/_3sdp"
-            android:src="@drawable/ic_arrow_down" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_3sdp"
-            android:text="Favorite Lines"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14sdp" />
-
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rlFav"
-        android:paddingHorizontal="@dimen/_5sdp"
-        android:paddingVertical="@dimen/_5sdp">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFavorite"
-            android:layout_width="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:orientation="vertical"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/_20sdp"
-            android:text="Here you will find your favorite lines"
-            android:textAlignment="textStart" />
+            android:orientation="vertical">
 
-    </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:orientation="horizontal">
 
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/ivExpandFav"
+                    android:padding="@dimen/_3sdp"
+                    android:src="@drawable/ic_arrow_down" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/ivExpandAll"
-            android:padding="@dimen/_3sdp"
-            android:src="@drawable/ic_arrow_down" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_3sdp"
-            android:text="All Lines"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14sdp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:text="Favorite Lines"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_14sdp" />
 
 
-    </LinearLayout>
+            </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rlAll"
-        android:paddingHorizontal="@dimen/_5sdp"
-        android:paddingVertical="@dimen/_5sdp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rlFav"
+                android:paddingHorizontal="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_5sdp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvLines"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/item_route"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:visibility="visible" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvFavorite"
+                    android:layout_width="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="@dimen/_20sdp"
-            android:text="Here you will find a lines"
-            android:textAlignment="textStart"
-            android:visibility="gone" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_20sdp"
+                    android:text="Here you will find your favorite lines"
+                    android:textAlignment="textStart" />
 
-    </RelativeLayout>
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/ivExpandAll"
+                    android:padding="@dimen/_3sdp"
+                    android:src="@drawable/ic_arrow_down" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_3sdp"
+                    android:text="All Lines"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_14sdp" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rlAll"
+                android:layout_marginBottom="?attr/actionBarSize"
+                android:paddingHorizontal="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_5sdp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvLines"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/item_route"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_20sdp"
+                    android:text="Here you will find a lines"
+                    android:textAlignment="textStart"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 
 </LinearLayout>

@@ -190,7 +190,6 @@ class SelectNetworkFragment : BaseFragment() {
                     }
 
                     if (stopsList.isNotEmpty()) {
-
                         //write data to file
                         writeToFile(
                             requireActivity().filesDir.absolutePath + "/stops.txt",

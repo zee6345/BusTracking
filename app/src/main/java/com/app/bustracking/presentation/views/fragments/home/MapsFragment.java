@@ -107,15 +107,12 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
         mapView = binding.mapBoxView;
         mapView.onCreate(savedInstanceState);
 
-
         binding.tvTitle.setText("Maps");
+
 
         String data = readFromFile(requireActivity().getFilesDir().getAbsolutePath() + "/stops.txt");
         stopsList = parseStopsFromString(data);
-        Log.e("mTAG", data);
 
-//        String data = AppPreference.INSTANCE.getString("routeList");
-//        stopsList = Converter.INSTANCE.fromJson(data, GetTravelRoutes.class);
 
         initRouteLists();
 

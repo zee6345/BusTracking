@@ -12,7 +12,7 @@
         android:title="Routes" />
 
     <item
-        android:id="@+id/stopsFragment"
+        android:id="@+id/allStopsFragment"
         android:icon="@drawable/ic_item_stops"
         android:title="Stops" />
 

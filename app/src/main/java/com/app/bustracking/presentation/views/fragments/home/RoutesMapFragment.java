@@ -27,6 +27,9 @@ import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
 import com.app.bustracking.app.AppService;
+import com.app.bustracking.data.local.RoutesDao;
+import com.app.bustracking.data.local.StopsDao;
+import com.app.bustracking.data.local.TravelDao;
 import com.app.bustracking.data.responseModel.GetTravelRoutes;
 import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
@@ -152,10 +155,20 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         IntentFilter filter = new IntentFilter("My_Action_Event");
         requireActivity().registerReceiver(broadcastReceiver, filter);
 
-        String data = requireArguments().getString(RoutesFragmentKt.ARGS);
-        Route route = Converter.INSTANCE.fromJson(data, Route.class);
+
+        //init dao
+        RoutesDao routesDao = appDb().routesDao();
+        StopsDao stopsDao = appDb().stopsDao();
+        TravelDao travelDao = appDb().travelDao();
 
 
+        //fetch data from db
+        int travelId = requireArguments().getInt(RoutesFragmentKt.ARGS);
+        Route route = routesDao.fetchRoute(travelId);
+
+
+
+        //map box
         Mapbox.getInstance(
                 requireActivity(),
                 getString(com.app.bustracking.R.string.mapbox_access_token)
@@ -172,8 +185,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
         //
-        routeMapModalSheet = new RouteMapModalSheet(route);
-        routeMapModalSheet.show(requireActivity().getSupportFragmentManager(), routeMapModalSheet.getTag());
+//        routeMapModalSheet = new RouteMapModalSheet(route);
+//        routeMapModalSheet.show(requireActivity().getSupportFragmentManager(), routeMapModalSheet.getTag());
 
 
         //

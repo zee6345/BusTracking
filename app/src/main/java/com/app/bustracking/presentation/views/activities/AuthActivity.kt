@@ -3,6 +3,7 @@ package com.app.bustracking.presentation.views.activities
 import android.content.Intent
 import android.os.Bundle
 import com.app.bustracking.databinding.ActivityAuthBinding
+import com.app.bustracking.utils.Constants
 import com.pixplicity.easyprefs.library.Prefs
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +19,7 @@ class AuthActivity : BaseActivity() {
         setContentView(binding.root)
 
         //if already login route user to main screen
-        val isLogin = Prefs.getBoolean("isLogin")
+        val isLogin = Prefs.getBoolean(Constants.isLogin)
         if (isLogin) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

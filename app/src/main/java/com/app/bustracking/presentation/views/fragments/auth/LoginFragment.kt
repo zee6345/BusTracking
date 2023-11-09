@@ -83,7 +83,7 @@ class LoginFragment : BaseFragment() {
                             try {
 
                                 val model = response.body() as LoginModel
-                                Prefs.putString("token", model.token)
+                                Prefs.putString(Constants.token, model.token)
 
                                 //
                                 Prefs.putBoolean(Constants.isLogin, true)

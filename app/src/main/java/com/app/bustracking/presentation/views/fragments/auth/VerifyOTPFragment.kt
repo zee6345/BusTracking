@@ -1,6 +1,5 @@
 package com.app.bustracking.presentation.views.fragments.auth
 
-import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -17,7 +16,6 @@ import com.app.bustracking.databinding.FragmentVerifyOTPBinding
 import com.app.bustracking.presentation.views.activities.MainActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
-
 import com.goodiebag.pinview.Pinview
 import com.pixplicity.easyprefs.library.Prefs
 import retrofit2.Call
@@ -78,18 +76,15 @@ class VerifyOTPFragment : BaseFragment() {
 
         binding.buttonLogin.setOnClickListener {
 
-            //clear back stack
-//            AppPreference.putBoolean("isLogin", true)
-
-
-
             //api call
-            val progressDialog = ProgressDialog(requireContext())
-            progressDialog.setTitle("Loading")
+            val progressDialog = showProgress()
+
             val pin = binding.pinview.value
+
             if (TextUtils.isEmpty(pin)) {
                 binding.phoneNumber.error = " Please enter otp"
             } else {
+
                 progressDialog.show()
                 val apiService = ApiClient.createService().create(ApiService::class.java)
                 apiService.verifyOTP(number, pin.toInt())
@@ -102,6 +97,7 @@ class VerifyOTPFragment : BaseFragment() {
                             if (response.code() == 200) {
 
                                 val model = response.body() as VerifyOTPModel
+
                                 Toast.makeText(requireContext(), model.message, Toast.LENGTH_SHORT)
                                     .show()
 

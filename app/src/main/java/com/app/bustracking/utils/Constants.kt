@@ -5,5 +5,6 @@ object Constants {
     const val agencyId = "agent_id"
     const val agencyName = "agent_name"
     const val isLogin = "isUserAlreadyLogin"
+    const val token = "token"
 
 }

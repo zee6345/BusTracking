@@ -7,25 +7,19 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
 import com.app.bustracking.R
-import com.app.bustracking.data.responseModel.GetTravelList
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Converter
 import com.app.bustracking.utils.Progress
-import com.pixplicity.easyprefs.library.Prefs
 
 const val ARGS = "data"
-
-private val TAG = RoutesFragment::class.simpleName.toString()
 
 class RoutesFragment : BaseFragment() {
 
     private lateinit var binding: FragmentRoutesBinding
     private lateinit var navController: NavController
 
-//    private val data: AppViewModel by viewModels()
-//    private val sharedModel: SharedModel by viewModels()
     private var isFavExpand = false
     private var isAllExpand = false
     private lateinit var progress: AlertDialog
@@ -53,26 +47,27 @@ class RoutesFragment : BaseFragment() {
         binding.toolbar.ivSearch.visibility = View.GONE
 
 
-        val data = Prefs.getString("travelList")
-        val routes = Converter.fromJson(data, GetTravelList::class.java)
+        val routesDao = appDb().routesDao()
+        val stopsDao = appDb().stopsDao()
+        val travelDao = appDb().travelDao()
+
+        val travelList = travelDao.fetchTravels()
+
+//        val data = Prefs.getString("travelList")
+//        val routes = Converter.fromJson(data, GetTravelList::class.java)
 
 
-
-        if (routes.travel_list.isNotEmpty()) {
-
-            binding.rvLines.adapter = RoutesAdapter(routes.travel_list) { route, position ->
-
-                val json = Converter.toJson(route)
-                Prefs.putString("route", json.toString())
-
+        if (travelList.isNotEmpty()) {
+            binding.rvLines.adapter = RoutesAdapter(travelList) { route, position ->
+//                val json = Converter.toJson(route)
                 val args = Bundle()
-                args.putString(ARGS, json)
+//                args.putString(ARGS, json)
+                args.putInt(ARGS, route.travelId)
                 navController.navigate(
                     R.id.action_routesFragment_to_routesMapFragment,
                     args
                 )
             }
-
         }
 
 

@@ -21,7 +21,9 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
-import com.app.bustracking.data.responseModel.Route;
+import com.app.bustracking.data.local.RoutesDao;
+import com.app.bustracking.data.local.StopsDao;
+import com.app.bustracking.data.local.TravelDao;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentMapsBinding;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
@@ -65,7 +67,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
     private NavController navController;
     private FragmentMapsBinding binding;
 
-//    private GetTravelRoutes stopsList;
+    //    private GetTravelRoutes stopsList;
     private List<Stop> stopsList;
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
@@ -109,20 +111,26 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
 
         binding.tvTitle.setText("Maps");
 
+        //fetch data from db
+        RoutesDao routesDao = appDb().routesDao();
+        StopsDao stopsDao = appDb().stopsDao();
+        TravelDao travelDao = appDb().travelDao();
 
-        String data = readFromFile(requireActivity().getFilesDir().getAbsolutePath() + "/stops.txt");
-//        stopsList = parseStopsFromString(data);
+        stopsList = stopsDao.fetchStops();
 
 
-//        initRouteLists();
-//
-//        initPointsForMap();
+
+
+
+
+        initRouteLists();
+
+        initPointsForMap();
 
 
         binding.fabCameraView.setOnClickListener(view1 -> {
             if (mapboxMap != null) {
                 try {
-
                     // Padding to control the space around the bounds (in pixels)
                     int padding = 100;
                     mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
@@ -135,12 +143,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
     }
 
     private void initRouteLists() {
-//        for (Route route : stopsList.getRoute_list()) {
-            for (Stop stop : stopsList) {
-                symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
-                coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
-            }
-//        }
+        for (Stop stop : stopsList) {
+            symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
+            coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
+        }
     }
 
     private void initPointsForMap() {
@@ -207,7 +213,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
 //
                                 LocationComponent locationComponent = mapboxMap.getLocationComponent();
                                 locationComponent.activateLocationComponent(requireActivity(), style);
-                                locationComponent.setLocationComponentEnabled(true);
+//                                locationComponent.setLocationComponentEnabled(true);
                                 locationComponent.setCameraMode(CameraMode.TRACKING);
                                 locationComponent.setRenderMode(RenderMode.NORMAL);
                             }

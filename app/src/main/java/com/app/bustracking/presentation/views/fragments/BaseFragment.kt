@@ -26,7 +26,6 @@ abstract class BaseFragment : Fragment() {
 
     abstract fun initNavigation(navController: NavController)
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -125,8 +124,8 @@ abstract class BaseFragment : Fragment() {
                 val stopTitle = stopData[8].substringAfter("stop_title=")
                 val updatedAt = stopData[9].substringAfter("updated_at=")
 
-                val stop = Stop(agencyId, createdAt, direction, id, "$lat", "$lng", routeId, stopTime, stopTitle, updatedAt)
-                stopList.add(stop)
+//                val stop = Stop(agencyId, createdAt, direction, id, "$lat", "$lng", routeId, stopTime, stopTitle, updatedAt)
+//                stopList.add(stop)
             }
         }
 

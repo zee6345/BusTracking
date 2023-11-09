@@ -144,7 +144,7 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
     override fun onConnectionStateChange(change: ConnectionStateChange?) {
         Log.e(
             "Pusher",
-            "State changed from " + change!!.previousState + " to " + change!!.currentState
+            "State changed from " + change!!.previousState + " to " + change.currentState
         )
     }
 

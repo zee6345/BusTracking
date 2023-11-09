@@ -24,7 +24,6 @@ import com.app.bustracking.presentation.viewmodel.AppViewModel
 import com.app.bustracking.presentation.views.activities.HomeActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
-import com.app.bustracking.utils.Converter
 import com.pixplicity.easyprefs.library.Prefs
 
 private val TAG: String = SelectNetworkFragment::class.simpleName.toString()
@@ -68,17 +67,15 @@ class SelectNetworkFragment : BaseFragment() {
 
         val dialog = showProgress()
 
-//        val routesDao = appDb().routesDao()
-//        val stopsDao = appDb().stopsDao()
-//        val travelDao = appDb().travelDao()
+        val routesDao = appDb().routesDao()
+        val stopsDao = appDb().stopsDao()
+        val travelDao = appDb().travelDao()
 
 
         //if agency already selected, route to main
         if (Prefs.getInt(Constants.agencyId) != 0) {
-//        if (stopsDao.allStops.isNotEmpty()) {
-//            routeScreen<HomeActivity>()
+            routeScreen<HomeActivity>()
         }
-
 
 
         binding.rvNetwork.setHasFixedSize(true)
@@ -169,14 +166,12 @@ class SelectNetworkFragment : BaseFragment() {
                     dialog.dismiss()
 
                     val response = it.data as GetTravelList
-                    Prefs.putString("travelList", Converter.toJson(response)!!)
-
-                    //fetch data for all travel lists
                     response.travel_list.forEach { travel ->
-                        //api call
-                        data.getTravelRouteList(RouteRequest(travel.id))
-                    }
+                        travelDao.insert(travel)
 
+                        //api call
+                        data.getTravelRouteList(RouteRequest(travel.travelId))
+                    }
                 }
 
                 else -> {
@@ -202,37 +197,24 @@ class SelectNetworkFragment : BaseFragment() {
 
                     val routesWithStops = it.data as GetTravelRoutes
 
-                    if (routesWithStops.route_list.isNotEmpty()) {
+                    routesWithStops.route_list.forEach { route ->
+                        routesDao.insert(route)
+                    }
 
-                        //success
-                        routesWithStops.route_list.forEach { route ->
-                            if (route.stop.isNotEmpty()) {
-                                //lists
-                                stopsList.addAll(route.stop)
+                    routesWithStops.route_list.forEach { route ->
+                        route.stop.forEachIndexed { index, stop ->
+                            stopsDao.insert(stop)
+
+                            val isLastStop = index == route.stop.size - 1
+                            if (isLastStop && routesWithStops.route_list.last() == route) {
+
+                                // Launch your activity here
+                                routeScreen<HomeActivity>()
+
                             }
                         }
-
-
-                        // Wait for all API calls to complete
-                        if (stopsList.isNotEmpty()) {
-
-                            //write data to file
-                            writeToFile(
-                                requireActivity().filesDir.absolutePath + "/stops.txt",
-                                stopsList.toString()
-                            )
-
-                            //start new activity
-                            routeScreen<HomeActivity>()
-
-
-                        } else {
-                            showMessage("No route found for this Agency!")
-                        }
-
                     }
                 }
-
 
                 else -> {}
             }

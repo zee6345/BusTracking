@@ -111,12 +111,12 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
 
 
         String data = readFromFile(requireActivity().getFilesDir().getAbsolutePath() + "/stops.txt");
-        stopsList = parseStopsFromString(data);
+//        stopsList = parseStopsFromString(data);
 
 
-        initRouteLists();
-
-        initPointsForMap();
+//        initRouteLists();
+//
+//        initPointsForMap();
 
 
         binding.fabCameraView.setOnClickListener(view1 -> {

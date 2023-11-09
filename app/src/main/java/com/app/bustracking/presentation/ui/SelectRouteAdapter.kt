@@ -18,7 +18,7 @@ class SelectRouteAdapter(
 
     private var _itemList: List<Travel> = ArrayList()
 
-    fun setList(itemList: List<Travel>){
+    fun setList(itemList: List<Travel>) {
         _itemList = itemList
         notifyDataSetChanged()
     }
@@ -42,13 +42,14 @@ class SelectRouteAdapter(
 
 
             val title = selectNetwork.travel_name
-            if (title.isNotEmpty()) {
+            if (title!!.isNotEmpty()) {
                 val firstChar = title[0]
                 val lastChar = title[title.length - 1]
                 _binding.ivIcon.text = "$firstChar$lastChar"
             }
 
-            _binding.tvText.text = "Start: ${selectNetwork.travel_departure_time} : Arrive: ${selectNetwork.travel_arrival_time}"
+            _binding.tvText.text =
+                "Start: ${selectNetwork.travel_departure_time} : Arrive: ${selectNetwork.travel_arrival_time}"
 
             try {
                 _binding.ivIcon.background = generateRandomColor()

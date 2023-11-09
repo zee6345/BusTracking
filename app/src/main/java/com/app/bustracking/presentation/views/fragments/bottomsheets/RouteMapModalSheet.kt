@@ -37,7 +37,7 @@ class RouteMapModalSheet(private val route: Route?) : BottomSheetDialogFragment(
 
         route?.apply {
             binding.tvTitle.text = route_title
-            binding.lvMsg.visibility = if (description.isEmpty()) View.GONE else View.VISIBLE
+            binding.lvMsg.visibility = if (description!!.isEmpty()) View.GONE else View.VISIBLE
             binding.tvText.text = description
         }
 

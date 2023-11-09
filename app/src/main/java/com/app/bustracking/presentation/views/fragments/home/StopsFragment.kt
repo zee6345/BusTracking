@@ -48,13 +48,13 @@ class StopsFragment : BaseFragment() {
 
 
         val data = readFromFile(requireActivity().filesDir.absolutePath + "/stops.txt")
-        val stopsList = parseStopsFromString(data)
+//        val stopsList = parseStopsFromString(data)
 
 
-        if (stopsList.isNotEmpty()) {
-
-
-            binding.rvLines.adapter = StopsAdapter(stopsList) { route, position ->
+//        if (stopsList.isNotEmpty()) {
+//
+//
+//            binding.rvLines.adapter = StopsAdapter(stopsList) { route, position ->
 
 //                val json = Converter.toJson(route)
 //                AppPreference.putString("route", json.toString())
@@ -65,9 +65,9 @@ class StopsFragment : BaseFragment() {
 //                    R.id.action_routesFragment_to_routesMapFragment,
 //                    args
 //                )
-            }
+//            }
 
-        }
+//        }
 
 
         binding.ivExpandFav.setOnClickListener {

@@ -9,12 +9,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.app.bustracking.R
-import com.app.bustracking.data.preference.AppPreference
 import com.app.bustracking.databinding.FragmentProfileBinding
 import com.app.bustracking.presentation.views.activities.MainActivity
 
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Progress
+import com.pixplicity.easyprefs.library.Prefs
 
 
 class ProfileFragment : BaseFragment() {
@@ -46,7 +46,13 @@ class ProfileFragment : BaseFragment() {
         progress = Progress(requireActivity()).showProgress(onCancel = {
             progress.dismiss()
         }, onExit = {
-            AppPreference.clear()
+
+            //clear prefs
+            Prefs.clear()
+            Prefs.getAll().clear()
+
+
+            //exit app
             (requireActivity() as AppCompatActivity).finishAffinity()
         })
 

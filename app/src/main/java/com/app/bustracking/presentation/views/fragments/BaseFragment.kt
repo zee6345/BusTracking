@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.app.bustracking.R
+import com.app.bustracking.data.local.Database
 import com.app.bustracking.data.responseModel.Stop
-import com.app.bustracking.presentation.views.activities.HomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -25,6 +25,7 @@ import java.io.FileWriter
 abstract class BaseFragment : Fragment() {
 
     abstract fun initNavigation(navController: NavController)
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +41,10 @@ abstract class BaseFragment : Fragment() {
         val controller = NavHostFragment.findNavController(this)
         initNavigation(controller)
 
+    }
+
+    fun appDb(): Database {
+        return Database.init(requireActivity())
     }
 
     fun showProgress(): AlertDialog {

@@ -1,10 +1,6 @@
 package com.app.bustracking.presentation.views.fragments.auth
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -19,7 +15,6 @@ import androidx.navigation.NavController
 import com.app.bustracking.R
 import com.app.bustracking.data.api.ApiClient
 import com.app.bustracking.data.api.ApiService
-import com.app.bustracking.data.preference.AppPreference
 import com.app.bustracking.data.responseModel.LoginModel
 import com.app.bustracking.databinding.FragmentLoginBinding
 import com.app.bustracking.presentation.views.activities.MainActivity
@@ -68,9 +63,6 @@ class LoginFragment : BaseFragment() {
 
         binding.buttonLogin.setOnClickListener {
 
-//            val progressDialog = ProgressDialog(requireContext())
-//            progressDialog.setMessage("Loading...")
-
             val number = binding.phoneNumber.text.toString().trim()
             val code = binding.ccp.selectedCountryCode.toString().trim()
 
@@ -91,7 +83,7 @@ class LoginFragment : BaseFragment() {
                             try {
 
                                 val model = response.body() as LoginModel
-                                AppPreference.setToken(model.token)
+                                Prefs.putString("token", model.token)
 
                                 //
                                 Prefs.putBoolean(Constants.isLogin, true)
@@ -143,26 +135,8 @@ class LoginFragment : BaseFragment() {
     }
 
     private fun animateImageView(imageView: ImageView) {
-//        val translateAnimator = ObjectAnimator.ofFloat(imageView, "translationY", 0f, 200f)
-//        translateAnimator.duration = 600 // Animation duration in milliseconds
-////        translateAnimator.repeatCount = ValueAnimator.INFINITE // Repeat the animation infinitely
-//        translateAnimator.repeatCount = 1 // Repeat the animation infinitely
-//        translateAnimator.repeatMode = ValueAnimator.REVERSE // Reverse the animation on each repeat
-//
-//        // Start the animation
-//        translateAnimator.start()
-
-//        val screenWidth = resources.displayMetrics.widthPixels
-//
-//        // Create an ObjectAnimator for translationX animation
-//        val translateAnimator = ObjectAnimator.ofFloat(imageView, "translationX", -screenWidth.toFloat(), screenWidth.toFloat())
-//        translateAnimator.duration = 3000 // Animation duration in milliseconds
-//
-//        // Start the animation
-//        translateAnimator.start()
-
-
-        val slideInAnimation = AnimationUtils.loadAnimation(requireActivity(), R.anim.slide_in_from_left)
+        val slideInAnimation =
+            AnimationUtils.loadAnimation(requireActivity(), R.anim.slide_in_from_left)
         imageView.startAnimation(slideInAnimation)
 
     }

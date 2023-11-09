@@ -155,6 +155,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         String data = requireArguments().getString(RoutesFragmentKt.ARGS);
         Route route = Converter.INSTANCE.fromJson(data, Route.class);
 
+
         Mapbox.getInstance(
                 requireActivity(),
                 getString(com.app.bustracking.R.string.mapbox_access_token)

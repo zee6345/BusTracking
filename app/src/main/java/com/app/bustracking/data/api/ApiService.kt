@@ -53,4 +53,12 @@ interface ApiService {
         @Body travelRequest: RouteRequest
     ):Response<GetTravelRoutes>
 
+
+//    @POST("get_travel_route_list")
+//    fun getTravelRoutes(
+//        @Body travelRequest: RouteRequest
+//    ):GetTravelRoutes
+
+
+
 }

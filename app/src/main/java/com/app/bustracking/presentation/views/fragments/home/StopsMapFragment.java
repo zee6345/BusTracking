@@ -154,14 +154,14 @@ public class StopsMapFragment extends BaseFragment implements OnMapReadyCallback
 
 
         String data = readFromFile(requireActivity().getFilesDir().getAbsolutePath() + "/stops.txt");
-        stopsList = parseStopsFromString(data);
+//        stopsList = parseStopsFromString(data);
 
-        Mapbox.getInstance(
-                requireActivity(),
-                getString(com.app.bustracking.R.string.mapbox_access_token)
-        );
-        binding.mapView.getMapAsync(this);
-        binding.mapView.onSaveInstanceState(savedInstanceState);
+//        Mapbox.getInstance(
+//                requireActivity(),
+//                getString(com.app.bustracking.R.string.mapbox_access_token)
+//        );
+//        binding.mapView.getMapAsync(this);
+//        binding.mapView.onSaveInstanceState(savedInstanceState);
 
         mapView = binding.mapView;
 

@@ -9,21 +9,13 @@
         android:id="@+id/infoFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.InfoFragment"
         android:label="fragment_info"
-        tools:layout="@layout/fragment_info">
-        <action
-            android:id="@+id/action_infoFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_info"/>
 
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.MapsFragment"
         android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps">
-        <action
-            android:id="@+id/action_mapsFragment_to_routesFragment"
-            app:destination="@id/routesFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_maps"/>
 
     <fragment
         android:id="@+id/profileFragment"
@@ -36,8 +28,8 @@
         android:label="fragment_routes"
         tools:layout="@layout/fragment_routes">
         <action
-            android:id="@+id/action_routesFragment_to_allStopsFragment"
-            app:destination="@id/allStopsFragment" />
+            android:id="@+id/action_routesFragment_to_routesMapFragment"
+            app:destination="@id/routesMapFragment" />
     </fragment>
     <fragment
         android:id="@+id/stopsFragment"
@@ -48,7 +40,11 @@
         android:id="@+id/routesMapFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.RoutesMapFragment"
         android:label="fragment_routes_map"
-        tools:layout="@layout/fragment_routes_map" />
+        tools:layout="@layout/fragment_routes_map" >
+        <action
+            android:id="@+id/action_routesMapFragment_to_routesFragment"
+            app:popUpTo="@id/routesFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/allStopsFragment"
@@ -56,7 +52,7 @@
         android:label="fragment_stops"
         tools:layout="@layout/fragment_stops_all">
         <action
-            android:id="@+id/action_stopsFragment2_to_infoFragment"
-            app:destination="@id/infoFragment" />
+            android:id="@+id/action_allStopsFragment_to_stopsFragment"
+            app:destination="@id/stopsFragment" />
     </fragment>
 </navigation>

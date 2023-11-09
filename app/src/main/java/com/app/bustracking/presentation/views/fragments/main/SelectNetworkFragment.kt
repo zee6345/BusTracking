@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
+import com.app.bustracking.data.api.ApiClient
+import com.app.bustracking.data.api.ApiService
 import com.app.bustracking.data.requestModel.RouteRequest
 import com.app.bustracking.data.requestModel.TravelRequest
 import com.app.bustracking.data.responseModel.Agency
@@ -29,11 +31,17 @@ private val TAG: String = SelectNetworkFragment::class.simpleName.toString()
 
 class SelectNetworkFragment : BaseFragment() {
 
+    //    private var travelListSize: Int = 0
     private lateinit var binding: FragmentSelectNetwrokBinding
     private lateinit var navController: NavController
     private val data: AppViewModel by viewModels()
     private val dataList = mutableListOf<Agency>()
     private val stopsList = mutableListOf<Stop>()
+//    val deferredJobs = mutableListOf<Deferred<GetTravelRoutes>>()
+
+    private val apiClient by lazy {
+        ApiClient.createService().create(ApiService::class.java)
+    }
 
     override fun initNavigation(navController: NavController) {
         this.navController = navController
@@ -57,12 +65,20 @@ class SelectNetworkFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //if agency already selected, route to main
-        if (Prefs.getInt(Constants.agencyId) != 0) {
-            routeScreen<HomeActivity>()
-        }
 
         val dialog = showProgress()
+
+//        val routesDao = appDb().routesDao()
+//        val stopsDao = appDb().stopsDao()
+//        val travelDao = appDb().travelDao()
+
+
+        //if agency already selected, route to main
+        if (Prefs.getInt(Constants.agencyId) != 0) {
+//        if (stopsDao.allStops.isNotEmpty()) {
+//            routeScreen<HomeActivity>()
+        }
+
 
 
         binding.rvNetwork.setHasFixedSize(true)
@@ -157,11 +173,15 @@ class SelectNetworkFragment : BaseFragment() {
 
                     //fetch data for all travel lists
                     response.travel_list.forEach { travel ->
+                        //api call
                         data.getTravelRouteList(RouteRequest(travel.id))
                     }
+
                 }
 
-                else -> {}
+                else -> {
+
+                }
             }
 
 
@@ -182,28 +202,37 @@ class SelectNetworkFragment : BaseFragment() {
 
                     val routesWithStops = it.data as GetTravelRoutes
 
-                    //success
-                    routesWithStops.route_list.forEach { route ->
-                        if (route.stop.isNotEmpty()) {
-                            stopsList.addAll(route.stop)
+                    if (routesWithStops.route_list.isNotEmpty()) {
+
+                        //success
+                        routesWithStops.route_list.forEach { route ->
+                            if (route.stop.isNotEmpty()) {
+                                //lists
+                                stopsList.addAll(route.stop)
+                            }
                         }
-                    }
 
-                    if (stopsList.isNotEmpty()) {
 
-                        //write data to file
-                        writeToFile(
-                            requireActivity().filesDir.absolutePath + "/stops.txt",
-                            stopsList.toString()
-                        )
+                        // Wait for all API calls to complete
+                        if (stopsList.isNotEmpty()) {
 
-                        //start new activity
-                        routeScreen<HomeActivity>()
+                            //write data to file
+                            writeToFile(
+                                requireActivity().filesDir.absolutePath + "/stops.txt",
+                                stopsList.toString()
+                            )
 
-                    } else {
-                        showMessage("No route found for this Agency!")
+                            //start new activity
+                            routeScreen<HomeActivity>()
+
+
+                        } else {
+                            showMessage("No route found for this Agency!")
+                        }
+
                     }
                 }
+
 
                 else -> {}
             }
@@ -211,6 +240,5 @@ class SelectNetworkFragment : BaseFragment() {
         }
 
     }
-
 
 }

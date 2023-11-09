@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.app.bustracking.data.api.ApiClient
 import com.app.bustracking.data.api.ApiService
-import com.app.bustracking.data.preference.AppPreference
 import com.app.bustracking.data.responseModel.VerifyOTPModel
 import com.app.bustracking.databinding.FragmentVerifyOTPBinding
 import com.app.bustracking.presentation.views.activities.MainActivity

@@ -154,8 +154,14 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         //fetch data from db
         int travelId = requireArguments().getInt(RoutesFragmentKt.ARGS);
         Route route = routesDao.fetchRoute(travelId);
-        routeColor = route.getColor();
 
+        if (route == null) {
+            showMessage("No route found!");
+            navController.popBackStack();
+            return;
+        }
+
+        routeColor = route.getColor();
 
         //map box
         Mapbox.getInstance(
@@ -172,7 +178,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         intent.putExtra("bus_id", route.getBus_id() + "");
         requireActivity().startService(intent);
 
-        
+
         for (Stop stop : route.getStop()) {
             symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
@@ -337,25 +343,29 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        if (mapView != null)
+            mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        if (mapView != null)
+            mapView.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mapView.onDestroy();
+        if (mapView != null)
+            mapView.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        if (mapView != null)
+            mapView.onSaveInstanceState(outState);
     }
 
 
@@ -380,10 +390,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
     @Override
     public void onDestroy() {
-
-        mapView.onDestroy();
-
-
+        if (mapView != null)
+            mapView.onDestroy();
         super.onDestroy();
     }
 }

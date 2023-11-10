@@ -5,6 +5,8 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.R
+import com.app.bustracking.data.local.StopsDao
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.ItemRouteBinding
@@ -12,6 +14,7 @@ import java.util.Random
 
 class StopsAdapter(
     private val itemList: List<Stop>,
+    private val stopsDao: StopsDao,
     val onItemClick: (travel: Stop, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<StopsAdapter.ViewHolder>() {
@@ -21,15 +24,33 @@ class StopsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val _binding: ItemRouteBinding
+        private var isFavourite = false
+
 
         init {
             _binding = binding
         }
 
 
-        fun bind(travel: Stop, onItemClick: (Stop) -> Unit) {
+        fun bind(travel: Stop, stopsDao: StopsDao,onItemClick: (Stop) -> Unit) {
 
             _binding.tvTitle.text = "${travel.stop_title}"
+
+
+            _binding.ivCheck.setImageResource(if (travel.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
+
+            _binding.ivCheck.setOnClickListener {
+
+                _binding.ivCheck.setImageResource(if (isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
+
+                if (isFavourite) {
+                    stopsDao.addFavourite(travel.stopId, 1)
+                } else {
+                    stopsDao.removeFavourite(travel.stopId, 0)
+                }
+
+                isFavourite = !isFavourite
+            }
 //            _binding.tvText.text = travel.travel_description
 //            _binding.ivMsgIcon.visibility = if (travel.travel_description.isEmpty()) View.GONE else View.VISIBLE
 //            _binding.lvMsg.visibility = if (travel.travel_description.isEmpty()) View.GONE else View.VISIBLE
@@ -79,7 +100,7 @@ class StopsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position]) {
+        holder.bind(itemList[position], stopsDao) {
             onItemClick(it, position)
         }
     }

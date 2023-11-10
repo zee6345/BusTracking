@@ -25,6 +25,7 @@ import com.app.bustracking.data.local.StopsDao;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentMapsBinding;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
+import com.app.bustracking.utils.Constants;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -52,6 +53,7 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +113,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Pe
 
         //fetch data from db
         StopsDao stopsDao = appDb().stopsDao();
-        stopsList = stopsDao.fetchStops();
+
+
+        int agencyId = Prefs.getInt(Constants.agencyId);
+        stopsList = stopsDao.fetchAllStops(agencyId);
 
 
         initRouteLists();

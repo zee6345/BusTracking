@@ -33,13 +33,19 @@ class RoutesAdapter(
         fun bind(travel: Travel, travelDao: TravelDao, onItemClick: (Travel) -> Unit) {
 
             _binding.tvTitle.text = "${travel.travel_name}"
-
+            _binding.ivCheck.setImageResource(if (travel.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
 
             _binding.ivCheck.setOnClickListener {
-                isFavourite = !isFavourite
 
-                travelDao.updateFavourite(travel.travelId, if (isFavourite) 1 else 0)
-                _binding.ivCheck.setImageResource(if (isFavourite) R.drawable.ic_favrotie else R.drawable.ic_check_unfilled)
+                _binding.ivCheck.setImageResource(if (isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
+
+                if (isFavourite) {
+                    travelDao.addFavourite(travel.travelId, 1)
+                } else {
+                    travelDao.removeFavourite(travel.travelId, 0)
+                }
+
+                isFavourite = !isFavourite
             }
 
             _binding.root.setOnClickListener {
@@ -49,17 +55,17 @@ class RoutesAdapter(
         }
 
 
-        private fun generateRandomColor(): ColorDrawable {
-            val random = Random()
-            val red = random.nextInt(256) // Random value between 0 and 255 for red
-            val green = random.nextInt(256) // Random value between 0 and 255 for green
-            val blue = random.nextInt(256) // Random value between 0 and 255 for blue
-
-            val backgroundColor = Color.rgb(red, green, blue)
-
-            // Create and return the random color
-            return ColorDrawable(backgroundColor)
-        }
+//        private fun generateRandomColor(): ColorDrawable {
+//            val random = Random()
+//            val red = random.nextInt(256) // Random value between 0 and 255 for red
+//            val green = random.nextInt(256) // Random value between 0 and 255 for green
+//            val blue = random.nextInt(256) // Random value between 0 and 255 for blue
+//
+//            val backgroundColor = Color.rgb(red, green, blue)
+//
+//            // Create and return the random color
+//            return ColorDrawable(backgroundColor)
+//        }
 
     }
 

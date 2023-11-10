@@ -13,6 +13,7 @@ import com.app.bustracking.databinding.FragmentProfileBinding
 import com.app.bustracking.presentation.views.activities.MainActivity
 
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Constants
 import com.app.bustracking.utils.Progress
 import com.pixplicity.easyprefs.library.Prefs
 
@@ -43,6 +44,9 @@ class ProfileFragment : BaseFragment() {
         binding.toolbar.tvTitle.text = "Profile"
         binding.toolbar.ivSearch.visibility = View.GONE
 
+        val agencyName = Prefs.getString(Constants.agencyName)
+        binding.tvAgency.text = agencyName
+
         progress = Progress(requireActivity()).showProgress(onCancel = {
             progress.dismiss()
         }, onExit = {
@@ -51,13 +55,19 @@ class ProfileFragment : BaseFragment() {
             Prefs.clear()
             Prefs.getAll().clear()
 
-
             //exit app
             (requireActivity() as AppCompatActivity).finishAffinity()
         })
 
 
         binding.llChangeNetwork.setOnClickListener {
+
+            //clear prefs
+//            Prefs.clear()
+//            Prefs.getAll().clear()
+            Prefs.remove(Constants.agencyId)
+            Prefs.remove(Constants.agencyName)
+
             val intent = Intent(requireActivity(), MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK

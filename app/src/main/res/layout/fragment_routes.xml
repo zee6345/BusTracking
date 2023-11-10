@@ -58,6 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            android:id="@+id/tvEmpty"
             android:paddingHorizontal="@dimen/_20sdp"
             android:text="Here you will find your favorite lines"
             android:textAlignment="textStart" />
@@ -114,6 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/_20sdp"
+            android:id="@+id/tvEmptyLines"
             android:text="Here you will find a lines"
             android:textAlignment="textStart"
             android:visibility="gone" />

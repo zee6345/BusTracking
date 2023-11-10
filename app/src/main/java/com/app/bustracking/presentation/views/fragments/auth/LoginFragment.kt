@@ -52,9 +52,7 @@ class LoginFragment : BaseFragment() {
          *  if already login route to main activity
          */
         if (Prefs.getBoolean(Constants.isLogin)) {
-            val intent = Intent(requireActivity(), MainActivity::class.java)
-            startActivity(intent)
-            (requireActivity() as AppCompatActivity).finish()
+            routeScreen<MainActivity>()
         }
 
         //animate

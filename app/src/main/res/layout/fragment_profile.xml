@@ -70,6 +70,7 @@
             android:layout_marginStart="@dimen/_10sdp"
             android:lineSpacingExtra="@dimen/_10sdp"
             android:text="v3.1.2"
+            android:id="@+id/tvAgency"
             android:textSize="@dimen/_14sdp" />
 
 

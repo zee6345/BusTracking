@@ -9,6 +9,8 @@ import com.app.bustracking.R
 import com.app.bustracking.databinding.FragmentStopsAllBinding
 import com.app.bustracking.presentation.ui.StopsAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Constants
+import com.pixplicity.easyprefs.library.Prefs
 
 class StopsFragment : BaseFragment() {
 
@@ -50,11 +52,21 @@ class StopsFragment : BaseFragment() {
 //        val data = readFromFile(requireActivity().filesDir.absolutePath + "/stops.txt")
 //        val stopsList = parseStopsFromString(data)
 
-        val stops = stopsDao.fetchStops()
+        val agencyId = Prefs.getInt(Constants.agencyId)
+        val stops = stopsDao.fetchStops(agencyId)
+        val favouriteStops = stopsDao.fetchFavouriteStops(agencyId)
 
+        favouriteStops.observe(viewLifecycleOwner){
+            if (it.isNotEmpty()){
+              binding.rvFavorite.visibility = View.VISIBLE
+              binding.tvEmpty.visibility = View.GONE
+            } else {
+                binding.rvFavorite.visibility = View.GONE
+                binding.tvEmpty.visibility = View.VISIBLE
+            }
 
-        if (stops.isNotEmpty()) {
-            binding.rvLines.adapter = StopsAdapter(stops) { stop, position ->
+            //
+            binding.rvFavorite.adapter = StopsAdapter(it, stopsDao) { stop, position ->
 //                val json = Converter.toJson(route)
                 val args = Bundle()
 //                args.putString(ARGS, json)
@@ -64,7 +76,29 @@ class StopsFragment : BaseFragment() {
                     args
                 )
             }
+        }
 
+        stops.observe(viewLifecycleOwner){
+
+            if (it.isNotEmpty()){
+                binding.rvLines.visibility = View.VISIBLE
+                binding.tvEmptyLines.visibility = View.GONE
+            } else {
+                binding.rvLines.visibility = View.GONE
+                binding.tvEmptyLines.visibility = View.VISIBLE
+            }
+
+
+            binding.rvLines.adapter = StopsAdapter(it, stopsDao) { stop, position ->
+//                val json = Converter.toJson(route)
+                val args = Bundle()
+//                args.putString(ARGS, json)
+                args.putInt(ARGS, stop.stopId)
+                navController.navigate(
+                    R.id.action_routesFragment_to_routesMapFragment,
+                    args
+                )
+            }
         }
 
 

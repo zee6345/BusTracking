@@ -10,7 +10,9 @@ import com.app.bustracking.R
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.Constants
 import com.app.bustracking.utils.Progress
+import com.pixplicity.easyprefs.library.Prefs
 
 const val ARGS = "data"
 
@@ -26,7 +28,6 @@ class RoutesFragment : BaseFragment() {
     override fun initNavigation(navController: NavController) {
         this.navController = navController
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,10 +48,23 @@ class RoutesFragment : BaseFragment() {
 
 
         val travelDao = appDb().travelDao()
-        val travelList = travelDao.fetchTravels()
 
-        if (travelList.isNotEmpty()) {
-            binding.rvLines.adapter = RoutesAdapter(travelList, travelDao) { route, position ->
+        val agencyId = Prefs.getInt(Constants.agencyId)
+        val travelList = travelDao.fetchTravels(agencyId)
+        val favouriteTravelList = travelDao.fetchFavouriteTravels(agencyId)
+
+        favouriteTravelList.observe(viewLifecycleOwner){
+
+            if (it.isNotEmpty()){
+                binding.rvFavorite.visibility = View.VISIBLE
+                binding.tvEmpty.visibility = View.GONE
+            } else {
+                binding.rvFavorite.visibility = View.GONE
+                binding.tvEmpty.visibility = View.VISIBLE
+            }
+
+            //
+            binding.rvFavorite.adapter = RoutesAdapter(it, travelDao) { route, position ->
                 val args = Bundle()
                 args.putInt(ARGS, route.travelId)
                 navController.navigate(
@@ -60,6 +74,25 @@ class RoutesFragment : BaseFragment() {
             }
         }
 
+        travelList.observe(viewLifecycleOwner){
+
+            if (it.isNotEmpty()){
+                binding.rvLines.visibility = View.VISIBLE
+                binding.tvEmpty.visibility = View.GONE
+            } else {
+                binding.rvLines.visibility = View.GONE
+                binding.tvEmpty.visibility = View.VISIBLE
+            }
+
+            binding.rvLines.adapter = RoutesAdapter(it, travelDao) { route, position ->
+                val args = Bundle()
+                args.putInt(ARGS, route.travelId)
+                navController.navigate(
+                    R.id.action_routesFragment_to_routesMapFragment,
+                    args
+                )
+            }
+        }
 
         binding.ivExpandFav.setOnClickListener {
             binding.rlFav.visibility = if (isFavExpand) View.VISIBLE else View.GONE
@@ -70,7 +103,6 @@ class RoutesFragment : BaseFragment() {
             binding.rlAll.visibility = if (isAllExpand) View.VISIBLE else View.GONE
             isAllExpand = !isAllExpand
         }
-
 
     }
 

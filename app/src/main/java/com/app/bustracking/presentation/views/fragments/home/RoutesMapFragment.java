@@ -33,6 +33,7 @@ import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentRoutesMapBinding;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
+import com.app.bustracking.presentation.views.fragments.bottomsheets.CustomDraggableBottomSheet;
 import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -137,6 +138,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         return binding.getRoot();
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -173,6 +175,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
         mapView = binding.mapView;
 
+
+
         //
         Intent intent = new Intent(requireActivity(), AppService.class);
         intent.putExtra("bus_id", route.getBus_id() + "");
@@ -183,6 +187,13 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
         }
+       // routeMapModalSheet = new RouteMapModalSheet(route);
+//        binding.bottomSheet.addView(routeMapModalSheet);
+
+       // routeMapModalSheet.show(requireActivity().getSupportFragmentManager(), "");
+
+        CustomDraggableBottomSheet draggableBottomSheet  = binding.draggableBottomSheet;
+        draggableBottomSheet.updateRouteAndCallData(route);
 
     }
 
@@ -297,7 +308,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
                 }
 
-                routeMapModalSheet.show(requireActivity().getSupportFragmentManager(), "");
+
 
                 return true;
             });

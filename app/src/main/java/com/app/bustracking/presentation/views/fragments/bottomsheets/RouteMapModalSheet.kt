@@ -21,6 +21,7 @@ class RouteMapModalSheet(private val route: Route?) : BottomSheetDialogFragment(
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRouteMapModalSheetBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 

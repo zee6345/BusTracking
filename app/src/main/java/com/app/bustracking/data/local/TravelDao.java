@@ -20,6 +20,8 @@ public interface TravelDao {
     @Query("select * from Travel where isFavourite=0 and agency_id=:agencyId")
     LiveData<List<Travel>> fetchTravels(int agencyId);
 
+    @Query("Select * from Travel where agency_id=:agencyID ")
+    List<Travel> fetchAllTravels(int agencyID);
     @Query("select * from Travel where isFavourite=1 and agency_id=:agencyId")
     LiveData<List<Travel>> fetchFavouriteTravels(int agencyId);
 

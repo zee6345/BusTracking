@@ -172,13 +172,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         intent.putExtra("bus_id", route.getBus_id() + "");
         requireActivity().startService(intent);
 
-
-        //
-//        routeMapModalSheet = new RouteMapModalSheet(route);
-//        routeMapModalSheet.show(requireActivity().getSupportFragmentManager(), routeMapModalSheet.getTag());
-
-
-        //
+        
         for (Stop stop : route.getStop()) {
             symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));

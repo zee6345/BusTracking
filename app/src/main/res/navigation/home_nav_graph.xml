@@ -32,11 +32,6 @@
             app:destination="@id/routesMapFragment" />
     </fragment>
     <fragment
-        android:id="@+id/stopsFragment"
-        android:name="com.app.bustracking.presentation.views.fragments.home.StopsMapFragment"
-        android:label="fragment_stops"
-        tools:layout="@layout/fragment_stops" />
-    <fragment
         android:id="@+id/routesMapFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.RoutesMapFragment"
         android:label="fragment_routes_map"
@@ -47,12 +42,18 @@
     </fragment>
 
     <fragment
-        android:id="@+id/allStopsFragment"
+        android:id="@+id/stopsFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.StopsFragment"
-        android:label="fragment_stops"
-        tools:layout="@layout/fragment_stops_all">
+        android:label="fragment_stops_map"
+        tools:layout="@layout/fragment_stops" >
         <action
-            android:id="@+id/action_allStopsFragment_to_stopsFragment"
-            app:destination="@id/stopsFragment" />
+            android:id="@+id/action_stopsFragment_to_stopsMapFragment"
+            app:destination="@id/stopsMapFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/stopsMapFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.StopsMapFragment"
+        tools:layout="@layout/fragment_stops_map"
+        android:label="StopsMapFragment" />
 </navigation>

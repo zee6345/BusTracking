@@ -6,7 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavController
 import com.app.bustracking.R
-import com.app.bustracking.databinding.FragmentStopsAllBinding
+
+import com.app.bustracking.databinding.FragmentStopsBinding
 import com.app.bustracking.presentation.ui.StopsAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
@@ -14,7 +15,7 @@ import com.pixplicity.easyprefs.library.Prefs
 
 class StopsFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentStopsAllBinding
+    private lateinit var binding: FragmentStopsBinding
     private lateinit var navController: NavController
 
     //    private val data: AppViewModel by viewModels()
@@ -31,7 +32,7 @@ class StopsFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentStopsAllBinding.inflate(inflater, container, false)
+        binding = FragmentStopsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -49,17 +50,14 @@ class StopsFragment : BaseFragment() {
         val travelDao = appDb().travelDao()
 
 
-//        val data = readFromFile(requireActivity().filesDir.absolutePath + "/stops.txt")
-//        val stopsList = parseStopsFromString(data)
-
         val agencyId = Prefs.getInt(Constants.agencyId)
         val stops = stopsDao.fetchStops(agencyId)
         val favouriteStops = stopsDao.fetchFavouriteStops(agencyId)
 
-        favouriteStops.observe(viewLifecycleOwner){
-            if (it.isNotEmpty()){
-              binding.rvFavorite.visibility = View.VISIBLE
-              binding.tvEmpty.visibility = View.GONE
+        favouriteStops.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                binding.rvFavorite.visibility = View.VISIBLE
+                binding.tvEmpty.visibility = View.GONE
             } else {
                 binding.rvFavorite.visibility = View.GONE
                 binding.tvEmpty.visibility = View.VISIBLE
@@ -67,20 +65,18 @@ class StopsFragment : BaseFragment() {
 
             //
             binding.rvFavorite.adapter = StopsAdapter(it, stopsDao) { stop, position ->
-//                val json = Converter.toJson(route)
                 val args = Bundle()
-//                args.putString(ARGS, json)
                 args.putInt(ARGS, stop.stopId)
                 navController.navigate(
-                    R.id.action_routesFragment_to_routesMapFragment,
+                    R.id.action_stopsFragment_to_stopsMapFragment,
                     args
                 )
             }
         }
 
-        stops.observe(viewLifecycleOwner){
+        stops.observe(viewLifecycleOwner) {
 
-            if (it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 binding.rvLines.visibility = View.VISIBLE
                 binding.tvEmptyLines.visibility = View.GONE
             } else {
@@ -90,12 +86,10 @@ class StopsFragment : BaseFragment() {
 
 
             binding.rvLines.adapter = StopsAdapter(it, stopsDao) { stop, position ->
-//                val json = Converter.toJson(route)
                 val args = Bundle()
-//                args.putString(ARGS, json)
                 args.putInt(ARGS, stop.stopId)
                 navController.navigate(
-                    R.id.action_routesFragment_to_routesMapFragment,
+                    R.id.action_stopsFragment_to_stopsMapFragment,
                     args
                 )
             }

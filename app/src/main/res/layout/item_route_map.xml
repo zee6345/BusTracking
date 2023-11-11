@@ -12,8 +12,8 @@
 
     <ImageView
         android:id="@+id/ivCheck"
-        android:layout_width="@dimen/_26sdp"
-        android:layout_height="@dimen/_26sdp"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
         android:layout_gravity="center_vertical"
         android:src="@drawable/ic_map_routes" />
 
@@ -22,6 +22,7 @@
         android:id="@+id/tvMapRoute"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:fontFamily="@font/roboto_medium"
         android:paddingStart="@dimen/_10sdp"
         android:paddingEnd="@dimen/_10sdp"
         android:text="Bressuire - Bellefeuille"

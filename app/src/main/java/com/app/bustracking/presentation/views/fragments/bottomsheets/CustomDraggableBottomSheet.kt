@@ -27,40 +27,42 @@ class CustomDraggableBottomSheet @JvmOverloads constructor(
     private var originalY = 0f
     private var currentY = 0f
     private var peekHeight = 300 // Set your initial peek height
-    private var view:View
-    private var route: Route?= null
+    private var view: View
+    private var route: Route? = null
 
-    private var tvTitle:TextView
+    private var tvTitle: TextView
 
-    private var tvText:TextView
-    private var tvTitle2:TextView
+    private var tvText: TextView
+    private var tvTitle2: TextView
 
     private var llRoutes: LinearLayout
     private var llRoute: LinearLayout
     private var llRouteDetails: LinearLayout
-    private var lvMsg:LinearLayout
+    private var lvMsg: LinearLayout
 
     private var rvMapRoutes: RecyclerView
+
     init {
-      view =  inflate(context, R.layout.fragment_route_map_modal_sheet, this)
+        view = inflate(context, R.layout.fragment_route_map_modal_sheet, this)
         gestureDetector = GestureDetector(context, GestureListener())
-        tvTitle =view.findViewById(R.id.tvTitle)
-        lvMsg =view.findViewById(R.id.lvMsg)
-        tvText =view.findViewById(R.id.tvText)
-        tvTitle2 =view.findViewById(R.id.tvTitle2)
+        tvTitle = view.findViewById(R.id.tvTitle)
+        lvMsg = view.findViewById(R.id.lvMsg)
+        tvText = view.findViewById(R.id.tvText)
+        tvTitle2 = view.findViewById(R.id.tvTitle2)
 
-        llRoute =view.findViewById(R.id.llRoute)
-        llRoutes =view.findViewById(R.id.llRoutes)
-        llRouteDetails =view.findViewById(R.id.llRouteDetails)
+        llRoute = view.findViewById(R.id.llRoute)
+        llRoutes = view.findViewById(R.id.llRoutes)
+        llRouteDetails = view.findViewById(R.id.llRouteDetails)
 
-        rvMapRoutes =view.findViewById(R.id.rvMapRoutes)
+        rvMapRoutes = view.findViewById(R.id.rvMapRoutes)
     }
+
     private fun toggleViews(isRouteVisible: Boolean) {
         llRoutes.visibility = if (isRouteVisible) View.VISIBLE else View.GONE
         llRouteDetails.visibility = if (isRouteVisible) View.GONE else View.VISIBLE
     }
 
-    fun updateRouteAndCallData(route: Route){
+    fun updateRouteAndCallData(route: Route) {
         this.route = route
         //show main view
         toggleViews(true)
@@ -70,12 +72,18 @@ class CustomDraggableBottomSheet @JvmOverloads constructor(
             tvText.text = description
         }
 
-        llRoute.setOnClickListener {
-            rvMapRoutes.visibility = View.VISIBLE
-        }
+//        llRoute.setOnClickListener {
+//            rvMapRoutes.visibility = View.VISIBLE
+//        }
 
 
         rvMapRoutes.setHasFixedSize(true)
+
+        if (route.stop.isNotEmpty()) {
+            rvMapRoutes.visibility = View.VISIBLE
+        } else rvMapRoutes.visibility = View.GONE
+
+
         rvMapRoutes.adapter = RoutesMapAdapter(route!!.stop) { stop, position ->
 
             //show second view
@@ -99,6 +107,7 @@ class CustomDraggableBottomSheet @JvmOverloads constructor(
                 currentY = originalY
                 return true
             }
+
             MotionEvent.ACTION_MOVE -> {
                 val deltaY = event.rawY - currentY
                 currentY = event.rawY
@@ -109,6 +118,7 @@ class CustomDraggableBottomSheet @JvmOverloads constructor(
                     return true
                 }
             }
+
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (isDragging) {
                     animateSheetToClosestPosition()

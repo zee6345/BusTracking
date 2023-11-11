@@ -1,0 +1,8 @@
+Subject: [PATCH] fix map fragment issues
+---
+diff --git a/.gradle/file-system.probe b/.gradle/file-system.probe
+index d9c74d875a5e0c0aca77f171b1a7ed855f3a6502..e77669164274162ba1e05ad43aea1d82e0140abd
+GIT binary patch
+literal 8
+Pc${NkVC>#?;lnKe3fBYS
+

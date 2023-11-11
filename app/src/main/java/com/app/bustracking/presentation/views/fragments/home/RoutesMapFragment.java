@@ -172,27 +172,19 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         );
         binding.mapView.getMapAsync(this);
         binding.mapView.onSaveInstanceState(savedInstanceState);
-
         mapView = binding.mapView;
-
-
 
         //
         Intent intent = new Intent(requireActivity(), AppService.class);
         intent.putExtra("bus_id", route.getBus_id() + "");
         requireActivity().startService(intent);
 
-
         for (Stop stop : route.getStop()) {
             symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
         }
-       // routeMapModalSheet = new RouteMapModalSheet(route);
-//        binding.bottomSheet.addView(routeMapModalSheet);
 
-       // routeMapModalSheet.show(requireActivity().getSupportFragmentManager(), "");
-
-        CustomDraggableBottomSheet draggableBottomSheet  = binding.draggableBottomSheet;
+        CustomDraggableBottomSheet draggableBottomSheet = binding.draggableBottomSheet;
         draggableBottomSheet.updateRouteAndCallData(route);
 
     }
@@ -307,7 +299,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                     mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 5000);
 
                 }
-
 
 
                 return true;

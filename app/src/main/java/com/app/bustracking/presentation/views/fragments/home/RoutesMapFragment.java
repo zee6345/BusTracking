@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,9 +33,9 @@ import com.app.bustracking.data.local.TravelDao;
 import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentRoutesMapBinding;
+import com.app.bustracking.presentation.ui.RoutesMapAdapter;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
-import com.app.bustracking.presentation.views.fragments.bottomsheets.CustomDraggableBottomSheet;
-import com.app.bustracking.presentation.views.fragments.bottomsheets.RouteMapModalSheet;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -90,7 +91,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     SymbolManager symbolManager;
     Symbol locationMarker;
     //    DirectionsRoute directionsRoute;
-    RouteMapModalSheet routeMapModalSheet;
+//    RouteMapModalSheet routeMapModalSheet;
     //    Style styless;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
@@ -154,8 +155,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
         //fetch data from db
-        int travelId = requireArguments().getInt(RoutesFragmentKt.ARGS);
-        Route route = routesDao.fetchRoute(travelId);
+        int routeId = requireArguments().getInt(RoutesFragmentKt.ARGS);
+        Route route = routesDao.fetchRoute(routeId);
 
         if (route == null) {
             showMessage("No route found!");
@@ -184,9 +185,32 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
         }
 
-        CustomDraggableBottomSheet draggableBottomSheet = binding.draggableBottomSheet;
-        draggableBottomSheet.updateRouteAndCallData(route);
 
+        handleBottomSheet(route);
+
+    }
+
+    private void handleBottomSheet(Route route) {
+        BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+        binding.llParent.tvTitle.setText(route.getRoute_title());
+        binding.llParent.lvMsg.setVisibility(route.getDescription().isEmpty() ? View.GONE : View.VISIBLE);
+        binding.llParent.tvText.setText(route.getDescription());
+
+
+        if (!route.getStop().isEmpty()) {
+            binding.llParent.rvMapRoutes.setVisibility(View.VISIBLE);
+        } else binding.llParent.rvMapRoutes.setVisibility(View.GONE);
+
+        binding.llParent.rvMapRoutes.setHasFixedSize(true);
+        binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), (stop, integer) -> {
+
+            Log.e("mTAG", stop + "");
+
+
+            return null;
+        }));
     }
 
     @Override
@@ -257,7 +281,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                             drawRouteOnMap(style, route);
 //
                             LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                            locationComponent.activateLocationComponent(requireActivity(), style);
+                            try {
+                                locationComponent.activateLocationComponent(requireActivity(), style);
+                            } catch (Exception e) {
+                            }
 //                                locationComponent.setLocationComponentEnabled(true);
                             locationComponent.setCameraMode(CameraMode.TRACKING);
                             locationComponent.setRenderMode(RenderMode.NORMAL);

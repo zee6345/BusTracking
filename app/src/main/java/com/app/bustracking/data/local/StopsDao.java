@@ -29,6 +29,9 @@ public interface StopsDao {
     @Query("select * from Stop where stopId=:stopId")
     Stop fetchStop(int stopId);
 
+    @Query("select * from Stop where stopId=:stopId")
+    List<Stop> fetchStopList(int stopId);
+
     @Query("update Stop set isFavourite=:favourite where stopId=:stopId and isFavourite=0")
     void addFavourite(int stopId, int favourite);
 

@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.views.fragments.home.StopsFragment">
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapBoxView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        mapbox:mapbox_cameraTargetLat="-33.213144"
-        mapbox:mapbox_cameraTargetLng="-57.225365"
-        mapbox:mapbox_cameraZoom="9.0" />
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapBoxView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            mapbox:mapbox_cameraTargetLat="-33.213144"
+            mapbox:mapbox_cameraTargetLng="-57.225365"
+            mapbox:mapbox_cameraZoom="9.0" />
+
+    </FrameLayout>
+
+    <include
+        android:id="@+id/llParent"
+        layout="@layout/item_stops_bottom_sheet"
+        app:behavior_hideable="true"
+        app:layout_anchorGravity="bottom" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

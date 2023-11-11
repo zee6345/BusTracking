@@ -52,12 +52,12 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="vertical"
             android:layout_height="wrap_content"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
             android:id="@+id/tvEmpty"
             android:paddingHorizontal="@dimen/_20sdp"
             android:text="Here you will find your favorite lines"

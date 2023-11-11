@@ -6,15 +6,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.bustracking.R
+import com.app.bustracking.data.local.RoutesDao
 import com.app.bustracking.data.local.TravelDao
+import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.ItemRouteBinding
 import java.util.Random
 
 class RoutesAdapter(
-    private val itemList: List<Travel>,
-    private val travelDao: TravelDao,
-    val onItemClick: (travel: Travel, position: Int) -> Unit
+//    private val itemList: List<Travel>,
+    private val itemList: List<Route>,
+    private val routesDao: RoutesDao,
+    val onItemClick: (route: Route, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
 
@@ -30,26 +33,26 @@ class RoutesAdapter(
         }
 
 
-        fun bind(travel: Travel, travelDao: TravelDao, onItemClick: (Travel) -> Unit) {
+        fun bind(route: Route, routesDao: RoutesDao, onItemClick: (Route) -> Unit) {
 
-            _binding.tvTitle.text = "${travel.travel_name}"
-            _binding.ivCheck.setImageResource(if (travel.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
+            _binding.tvTitle.text = "${route.route_title}"
+            _binding.ivCheck.setImageResource(if (route.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
 
             _binding.ivCheck.setOnClickListener {
 
                 _binding.ivCheck.setImageResource(if (isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
 
                 if (isFavourite) {
-                    travelDao.addFavourite(travel.travelId, 1)
+                    routesDao.addFavourite(route.routeId, 1)
                 } else {
-                    travelDao.removeFavourite(travel.travelId, 0)
+                    routesDao.removeFavourite(route.routeId, 0)
                 }
 
                 isFavourite = !isFavourite
             }
 
             _binding.root.setOnClickListener {
-                onItemClick(travel)
+                onItemClick(route)
             }
 
         }
@@ -79,7 +82,7 @@ class RoutesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position], travelDao) {
+        holder.bind(itemList[position], routesDao) {
             onItemClick(it, position)
         }
     }

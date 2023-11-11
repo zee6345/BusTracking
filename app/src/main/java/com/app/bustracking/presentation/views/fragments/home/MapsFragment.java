@@ -93,7 +93,7 @@ public class MapsFragment extends BaseFragment {
                             this.mapbox = mapboxMap;
 
                             // Assuming routeList is a list of routes with stops
-                            List<Route> routeList = routesDao.fetchRoutes(); // Replace with your actual method to get routes
+                            List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
 
 
                             for (Route route : routeList) {
@@ -198,7 +198,9 @@ public class MapsFragment extends BaseFragment {
 
                     //
                     LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                    locationComponent.activateLocationComponent(requireActivity(), style);
+                    try {
+                        locationComponent.activateLocationComponent(requireActivity(), style);
+                    }catch (Exception e){ }
                     locationComponent.setCameraMode(CameraMode.TRACKING);
                     locationComponent.setRenderMode(RenderMode.NORMAL);
 

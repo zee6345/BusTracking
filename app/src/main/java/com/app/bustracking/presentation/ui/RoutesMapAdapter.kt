@@ -3,9 +3,9 @@ package com.app.bustracking.presentation.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.app.bustracking.R
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.ItemRouteMapBinding
-import com.app.bustracking.presentation.model.MapRoutes
 
 class RoutesMapAdapter(
     private val itemList: List<Stop>,
@@ -23,12 +23,14 @@ class RoutesMapAdapter(
             _binding = binding
         }
 
-        fun bind(routes: Stop, onItemClick: (Stop) -> Unit) {
+        fun bind(stop: Stop, onItemClick: (Stop) -> Unit) {
 
-            _binding.tvMapRoute.text = routes.stop_title
+            _binding.tvTitle.text = stop.stop_title
+
+            _binding.ivCheck.setImageResource(if (stop.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
 
             _binding.root.setOnClickListener {
-                onItemClick(routes)
+                onItemClick(stop)
             }
 
         }

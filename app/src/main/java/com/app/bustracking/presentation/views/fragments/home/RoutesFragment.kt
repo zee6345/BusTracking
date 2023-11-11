@@ -11,6 +11,7 @@ import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
+import com.app.bustracking.utils.Constants.agencyId
 import com.app.bustracking.utils.Progress
 import com.pixplicity.easyprefs.library.Prefs
 
@@ -48,12 +49,18 @@ class RoutesFragment : BaseFragment() {
 
 
         val travelDao = appDb().travelDao()
+        val routeDao = appDb().routesDao()
 
-        val agencyId = Prefs.getInt(Constants.agencyId)
-        val travelList = travelDao.fetchTravels(agencyId)
-        val favouriteTravelList = travelDao.fetchFavouriteTravels(agencyId)
+        val favouriteList = routeDao.fetchFavouriteRoutes()
+        val routeList = routeDao.fetchRoutes()
 
-        favouriteTravelList.observe(viewLifecycleOwner){
+//        val agencyId = Prefs.getInt(Constants.agencyId)
+//        val travelList = travelDao.fetchTravels(agencyId)
+//        val favouriteTravelList = travelDao.fetchFavouriteTravels(agencyId)
+
+
+
+        favouriteList.observe(viewLifecycleOwner){
 
             if (it.isNotEmpty()){
                 binding.rvFavorite.visibility = View.VISIBLE
@@ -64,9 +71,9 @@ class RoutesFragment : BaseFragment() {
             }
 
             //
-            binding.rvFavorite.adapter = RoutesAdapter(it, travelDao) { route, position ->
+            binding.rvFavorite.adapter = RoutesAdapter(it, routeDao) { route, position ->
                 val args = Bundle()
-                args.putInt(ARGS, route.travelId)
+                args.putInt(ARGS, route.routeId)
                 navController.navigate(
                     R.id.action_routesFragment_to_routesMapFragment,
                     args
@@ -74,7 +81,7 @@ class RoutesFragment : BaseFragment() {
             }
         }
 
-        travelList.observe(viewLifecycleOwner){
+        routeList.observe(viewLifecycleOwner){
 
             if (it.isNotEmpty()){
                 binding.rvLines.visibility = View.VISIBLE
@@ -84,9 +91,9 @@ class RoutesFragment : BaseFragment() {
                 binding.tvEmpty.visibility = View.VISIBLE
             }
 
-            binding.rvLines.adapter = RoutesAdapter(it, travelDao) { route, position ->
+            binding.rvLines.adapter = RoutesAdapter(it, routeDao) { route, position ->
                 val args = Bundle()
-                args.putInt(ARGS, route.travelId)
+                args.putInt(ARGS, route.routeId)
                 navController.navigate(
                     R.id.action_routesFragment_to_routesMapFragment,
                     args

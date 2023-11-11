@@ -12,7 +12,6 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -173,17 +172,17 @@ public class StopsMapFragment extends BaseFragment
     }
 
     private void handleBottomSheet(Stop stops) {
-        BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
+        BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        binding.llParent.tvTitle.setText(stops.getStop_title());
 
-        binding.llParent.rvMapRoutes.setHasFixedSize(true);
-        binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), (stop, integer) -> {
+        binding.llStop.tvTitle.setText(stops.getStop_title());
 
-            Log.e("mTAG", stop + "");
-
+        binding.llStop.rvMapRoutes.setHasFixedSize(true);
+        binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), (stop, integer) -> {
+            animateCamera(mapbox, stop);
             return null;
         }));
+
     }
 
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {

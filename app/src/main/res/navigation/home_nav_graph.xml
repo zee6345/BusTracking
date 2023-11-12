@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_routesMapFragment_to_routesFragment"
             app:popUpTo="@id/routesFragment" />
+        <action
+            android:id="@+id/action_routesMapFragment_to_stopsMapFragment"
+            app:destination="@id/stopsMapFragment" />
     </fragment>
 
     <fragment

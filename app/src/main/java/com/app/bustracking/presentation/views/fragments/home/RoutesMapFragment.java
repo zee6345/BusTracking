@@ -206,8 +206,9 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         binding.llParent.rvMapRoutes.setHasFixedSize(true);
         binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), (stop, integer) -> {
 
-            Log.e("mTAG", stop + "");
-
+            Bundle bundle = new Bundle();
+            bundle.putInt(RoutesFragmentKt.ARGS, stop.getStopId());
+            navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
 
             return null;
         }));
@@ -230,9 +231,14 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                         .withIconSize(2.0f);
                 locationMarker = symbolManager.create(symbolOptions);
 
-                //
-//                enableLocationComponent(style);
+                //components
+                LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                locationComponent.activateLocationComponent(requireActivity(), style);
+//                                locationComponent.setLocationComponentEnabled(true);
+                locationComponent.setCameraMode(CameraMode.TRACKING);
+                locationComponent.setRenderMode(RenderMode.NORMAL);
 
+                //
                 style.addImage(ICON_ID, BitmapFactory.decodeResource(
                         requireActivity().getResources(),
                         com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
@@ -279,16 +285,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                             DirectionsRoute route = response.body().routes().get(0);
 
                             drawRouteOnMap(style, route);
-//
-                            LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                            try {
-                                locationComponent.activateLocationComponent(requireActivity(), style);
-                            } catch (Exception e) {
-                            }
-//                                locationComponent.setLocationComponentEnabled(true);
-                            locationComponent.setCameraMode(CameraMode.TRACKING);
-                            locationComponent.setRenderMode(RenderMode.NORMAL);
-
 
                         }
                     }
@@ -311,8 +307,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             });
 
             mapboxMap.addOnMapClickListener(point -> {
-
-                Log.e("mmmTAG", "" + point);
 
                 if (coordinatesList.contains(point)) {
                     Log.e("mmmTAG", "" + point + ":: matched");

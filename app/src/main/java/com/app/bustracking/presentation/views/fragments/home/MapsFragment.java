@@ -92,6 +92,8 @@ public class MapsFragment extends BaseFragment {
 
                             this.mapbox = mapboxMap;
 
+
+
                             // Assuming routeList is a list of routes with stops
                             List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
 
@@ -143,15 +145,7 @@ public class MapsFragment extends BaseFragment {
         SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
         symbolManager.setIconAllowOverlap(true);
 
-//        Double latitude = 0.0;
-//        Double longitude = 0.0;
-
-        // Add a marker at the initial position
-//        SymbolOptions symbolOptions = new SymbolOptions()
-//                .withLatLng(new LatLng(latitude, longitude))
-//                .withIconImage(String.valueOf(R.drawable.abc)) // You should provide your own marker icon
-//                .withIconSize(2.0f);
-//        Symbol locationMarker = symbolManager.create(symbolOptions);
+        //
         style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(
                 requireActivity().getResources(),
                 com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
@@ -197,19 +191,17 @@ public class MapsFragment extends BaseFragment {
                     DirectionsRoute directionsRoute = response.body().routes().get(0);
 
                     //
-                    LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                    try {
-                        locationComponent.activateLocationComponent(requireActivity(), style);
-                    }catch (Exception e){ }
-                    locationComponent.setCameraMode(CameraMode.TRACKING);
-                    locationComponent.setRenderMode(RenderMode.NORMAL);
-
-                    //
                     LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
                     List<Point> points = lineString.coordinates();
                     GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{
                             Feature.fromGeometry(LineString.fromLngLats(points))
                     }));
+
+                    //
+                    LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                    locationComponent.activateLocationComponent(requireActivity(), style);
+                    locationComponent.setCameraMode(CameraMode.TRACKING);
+                    locationComponent.setRenderMode(RenderMode.NORMAL);
 
                     style.addSource(geoJsonSource);
 
@@ -234,80 +226,40 @@ public class MapsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        if (mapView != null)
+            mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        if (mapView != null)
+            mapView.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mapView.onDestroy();
+        if (mapView != null)
+            mapView.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        if (mapView != null)
+            mapView.onSaveInstanceState(outState);
     }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-//    @Override
-//    public void onExplanationNeeded(List<String> permissionsToExplain) {
-//        Toast.makeText(requireActivity(), "Please allow location permission to use this app!", Toast.LENGTH_LONG).show();
-//    }
-//
-//    @Override
-//    public void onPermissionResult(boolean granted) {
-//        if (granted) {
-////            mapboxMap.getStyle(style -> enableLocationComponent(style));
-//        } else {
-//            Toast.makeText(requireActivity(), "Please allow location permission to use this app!", Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     @Override
     public void onDestroy() {
 
-        mapView.onDestroy();
+        if (mapView != null)
+            mapView.onDestroy();
 
-//        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(appTimerReceiver);
+//        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(appTimerReceiver)
 
         super.onDestroy();
     }
 
-//    public static class CustomStops {
-//
-//        List<LatLng> coordinator;
-//        List<Feature> featuresList;
-//
-//        String color;
-//
-//        public CustomStops(List<LatLng> coordinator, List<Feature> featuresList, String color) {
-//            this.coordinator = coordinator;
-//            this.featuresList = featuresList;
-//            this.color = color;
-//        }
-//
-//        public List<Feature> getFeaturesList() {
-//            return featuresList;
-//        }
-//
-//        public List<LatLng> getCoordinator() {
-//            return coordinator;
-//        }
-//
-//        public String getColor() {
-//            return this.color;
-//        }
-//    }
 }

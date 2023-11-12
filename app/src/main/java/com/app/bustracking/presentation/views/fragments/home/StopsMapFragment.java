@@ -150,6 +150,12 @@ public class StopsMapFragment extends BaseFragment
                         style -> {
                             this.mapbox = mapboxMap;
 
+                            LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                            locationComponent.activateLocationComponent(requireActivity(), style);
+                            locationComponent.setCameraMode(CameraMode.TRACKING);
+                            locationComponent.setRenderMode(RenderMode.NORMAL);
+
+
                             // Assuming routeList is a list of routes with stops
                             List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
                             for (Route route : routeList) {
@@ -243,15 +249,6 @@ public class StopsMapFragment extends BaseFragment
                     DirectionsRoute directionsRoute = response.body().routes().get(0);
 
                     //
-                    LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                    try {
-                        locationComponent.activateLocationComponent(requireActivity(), style);
-                    } catch (Exception e) {
-                    }
-                    locationComponent.setCameraMode(CameraMode.TRACKING);
-                    locationComponent.setRenderMode(RenderMode.NORMAL);
-
-                    //
                     LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
                     List<Point> points = lineString.coordinates();
                     GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{
@@ -287,30 +284,36 @@ public class StopsMapFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        if (mapView != null)
+            mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mapView.onPause();
+        if (mapView != null)
+            mapView.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mapView.onDestroy();
+        if (mapView != null)
+            mapView.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        if (mapView != null)
+            mapView.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroy() {
-        mapView.onDestroy();
+        if (mapView != null)
+            mapView.onDestroy();
+
         super.onDestroy();
     }
 }

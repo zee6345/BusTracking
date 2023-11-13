@@ -92,16 +92,12 @@ public class MapsFragment extends BaseFragment {
 
                             this.mapbox = mapboxMap;
 
-
-
                             // Assuming routeList is a list of routes with stops
                             List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
-
 
                             for (Route route : routeList) {
                                 if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
                                     drawRouteOnMap(mapboxMap, style, route);
-
 
                                     //animate camera
                                     for (Stop stop : route.getStop()) {
@@ -109,7 +105,6 @@ public class MapsFragment extends BaseFragment {
                                     }
                                 }
                             }
-
 
                             animateCamera(mapboxMap, coordinatesList);
 
@@ -121,16 +116,21 @@ public class MapsFragment extends BaseFragment {
     }
 
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (LatLng latLng : coordinatesList) {
-            builder.include(latLng);
+        try {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (LatLng latLng : coordinatesList) {
+                builder.include(latLng);
+            }
+
+            LatLngBounds bounds = builder.build();
+
+            // Padding to control the space around the bounds (in pixels)
+            int padding = 100;
+            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        LatLngBounds bounds = builder.build();
-
-        // Padding to control the space around the bounds (in pixels)
-        int padding = 100;
-        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
 
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {

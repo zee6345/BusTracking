@@ -12,8 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.app.bustracking.R
+import com.app.bustracking.app.AppService
 import com.app.bustracking.data.local.Database
 import com.app.bustracking.data.responseModel.Stop
+import com.app.bustracking.utils.Constants
+import com.pixplicity.easyprefs.library.Prefs
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -39,6 +42,18 @@ abstract class BaseFragment : Fragment() {
 
         val controller = NavHostFragment.findNavController(this)
         initNavigation(controller)
+
+
+        //location service
+        val agencyId = Prefs.getInt(Constants.agencyId)
+        val routeDao = appDb().routesDao()
+        val busId = routeDao.fetchBusId(agencyId)
+
+        val locationIntent = Intent(requireActivity(), AppService::class.java)
+        locationIntent.putExtra("bus_id", "${busId?:0}")
+        requireActivity().startService(locationIntent)
+
+
 
     }
 

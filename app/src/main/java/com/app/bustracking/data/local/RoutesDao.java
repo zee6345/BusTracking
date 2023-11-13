@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import com.app.bustracking.data.responseModel.Route;
-import com.app.bustracking.data.responseModel.Stop;
 
 import java.util.List;
 
@@ -28,6 +27,10 @@ public interface RoutesDao {
 
 //    @Query("select * from route where travel_id=:travelId")
 //    Route fetchRoute(int travelId);
+
+    @Query("select bus_id from route where agency_id=:agencyId")
+    int fetchBusId(int agencyId);
+
 
     @Query("select * from route where routeId=:travelId")
     Route fetchRoute(int travelId);

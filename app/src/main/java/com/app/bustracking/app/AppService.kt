@@ -175,6 +175,7 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
 //        val intent = Intent("My_Action_Event")
 //        intent.putExtra("json_data", withoutslashes)
 //        sendBroadcast(intent)
+
         val jsonString = event.toString()
         if (jsonString.isNotEmpty()) {
             val intent = Intent("My_Action_Event")

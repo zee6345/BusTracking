@@ -32,6 +32,7 @@ class HomeActivity : BaseActivity() {
             navController.addOnDestinationChangedListener { controller, destination, arguments ->
                 // Update the selected item in the BottomNavigationView based on the destination
                 updateSelectedItem(destination.id)
+//                binding.bottomNav.selectedItemId = destination.id
             }
 
 
@@ -55,6 +56,8 @@ class HomeActivity : BaseActivity() {
             if (menuItem.itemId == destinationId) {
                 // Set the item as selected
                 menuItem.isChecked = true
+
+//                binding.bottomNav.selectedItemId = destinationId
             }
         }
     }

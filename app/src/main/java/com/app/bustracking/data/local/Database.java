@@ -10,7 +10,7 @@ import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.data.responseModel.Travel;
 
-@androidx.room.Database(entities = {Route.class, Stop.class, Travel.class}, version = 2, exportSchema = false)
+@androidx.room.Database(entities = {Route.class, Stop.class, Travel.class}, version = 3, exportSchema = false)
 @TypeConverters(Converters.class)
 public abstract class Database extends RoomDatabase {
 

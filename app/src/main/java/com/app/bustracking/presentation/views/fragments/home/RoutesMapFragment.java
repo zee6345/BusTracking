@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -46,6 +47,9 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -115,9 +119,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                         latitudeBus = lat;
                         longitudeBus = lon;
 
-                        locationMarker.setLatLng(new LatLng(lat, lon));
-                        symbolManager.update(locationMarker);
+//                        locationMarker.setLatLng(new LatLng(lat, lon));
+//                        symbolManager.update(locationMarker);
 
+                        updateMarkerOnMap(lat,lon);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -126,6 +131,12 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             }
         }
     };
+
+    private void updateMarkerOnMap(double lat, double lon) {
+        LatLng newLatLng = new LatLng(lat, lon);
+        marker.setPosition(newLatLng);
+        mapboxMap.animateCamera(CameraUpdateFactory.newLatLng(newLatLng));
+    }
 
     @Override
     public void initNavigation(@NonNull NavController navController) {
@@ -189,6 +200,16 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         handleBottomSheet(route);
 
     }
+    private Marker marker;
+    public void setupMap(){
+        Bitmap customBusIcon = BitmapFactory.decodeResource(getResources(), R.drawable.abc);
+        marker = mapboxMap.addMarker(
+                new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title("Bus Marker")
+                        .icon(IconFactory.getInstance(requireContext()).fromBitmap(customBusIcon))
+        );
+    }
 
     private void handleBottomSheet(Route route) {
         BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
@@ -214,23 +235,28 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         }));
     }
 
+    Style style;
+
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
         if (!coordinatesList.isEmpty()) {
 
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-
-                symbolManager = new SymbolManager(binding.mapView, mapboxMap, style);
-                symbolManager.setIconAllowOverlap(true);
+                this.style =style;
+//                symbolManager = new SymbolManager(binding.mapView, mapboxMap, style);
+//                symbolManager.setIconAllowOverlap(true);
 
                 // Add a marker at the initial position
-                SymbolOptions symbolOptions = new SymbolOptions()
-                        .withLatLng(new LatLng(latitude, longitude))
-                        .withIconImage(String.valueOf(R.drawable.abc)) // You should provide your own marker icon
-                        .withIconSize(2.0f);
-                locationMarker = symbolManager.create(symbolOptions);
+//                SymbolOptions symbolOptions = new SymbolOptions()
+//                        .withLatLng(new LatLng(latitude, longitude))
+//                        .withIconImage(String.valueOf(R.drawable.abc)) // You should provide your own marker icon
+//                        .withIconSize(2.0f);
+//                locationMarker = symbolManager.create(symbolOptions);
+//
+//
 
+                setupMap();
                 //components
                 LocationComponent locationComponent = mapboxMap.getLocationComponent();
                 locationComponent.activateLocationComponent(requireActivity(), style);

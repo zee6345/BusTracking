@@ -122,7 +122,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 //                        locationMarker.setLatLng(new LatLng(lat, lon));
 //                        symbolManager.update(locationMarker);
 
-                        updateMarkerOnMap(lat,lon);
+                        updateMarkerOnMap(lat, lon);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -150,6 +150,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         return binding.getRoot();
     }
 
+    private Route route;
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -167,7 +169,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
         //fetch data from db
         int routeId = requireArguments().getInt(RoutesFragmentKt.ARGS);
-        Route route = routesDao.fetchRoute(routeId);
+         route = routesDao.fetchRoute(routeId);
 
         if (route == null) {
             showMessage("No route found!");
@@ -192,7 +194,14 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         requireActivity().startService(intent);
 
         for (Stop stop : route.getStop()) {
-            symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()))));
+            String tag = String.valueOf(stop.getStopId());  // Replace this with the actual way you get the tag for each stop
+            Feature feature = Feature.fromGeometry(Point.fromLngLat(
+                    Double.parseDouble(stop.getLng()),
+                    Double.parseDouble(stop.getLat())));
+            feature.addStringProperty("tag", tag);
+            symbolLayerIconFeatureList.add(
+                    feature
+            );
             coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
         }
 
@@ -200,8 +209,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         handleBottomSheet(route);
 
     }
+
     private Marker marker;
-    public void setupMap(){
+
+    public void setupMap() {
         Bitmap customBusIcon = BitmapFactory.decodeResource(getResources(), R.drawable.abc);
         marker = mapboxMap.addMarker(
                 new MarkerOptions()
@@ -243,18 +254,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         if (!coordinatesList.isEmpty()) {
 
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                this.style =style;
-//                symbolManager = new SymbolManager(binding.mapView, mapboxMap, style);
-//                symbolManager.setIconAllowOverlap(true);
-
-                // Add a marker at the initial position
-//                SymbolOptions symbolOptions = new SymbolOptions()
-//                        .withLatLng(new LatLng(latitude, longitude))
-//                        .withIconImage(String.valueOf(R.drawable.abc)) // You should provide your own marker icon
-//                        .withIconSize(2.0f);
-//                locationMarker = symbolManager.create(symbolOptions);
-//
-//
+                this.style = style;
 
                 setupMap();
                 //components
@@ -333,6 +333,26 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             });
 
             mapboxMap.addOnMapClickListener(point -> {
+
+                List<Feature> features = mapboxMap.queryRenderedFeatures(
+                        mapboxMap.getProjection().toScreenLocation(point),
+                        LAYER_ID
+                );
+
+                if (features != null && !features.isEmpty()) {
+                    // A marker was clicked, get its properties
+                    Feature clickedFeature = features.get(0);
+                    String tag = clickedFeature.getStringProperty("tag");
+
+                    // Use the tag as needed
+                    Log.d("MapboxActivity", "Clicked Marker - Tag: " + tag);
+                    for (int i = 0; i< route.getStop().size();i++){
+                        if (route.getStop().get(i).getStopId() == Integer.parseInt(tag)){
+                            Log.e("error",route.getStop().get(i).getStop_title().toLowerCase());
+                        }
+                    }
+
+                }
 
                 if (coordinatesList.contains(point)) {
                     Log.e("mmmTAG", "" + point + ":: matched");

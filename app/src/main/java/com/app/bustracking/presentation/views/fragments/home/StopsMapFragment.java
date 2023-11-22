@@ -28,6 +28,7 @@ import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentStopsMapBinding;
 import com.app.bustracking.presentation.ui.RoutesMapAdapter;
+import com.app.bustracking.presentation.ui.StopMapTimeAdapter;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.api.directions.v5.MapboxDirections;
@@ -40,6 +41,7 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -66,11 +68,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class StopsMapFragment extends BaseFragment
-//        implements OnMapReadyCallback, PermissionsListener
-{
+public class StopsMapFragment extends BaseFragment {
 
     public static String ARGS = "data";
+    public static final String TAG = StopsMapFragment.class.getSimpleName();
 
     private NavController navController;
     private FragmentStopsMapBinding binding;
@@ -114,6 +115,12 @@ public class StopsMapFragment extends BaseFragment
         }
     };
 
+    public static double lat = 0.0;
+    public static double lng = 0.0;
+    int stopId = 0;
+    RoutesDao routesDao;
+    StopsDao stopsDao;
+
     @Override
     public void initNavigation(@NonNull NavController navController) {
         this.navController = navController;
@@ -138,11 +145,16 @@ public class StopsMapFragment extends BaseFragment
         mapView = binding.mapBoxView;
         mapView.onCreate(savedInstanceState);
 
-        int stopId = requireArguments().getInt(RoutesFragmentKt.ARGS);
+        try {
+            stopId = getArguments().getInt(RoutesFragmentKt.ARGS);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
 
         //fetch data from db
-        RoutesDao routesDao = appDb().routesDao();
-        StopsDao stopsDao = appDb().stopsDao();
+        routesDao = appDb().routesDao();
+        stopsDao = appDb().stopsDao();
         Stop fetchedStop = stopsDao.fetchStop(stopId);
 
         mapView.getMapAsync(mapboxMap ->
@@ -175,20 +187,93 @@ public class StopsMapFragment extends BaseFragment
 
 
         handleBottomSheet(fetchedStop);
+
+
+        try {
+            //
+            LatLng latLng = new LatLng(lat, lng);
+            // Padding to control the space around the bounds (in pixels)
+            mapbox.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        } catch (Exception e) {
+
+        }
     }
 
     private void handleBottomSheet(Stop stops) {
+        List<LatLng> coordinatesList = new ArrayList<>();
+
+        /**
+         * show stop with route title
+         */
         BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-        binding.llStop.tvTitle.setText(stops.getStop_title());
-
         binding.llStop.rvMapRoutes.setHasFixedSize(true);
         binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), (stop, integer) -> {
             animateCamera(mapbox, stop);
             return null;
         }));
 
+
+        /**
+         * show stop time for route
+         */
+
+        BottomSheetBehavior<LinearLayout> bottomStopTimeSheet = BottomSheetBehavior.from(binding.llStopTime.bottomTimeSheet);
+        bottomStopTimeSheet.setHideable(true);
+        bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+
+        int routeId = stopsDao.fetchRouteId(stops.getStopId());
+        Route route = routesDao.fetchRouteById(routeId);
+
+        for (Stop stop : route.getStop()) {
+            coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
+        }
+
+
+        binding.llStop.tvTitle.setVisibility(route.getRoute_title() == null ? View.GONE : View.VISIBLE);
+        binding.llStop.tvTitle.setText(route.getRoute_title());
+
+        binding.llStop.tvDesc.setVisibility(route.getDescription() == null ? View.GONE : View.VISIBLE);
+        binding.llStop.tvDesc.setText(route.getDescription());
+
+        binding.llStop.llRoute.setOnClickListener(v -> {
+
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+
+            //animate whole view
+            animateCamera(mapbox, coordinatesList);
+
+        });
+
+        binding.llStopTime.tvStopTimes.setHasFixedSize(true);
+        binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(route.getStop(), (stop, integer) -> {
+
+            return null;
+        }));
+
+    }
+
+    private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
+        try {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (LatLng latLng : coordinatesList) {
+                builder.include(latLng);
+            }
+
+            LatLngBounds bounds = builder.build();
+
+            // Padding to control the space around the bounds (in pixels)
+            int padding = 100;
+            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {
@@ -245,25 +330,30 @@ public class StopsMapFragment extends BaseFragment
         directionsClient.enqueueCall(new Callback<>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                if (response.body() != null && !response.body().routes().isEmpty()) {
-                    DirectionsRoute directionsRoute = response.body().routes().get(0);
+                try {
+                    if (response.body() != null && !response.body().routes().isEmpty()) {
+                        DirectionsRoute directionsRoute = response.body().routes().get(0);
 
-                    //
-                    LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
-                    List<Point> points = lineString.coordinates();
-                    GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{
-                            Feature.fromGeometry(LineString.fromLngLats(points))
-                    }));
+                        //
+                        LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
+                        List<Point> points = lineString.coordinates();
+                        GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{
+                                Feature.fromGeometry(LineString.fromLngLats(points))
+                        }));
 
-                    style.addSource(geoJsonSource);
+                        style.addSource(geoJsonSource);
 
-                    // Add layer
-                    style.addLayer(new LineLayer("route-layer-" + route.hashCode(),
-                            "route-source-" + route.hashCode())
-                            .withProperties(
-                                    PropertyFactory.lineWidth(4f),
-                                    PropertyFactory.lineColor(Color.parseColor(route.getColor()))
-                            ));
+                        // Add layer
+                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(),
+                                "route-source-" + route.hashCode())
+                                .withProperties(
+                                        PropertyFactory.lineWidth(4f),
+                                        PropertyFactory.lineColor(Color.parseColor(route.getColor()))
+                                ));
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 

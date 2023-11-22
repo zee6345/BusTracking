@@ -62,7 +62,6 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
@@ -169,7 +168,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
         //fetch data from db
         int routeId = requireArguments().getInt(RoutesFragmentKt.ARGS);
-         route = routesDao.fetchRoute(routeId);
+        route = routesDao.fetchRoute(routeId);
 
         if (route == null) {
             showMessage("No route found!");
@@ -238,9 +237,15 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         binding.llParent.rvMapRoutes.setHasFixedSize(true);
         binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), (stop, integer) -> {
 
-            Bundle bundle = new Bundle();
-            bundle.putInt(RoutesFragmentKt.ARGS, stop.getStopId());
-            navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
+            try {
+
+                Bundle bundle = new Bundle();
+                bundle.putInt(RoutesFragmentKt.ARGS, stop.getStopId());
+                navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             return null;
         }));
@@ -346,26 +351,32 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
                     // Use the tag as needed
                     Log.d("MapboxActivity", "Clicked Marker - Tag: " + tag);
-                    for (int i = 0; i< route.getStop().size();i++){
-                        if (route.getStop().get(i).getStopId() == Integer.parseInt(tag)){
-                            Log.e("error",route.getStop().get(i).getStop_title().toLowerCase());
+                    for (int i = 0; i < route.getStop().size(); i++) {
+                        if (route.getStop().get(i).getStopId() == Integer.parseInt(tag)) {
+                            Log.e("mmTAG", route.getStop().get(i).getStop_title().toLowerCase());
+
+                            int stopId = route.getStop().get(i).getStopId();
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(RoutesFragmentKt.ARGS, stopId);
+                            navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
+
                         }
                     }
 
                 }
 
-                if (coordinatesList.contains(point)) {
-                    Log.e("mmmTAG", "" + point + ":: matched");
-                } else {
-
-                    LatLngBounds latLngBounds = new LatLngBounds.Builder()
-                            .include(coordinatesList.get(0)) // Northeast
-                            .include(coordinatesList.get(coordinatesList.size() - 1)) // Southwest
-                            .build();
-
-                    mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 5000);
-
-                }
+//                if (coordinatesList.contains(point)) {
+//                    Log.e("mmmTAG", "" + point + ":: matched");
+//                } else {
+//
+//                    LatLngBounds latLngBounds = new LatLngBounds.Builder()
+//                            .include(coordinatesList.get(0)) // Northeast
+//                            .include(coordinatesList.get(coordinatesList.size() - 1)) // Southwest
+//                            .build();
+//
+//                    mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 5000);
+//
+//                }
 
 
                 return true;
@@ -386,26 +397,30 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
     private void drawRouteOnMap(@NonNull Style style, DirectionsRoute route) {
-        LineString lineString = LineString.fromPolyline(route.geometry(), 6);
+        try {
+            LineString lineString = LineString.fromPolyline(route.geometry(), 6);
 
-        List<Point> points = lineString.coordinates();
-        List<LatLng> latLngs = new ArrayList<>();
+            List<Point> points = lineString.coordinates();
+            List<LatLng> latLngs = new ArrayList<>();
 
-        for (Point point : points) {
-            latLngs.add(new LatLng(point.latitude(), point.longitude()));
-        }
+            for (Point point : points) {
+                latLngs.add(new LatLng(point.latitude(), point.longitude()));
+            }
 
-        GeoJsonSource geoJsonSource = new GeoJsonSource("route-source", FeatureCollection.fromFeatures(new Feature[]{
-                Feature.fromGeometry(LineString.fromLngLats(points))
-        }));
+            GeoJsonSource geoJsonSource = new GeoJsonSource("route-source", FeatureCollection.fromFeatures(new Feature[]{
+                    Feature.fromGeometry(LineString.fromLngLats(points))
+            }));
 
-        style.addSource(geoJsonSource);
+            style.addSource(geoJsonSource);
 
-        style.addLayer(new LineLayer("route-layer", "route-source").withProperties(
+            style.addLayer(new LineLayer("route-layer", "route-source").withProperties(
 //                PropertyFactory.lineColor(Color.RED),
-                PropertyFactory.lineColor(Color.parseColor(routeColor)),
-                PropertyFactory.lineWidth(3f)
-        ));
+                    PropertyFactory.lineColor(Color.parseColor(routeColor)),
+                    PropertyFactory.lineWidth(3f)
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

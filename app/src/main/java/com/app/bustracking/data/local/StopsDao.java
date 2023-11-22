@@ -32,11 +32,17 @@ public interface StopsDao {
     @Query("select * from Stop where stopId=:stopId")
     List<Stop> fetchStopList(int stopId);
 
+    @Query("select route_id from stop where stopId=:stopId")
+    int fetchRouteId(int stopId);
+
     @Query("update Stop set isFavourite=:favourite where stopId=:stopId and isFavourite=0")
     void addFavourite(int stopId, int favourite);
 
     @Query("update Stop set isFavourite=:favourite where stopId=:stopId and isFavourite=1")
     void removeFavourite(int stopId, int favourite);
+
+    @Query("select stopId from stop where lat=:lat and lng=:lng")
+    int stopIdByLatLng(double lat, double lng);
 
 
 }

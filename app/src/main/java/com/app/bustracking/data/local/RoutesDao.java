@@ -25,8 +25,8 @@ public interface RoutesDao {
     @Query("select * from route where isFavourite=1")
     LiveData<List<Route>> fetchFavouriteRoutes();
 
-//    @Query("select * from route where travel_id=:travelId")
-//    Route fetchRoute(int travelId);
+    @Query("select * from route where routeId=:routeId")
+    Route fetchRouteById(int routeId);
 
     @Query("select bus_id from route where agency_id=:agencyId")
     int fetchBusId(int agencyId);

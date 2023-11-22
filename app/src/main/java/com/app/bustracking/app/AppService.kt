@@ -72,7 +72,7 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
         intent?.apply {
 //            if (action.equals("com.app.tracking")){
             val busId = getStringExtra("bus_id")
-            Log.e("mmTAG", "$busId")
+
             busId?.let {
                 channel.bind("${it}location", this@AppService)
             }

@@ -16,6 +16,8 @@ import com.app.bustracking.utils.Progress
 import com.pixplicity.easyprefs.library.Prefs
 
 const val ARGS = "data"
+const val ARGS_LAT = "lat"
+const val ARGS_LNG = "lng"
 
 class RoutesFragment : BaseFragment() {
 

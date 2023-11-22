@@ -2,10 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.views.fragments.home.StopsFragment">
+    android:layout_height="match_parent">
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
             android:id="@+id/mapBoxView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
             mapbox:mapbox_cameraTargetLat="-33.213144"
             mapbox:mapbox_cameraTargetLng="-57.225365"
             mapbox:mapbox_cameraZoom="9.0" />
@@ -24,15 +22,28 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_gravity="bottom"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <include
+            android:id="@+id/llStop"
+            layout="@layout/item_stops_bottom_sheet"
+            app:behavior_hideable="false"
+            app:layout_anchorGravity="bottom" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
 
 
-    <include
-        android:id="@+id/llStop"
-        layout="@layout/item_stops_bottom_sheet"
-        app:behavior_hideable="false"
-        app:layout_anchorGravity="bottom" />
+        <include
+            android:id="@+id/llStopTime"
+            layout="@layout/item_stops_time_bottom_sheet"
+            app:behavior_hideable="true"
+            app:layout_anchorGravity="bottom" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

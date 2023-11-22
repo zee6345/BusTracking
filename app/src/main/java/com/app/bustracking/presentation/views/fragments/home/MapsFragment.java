@@ -23,6 +23,7 @@ import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentMapsBinding;
 import com.app.bustracking.presentation.model.CustomMapObject;
+import com.app.bustracking.presentation.views.activities.HomeActivity;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
 import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
@@ -271,6 +272,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
                 Bundle bundle = new Bundle();
                 bundle.putInt(RoutesFragmentKt.ARGS, stopId);
                 navController.navigate(R.id.action_mapsFragment_to_stopsMapFragment, bundle);
+                HomeActivity.updateData();
             }
 
             return true;

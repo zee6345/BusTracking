@@ -42,6 +42,7 @@ class HomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        _binding = binding
         setContentView(binding.root)
 
         //reset
@@ -91,6 +92,16 @@ class HomeActivity : BaseActivity() {
     override fun onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(navigationReceiver)
         super.onDestroy()
+    }
+
+    companion object {
+        var _binding:ActivityHomeBinding?=null
+        @JvmStatic
+        fun updateData() {
+            if (_binding!=null){
+                _binding!!.bottomNav.selectedItemId = R.id.stopsFragment
+            }
+        }
     }
 
 

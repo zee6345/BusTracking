@@ -36,6 +36,7 @@ import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentRoutesMapBinding;
 import com.app.bustracking.presentation.ui.RoutesMapAdapter;
+import com.app.bustracking.presentation.views.activities.HomeActivity;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.android.core.permissions.PermissionsListener;
@@ -245,7 +246,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), (stop, integer) -> {
 
             try {
-
+                HomeActivity.updateData();
                 Bundle bundle = new Bundle();
                 bundle.putInt(RoutesFragmentKt.ARGS, stop.getStopId());
                 navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);

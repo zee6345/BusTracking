@@ -8,8 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
-import com.app.bustracking.data.api.ApiClient
-import com.app.bustracking.data.api.ApiService
 import com.app.bustracking.data.requestModel.RouteRequest
 import com.app.bustracking.data.requestModel.TravelRequest
 import com.app.bustracking.data.responseModel.Agency
@@ -17,7 +15,6 @@ import com.app.bustracking.data.responseModel.DataState
 import com.app.bustracking.data.responseModel.GetAgenciesList
 import com.app.bustracking.data.responseModel.GetTravelList
 import com.app.bustracking.data.responseModel.GetTravelRoutes
-import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.FragmentSelectNetwrokBinding
 import com.app.bustracking.presentation.ui.SelectNetworkAdapter
 import com.app.bustracking.presentation.viewmodel.AppViewModel
@@ -35,12 +32,16 @@ class SelectNetworkFragment : BaseFragment() {
     private lateinit var navController: NavController
     private val data: AppViewModel by viewModels()
     private val dataList = mutableListOf<Agency>()
-    private val stopsList = mutableListOf<Stop>()
+//    private val stopsList = mutableListOf<Stop>()
+
+    companion object {
+        var isActivityLaunched = false
+    }
 //    val deferredJobs = mutableListOf<Deferred<GetTravelRoutes>>()
 
-    private val apiClient by lazy {
-        ApiClient.createService().create(ApiService::class.java)
-    }
+//    private val apiClient by lazy {
+//        ApiClient.createService().create(ApiService::class.java)
+//    }
 
     override fun initNavigation(navController: NavController) {
         this.navController = navController
@@ -208,8 +209,12 @@ class SelectNetworkFragment : BaseFragment() {
                             val isLastStop = index == route.stop.size - 1
                             if (isLastStop && routesWithStops.route_list.last() == route) {
 
-                                // Launch your activity here
-                                routeScreen<HomeActivity>()
+                                if (!isActivityLaunched) {
+                                    // Launch your activity here
+                                    routeScreen<HomeActivity>()
+                                    isActivityLaunched = true
+
+                                }
 
                             }
                         }

@@ -12,11 +12,13 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
@@ -70,25 +72,25 @@ import retrofit2.Response;
 
 public class StopsMapFragment extends BaseFragment {
 
-    public static String ARGS = "data";
     public static final String TAG = StopsMapFragment.class.getSimpleName();
-
-    private NavController navController;
-    private FragmentStopsMapBinding binding;
-
-    private MapView mapView;
+    public static String ARGS = "data";
+    public static double lat = 0.0;
+    public static double lng = 0.0;
     MapboxMap mapbox;
     List<LatLng> coordinatesList = new ArrayList<>();
-
-
     SymbolManager symbolManager;
     Symbol locationMarker;
-
+    int stopId = 0;
+    RoutesDao routesDao;
+    StopsDao stopsDao;
+    BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
+    BottomSheetBehavior<LinearLayout> bottomStopTimeSheet;
+    private NavController navController;
+    private FragmentStopsMapBinding binding;
+    private MapView mapView;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
-
-
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null && intent.getAction().equals("My_Action_Event")) {
@@ -115,11 +117,24 @@ public class StopsMapFragment extends BaseFragment {
         }
     };
 
-    public static double lat = 0.0;
-    public static double lng = 0.0;
-    int stopId = 0;
-    RoutesDao routesDao;
-    StopsDao stopsDao;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+                if (bottomStopTimeSheet != null) {
+                    if (bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_EXPANDED || bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                        bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
+                    this.remove();
+                }
+            }
+        });
+
+    }
 
     @Override
     public void initNavigation(@NonNull NavController navController) {
@@ -139,6 +154,10 @@ public class StopsMapFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         Mapbox.getInstance(requireActivity(), getString(com.app.bustracking.R.string.mapbox_access_token));
 
+        //init dao
+        routesDao = appDb().routesDao();
+        stopsDao = appDb().stopsDao();
+
         IntentFilter filter = new IntentFilter("My_Action_Event");
         requireActivity().registerReceiver(broadcastReceiver, filter);
 
@@ -149,44 +168,68 @@ public class StopsMapFragment extends BaseFragment {
             stopId = getArguments().getInt(RoutesFragmentKt.ARGS);
         } catch (Exception e) {
             e.printStackTrace();
-
         }
 
         //fetch data from db
-        routesDao = appDb().routesDao();
-        stopsDao = appDb().stopsDao();
+
         Stop fetchedStop = stopsDao.fetchStop(stopId);
 
         mapView.getMapAsync(mapboxMap ->
-                mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS),
-                        style -> {
-                            this.mapbox = mapboxMap;
+        {
+            mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS),
+                    style -> {
+                        this.mapbox = mapboxMap;
 
-                            LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                            locationComponent.activateLocationComponent(requireActivity(), style);
-                            locationComponent.setCameraMode(CameraMode.TRACKING);
-                            locationComponent.setRenderMode(RenderMode.NORMAL);
+                        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                        locationComponent.activateLocationComponent(requireActivity(), style);
+                        locationComponent.setCameraMode(CameraMode.TRACKING);
+                        locationComponent.setRenderMode(RenderMode.NORMAL);
 
 
-                            // Assuming routeList is a list of routes with stops
-                            List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
-                            for (Route route : routeList) {
-                                if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
-                                    drawRouteOnMap(mapboxMap, style, route);
+                        // Assuming routeList is a list of routes with stops
+                        List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
+                        for (Route route : routeList) {
+                            if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
+                                drawRouteOnMap(mapboxMap, style, route);
 
-                                    //animate camera
-                                    for (Stop stop : route.getStop()) {
-                                        coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
-                                    }
+                                //animate camera
+                                for (Stop stop : route.getStop()) {
+                                    coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
                                 }
                             }
+                        }
 
-                            animateCamera(mapboxMap, fetchedStop);
+                        animateCamera(mapboxMap, fetchedStop);
 
-                        }));
+                    });
+
+            mapboxMap.addOnMapClickListener(point -> {
+
+                mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
 
 
-        handleBottomSheet(fetchedStop);
+                LatLng closestCoordinate = getClosestCoordinate(point);
+                if (closestCoordinate != null) {
+                    Stop stop = stopsDao.stopByLatLng(closestCoordinate.getLatitude(), closestCoordinate.getLongitude());
+
+                    //refresh bottom sheet
+                    try {
+                        handleBottomSheet(stop);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return true;
+            });
+        });
+
+
+        try {
+            handleBottomSheet(fetchedStop);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         try {
@@ -199,14 +242,16 @@ public class StopsMapFragment extends BaseFragment {
         }
     }
 
-    private void handleBottomSheet(Stop stops) {
+
+    private void handleBottomSheet(Stop stops) throws Exception {
         List<LatLng> coordinatesList = new ArrayList<>();
 
         /**
          * show stop with route title
          */
-        BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setHideable(false);
         binding.llStop.rvMapRoutes.setHasFixedSize(true);
         binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), (stop, integer) -> {
             animateCamera(mapbox, stop);
@@ -218,7 +263,7 @@ public class StopsMapFragment extends BaseFragment {
          * show stop time for route
          */
 
-        BottomSheetBehavior<LinearLayout> bottomStopTimeSheet = BottomSheetBehavior.from(binding.llStopTime.bottomTimeSheet);
+        bottomStopTimeSheet = BottomSheetBehavior.from(binding.llStopTime.bottomTimeSheet);
         bottomStopTimeSheet.setHideable(true);
         bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
 
@@ -251,10 +296,7 @@ public class StopsMapFragment extends BaseFragment {
         });
 
         binding.llStopTime.tvStopTimes.setHasFixedSize(true);
-        binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(route.getStop(), (stop, integer) -> {
-
-            return null;
-        }));
+        binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(route.getStop(), (stop, integer) -> null));
 
     }
 
@@ -405,5 +447,52 @@ public class StopsMapFragment extends BaseFragment {
             mapView.onDestroy();
 
         super.onDestroy();
+    }
+
+    private boolean isPointCloseToAnyCoordinate(LatLng point) {
+        // Define a threshold distance for proximity check
+        double thresholdDistance = 0.01; // Adjust as needed
+
+        // Check if the clicked point is close to any of your coordinates
+        for (LatLng coordinate : coordinatesList) {
+            double distance = calculateDistance(point, coordinate);
+            if (distance < thresholdDistance) {
+                return true; // The point is close to at least one coordinate
+            }
+        }
+        return false; // The point is not close to any coordinate
+    }
+
+    private double calculateDistance(LatLng point1, LatLng point2) {
+        // You can use a suitable formula to calculate the distance between two LatLng points
+        // For simplicity, a basic formula is used here (not suitable for large distances)
+        double latDiff = point1.getLatitude() - point2.getLatitude();
+        double lonDiff = point1.getLongitude() - point2.getLongitude();
+        return Math.sqrt(latDiff * latDiff + lonDiff * lonDiff);
+    }
+
+    private LatLng getClosestCoordinate(LatLng point) {
+        // Define a threshold distance for proximity check
+        double thresholdDistance = 0.01; // Adjust as needed
+
+        // Initialize variables to keep track of the closest coordinate
+        LatLng closestCoordinate = null;
+        double closestDistance = Double.MAX_VALUE;
+
+        // Check if the clicked point is close to any of your coordinates
+        for (LatLng coordinate : coordinatesList) {
+            double distance = calculateDistance(point, coordinate);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestCoordinate = coordinate;
+            }
+        }
+
+        // Check if the closest distance is within the threshold
+        if (closestDistance < thresholdDistance) {
+            return closestCoordinate; // Return the closest coordinate if within the threshold
+        } else {
+            return null; // Return null if no match is found within the threshold
+        }
     }
 }

@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
@@ -101,6 +102,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     Double latitude = 0.0;
     Double longitude = 0.0;
     private String routeColor;
+    private Marker marker;
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -207,9 +209,14 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
         handleBottomSheet(route);
 
+
+        binding.fabCameraView.setOnClickListener(v -> {
+            animateCamera(mapboxMap, coordinatesList);
+        });
+
     }
 
-    private Marker marker;
+
 
     public void setupMap() {
         Bitmap customBusIcon = BitmapFactory.decodeResource(getResources(), R.drawable.abc);
@@ -355,6 +362,13 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                         if (route.getStop().get(i).getStopId() == Integer.parseInt(tag)) {
                             Log.e("mmTAG", route.getStop().get(i).getStop_title().toLowerCase());
 
+
+                            Intent filter = new Intent("com.app.navigate");
+                            filter.putExtra("route", R.id.stopsFragment);
+                            LocalBroadcastManager.getInstance(requireActivity())
+                                    .sendBroadcast(filter);
+
+
                             int stopId = route.getStop().get(i).getStopId();
                             Bundle bundle = new Bundle();
                             bundle.putInt(RoutesFragmentKt.ARGS, stopId);
@@ -477,5 +491,23 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         if (mapView != null)
             mapView.onDestroy();
         super.onDestroy();
+    }
+
+    private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
+        try {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (LatLng latLng : coordinatesList) {
+                builder.include(latLng);
+            }
+
+            LatLngBounds bounds = builder.build();
+
+            // Padding to control the space around the bounds (in pixels)
+            int padding = 100;
+            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,12 +1,18 @@
 package com.app.bustracking.presentation.views.activities
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI.onNavDestinationSelected
 import androidx.navigation.ui.NavigationUI.setupWithNavController
+import com.app.bustracking.R
 import com.app.bustracking.databinding.ActivityHomeBinding
+import com.app.bustracking.presentation.views.fragments.main.SelectNetworkFragment
 import dagger.hilt.android.AndroidEntryPoint
-
 
 private val TAG = HomeActivity::class.simpleName.toString()
 
@@ -17,48 +23,75 @@ class HomeActivity : BaseActivity() {
         ActivityHomeBinding.inflate(layoutInflater)
     }
 
+    private var route:Int = 0;
+
+    private val navigationReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            p1?.apply {
+                if (action == "com.app.navigate"){
+                    val route = p1.getIntExtra("route", 0)
+                    Log.e(TAG, "onReceive: $route")
+
+//                    binding.bottomNav.selectedItemId = route
+
+                }
+            }
+
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        //reset
+        SelectNetworkFragment.isActivityLaunched = false
 
-        val navHostFragment = supportFragmentManager.findFragmentById(com.app.bustracking.R.id.fl_container_02) as NavHostFragment?
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fl_container_02) as NavHostFragment?
         if (navHostFragment != null) {
             val navController = navHostFragment.navController
             setupWithNavController(binding.bottomNav, navController)
 
 
-            //
-            navController.addOnDestinationChangedListener { controller, destination, arguments ->
-                // Update the selected item in the BottomNavigationView based on the destination
-                updateSelectedItem(destination.id)
-//                binding.bottomNav.selectedItemId = destination.id
-            }
+//            navController.addOnDestinationChangedListener { _, destination, _ ->
+//                when (destination.id) {
+//                    R.id.mapsFragment -> {
+//                        binding.bottomNav.selectedItemId = R.id.mapsFragment
+//                    }
+//
+//                    R.id.routesFragment -> {
+//                        binding.bottomNav.selectedItemId = R.id.routesFragment
+//                    }
+//
+//                    R.id.stopsMapFragment -> {
+//                        binding.bottomNav.selectedItemId = R.id.stopsMapFragment
+//                    }
+//
+//                    R.id.infoFragment -> {
+//                        binding.bottomNav.selectedItemId = R.id.infoFragment
+//                    }
+//
+//                    R.id.profileFragment -> {
+//                        binding.bottomNav.selectedItemId = R.id.profileFragment
+//                    }
+//                }
+//            }
 
 
-            // Set up the BottomNavigationView item selection listener
-            binding.bottomNav.setOnNavigationItemSelectedListener { item ->
-                // Navigate to the corresponding destination when an item is selected
-                onNavDestinationSelected(item, navController)
-                true
-            }
-
+            val filter = IntentFilter("com.app.navigate")
+            LocalBroadcastManager.getInstance(this).registerReceiver(navigationReceiver, filter)
 
         }
 
 
     }
 
-    private fun updateSelectedItem(destinationId: Int) {
-        // Find the menu item that corresponds to the destination ID
-        for (i in 0 until binding.bottomNav.menu.size()) {
-            val menuItem = binding.bottomNav.menu.getItem(i)
-            if (menuItem.itemId == destinationId) {
-                // Set the item as selected
-                menuItem.isChecked = true
-
-//                binding.bottomNav.selectedItemId = destinationId
-            }
-        }
+    override fun onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(navigationReceiver)
+        super.onDestroy()
     }
+
+
 }

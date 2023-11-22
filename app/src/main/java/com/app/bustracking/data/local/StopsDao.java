@@ -45,4 +45,8 @@ public interface StopsDao {
     int stopIdByLatLng(double lat, double lng);
 
 
+    @Query("select * from stop where lat=:lat and lng=:lng")
+    Stop stopByLatLng(double lat, double lng);
+
+
 }

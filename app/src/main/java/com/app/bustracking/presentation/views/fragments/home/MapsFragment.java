@@ -51,7 +51,6 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,16 +58,15 @@ import retrofit2.Response;
 
 public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
-    private NavController navController;
-    private FragmentMapsBinding binding;
-
-    private MapView mapView;
     MapboxMap mapbox;
     RoutesDao routesDao;
     StopsDao stopsDao;
     List<LatLng> coordinatesList = new ArrayList<>();
     List<String> layerId = new ArrayList<>();
     List<CustomMapObject> customMapObjectList = new ArrayList<>();
+    private NavController navController;
+    private FragmentMapsBinding binding;
+    private MapView mapView;
 
     @Override
     public void initNavigation(@NonNull NavController navController) {
@@ -139,10 +137,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         symbolManager.setIconAllowOverlap(true);
 
         //
-        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(
-                requireActivity().getResources(),
-                com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
-        ));
+        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(requireActivity().getResources(), com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default));
 
 
         for (Stop stop : stops) {
@@ -167,23 +162,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         // Add a GeoJson source for markers
         style.addSource(new GeoJsonSource("source-id-" + route.hashCode(), FeatureCollection.fromFeatures(featuresList)));
         // Add a SymbolLayer to display markers
-        style.addLayer(new SymbolLayer(LAYER_ID, "source-id-" + route.hashCode())
-                .withProperties(
-                        iconImage("icon-id-" + route.hashCode()),
-                        iconAllowOverlap(true),
-                        iconIgnorePlacement(true)
-                )
-        );
+        style.addLayer(new SymbolLayer(LAYER_ID, "source-id-" + route.hashCode()).withProperties(iconImage("icon-id-" + route.hashCode()), iconAllowOverlap(true), iconIgnorePlacement(true)));
 
 
-        MapboxDirections directionsClient = MapboxDirections.builder()
-                .origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude()))
-                .destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude()))
-                .accessToken(getString(R.string.mapbox_access_token))
-                .overview("full")
-                .profile("driving-traffic")
-                .steps(true)
-                .build();
+        MapboxDirections directionsClient = MapboxDirections.builder().origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude())).destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude())).accessToken(getString(R.string.mapbox_access_token)).overview("full").profile("driving-traffic").steps(true).build();
 
 
         // Request directions for the stops
@@ -197,9 +179,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
                         //
                         LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
                         List<Point> points = lineString.coordinates();
-                        GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{
-                                Feature.fromGeometry(LineString.fromLngLats(points))
-                        }));
+                        GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{Feature.fromGeometry(LineString.fromLngLats(points))}));
 
                         //
                         LocationComponent locationComponent = mapboxMap.getLocationComponent();
@@ -210,12 +190,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
                         style.addSource(geoJsonSource);
 
                         // Add layer
-                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(),
-                                "route-source-" + route.hashCode())
-                                .withProperties(
-                                        PropertyFactory.lineWidth(4f),
-                                        PropertyFactory.lineColor(Color.parseColor(route.getColor()))
-                                ));
+                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(), "route-source-" + route.hashCode()).withProperties(PropertyFactory.lineWidth(4f), PropertyFactory.lineColor(Color.parseColor(route.getColor()))));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -235,36 +210,31 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null)
-            mapView.onResume();
+        if (mapView != null) mapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null)
-            mapView.onPause();
+        if (mapView != null) mapView.onPause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mapView != null)
-            mapView.onDestroy();
+        if (mapView != null) mapView.onDestroy();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mapView != null)
-            mapView.onSaveInstanceState(outState);
+        if (mapView != null) mapView.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroy() {
 
-        if (mapView != null)
-            mapView.onDestroy();
+        if (mapView != null) mapView.onDestroy();
 
 //        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(appTimerReceiver)
 
@@ -277,37 +247,27 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         // Assuming routeList is a list of routes with stops
         List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
 
-        mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS),
-                style -> {
-                    this.mapbox = mapboxMap;
-                    for (Route route : routeList) {
-                        if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
+        mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS), style -> {
+            this.mapbox = mapboxMap;
+            for (Route route : routeList) {
+                if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
 
-                            drawRouteOnMap(mapboxMap, style, route);
-                            //animate camera
-                            for (Stop stop : route.getStop()) {
-                                coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
-                            }
-                        }
+                    drawRouteOnMap(mapboxMap, style, route);
+                    //animate camera
+                    for (Stop stop : route.getStop()) {
+                        coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
                     }
-                    animateCamera(mapboxMap, coordinatesList);
-                });
+                }
+            }
+            animateCamera(mapboxMap, coordinatesList);
+        });
 
 
         mapboxMap.addOnMapClickListener(point -> {
 
             LatLng closestCoordinate = getClosestCoordinate(point);
-            boolean check = isPointCloseToAnyCoordinate(point);
-
             int stopId = stopsDao.stopIdByLatLng(closestCoordinate.getLatitude(), closestCoordinate.getLongitude());
-
-
-            Log.e("mmTAG", "onMapReady: original >> " + point.toString());
-            Log.e("mmTAG", "onMapReady: " + check + " nearby");
-            Log.e("mmTAG", "onMapReady: " + closestCoordinate);
-            Log.e("mmTAG", "onMapReady: stopId>> " + stopId + "");
-
-            if(stopId != 0) {
+            if (stopId != 0) {
                 Bundle bundle = new Bundle();
                 bundle.putInt(RoutesFragmentKt.ARGS, stopId);
                 navController.navigate(R.id.action_mapsFragment_to_stopsMapFragment, bundle);

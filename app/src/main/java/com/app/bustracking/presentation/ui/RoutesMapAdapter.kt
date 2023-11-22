@@ -47,8 +47,11 @@ class RoutesMapAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(itemList[position]) {
-            onItemClick(it, position)
+        val stop = itemList[position]
+        stop?.let { stop ->
+            holder.bind(stop) {
+                onItemClick(it, position)
+            }
         }
     }
 }

@@ -47,4 +47,19 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:fabSize="mini"
+        app:elevation="0dp"
+        android:id="@+id/fabCameraView"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:importantForAccessibility="no"
+        app:maxImageSize="@dimen/_14sdp"
+        android:src="@drawable/ic_map_select"
+        app:backgroundTint="@color/white_90"
+        app:borderWidth="0dp" />
+
 </FrameLayout>

@@ -240,6 +240,11 @@ public class StopsMapFragment extends BaseFragment {
         } catch (Exception e) {
 
         }
+
+
+        binding.fabCameraView.setOnClickListener(v -> {
+            animateCamera(mapbox, coordinatesList);
+        });
     }
 
 

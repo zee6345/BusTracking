@@ -246,7 +246,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), (stop, integer) -> {
 
             try {
-                HomeActivity.updateData();
+
                 Bundle bundle = new Bundle();
                 bundle.putInt(RoutesFragmentKt.ARGS, stop.getStopId());
                 navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
@@ -371,10 +371,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
                             int stopId = route.getStop().get(i).getStopId();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt(RoutesFragmentKt.ARGS, stopId);
-                            navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
-
+//                            Bundle bundle = new Bundle();
+//                            bundle.putInt(RoutesFragmentKt.ARGS, stopId);
+//                            navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
+                            HomeActivity.updateData(stopId);
                         }
                     }
 

@@ -1,5 +1,6 @@
 package com.app.bustracking.presentation.views.activities
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.setupWithNavController
 import com.app.bustracking.R
 import com.app.bustracking.databinding.ActivityHomeBinding
+import com.app.bustracking.presentation.views.fragments.home.MapsFragment
+import com.app.bustracking.presentation.views.fragments.home.StopsFragment
 import com.app.bustracking.presentation.views.fragments.main.SelectNetworkFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +29,7 @@ class HomeActivity : BaseActivity() {
     private var route:Int = 0;
 
     private val navigationReceiver = object : BroadcastReceiver() {
+        @SuppressLint("LogNotTimber")
         override fun onReceive(p0: Context?, p1: Intent?) {
             p1?.apply {
                 if (action == "com.app.navigate"){
@@ -97,8 +101,9 @@ class HomeActivity : BaseActivity() {
     companion object {
         var _binding:ActivityHomeBinding?=null
         @JvmStatic
-        fun updateData() {
+        fun updateData(stopId:Int) {
             if (_binding!=null){
+                StopsFragment.ARGMAIN = stopId
                 _binding!!.bottomNav.selectedItemId = R.id.stopsFragment
             }
         }

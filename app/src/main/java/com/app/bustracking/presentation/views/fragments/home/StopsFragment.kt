@@ -13,6 +13,7 @@ import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
 import com.pixplicity.easyprefs.library.Prefs
 
+
 class StopsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentStopsBinding
@@ -24,6 +25,7 @@ class StopsFragment : BaseFragment() {
     private var isAllExpand = false
 //    private lateinit var progress: AlertDialog
 
+
     override fun initNavigation(navController: NavController) {
         this.navController = navController
     }
@@ -31,7 +33,7 @@ class StopsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentStopsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,6 +55,20 @@ class StopsFragment : BaseFragment() {
         val agencyId = Prefs.getInt(Constants.agencyId)
         val stops = stopsDao.fetchStops(agencyId)
         val favouriteStops = stopsDao.fetchFavouriteStops(agencyId)
+
+        try {
+
+            if (ARGMAIN != null) {
+                val args = Bundle()
+                args.putInt(ARGS, ARGMAIN!!)
+                navController.navigate(
+                    R.id.action_stopsFragment_to_stopsMapFragment,
+                    args
+                )
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
 
         favouriteStops.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
@@ -107,6 +123,10 @@ class StopsFragment : BaseFragment() {
         }
 
 
+    }
+
+    companion object {
+         var ARGMAIN:Int?=null
     }
 
 }

@@ -265,16 +265,21 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
 
         mapboxMap.addOnMapClickListener(point -> {
-
-            LatLng closestCoordinate = getClosestCoordinate(point);
-            int stopId = stopsDao.stopIdByLatLng(closestCoordinate.getLatitude(), closestCoordinate.getLongitude());
-            if (stopId != 0) {
-                Bundle bundle = new Bundle();
-                bundle.putInt(RoutesFragmentKt.ARGS, stopId);
-                navController.navigate(R.id.action_mapsFragment_to_stopsMapFragment, bundle);
-                HomeActivity.updateData();
+            try {
+                LatLng closestCoordinate = getClosestCoordinate(point);
+                int stopId = 0;
+                if (closestCoordinate != null) {
+                    stopId = stopsDao.stopIdByLatLng(closestCoordinate.getLatitude(), closestCoordinate.getLongitude());
+                }
+                if (stopId != 0) {
+//                    Bundle bundle = new Bundle();
+//                    bundle.putInt(RoutesFragmentKt.ARGS, stopId);
+//                    navController.navigate(R.id.action_mapsFragment_to_stopsMapFragment, bundle);
+                    HomeActivity.updateData(stopId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
             return true;
         });
 

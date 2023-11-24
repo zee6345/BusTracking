@@ -44,15 +44,17 @@ abstract class BaseFragment : Fragment() {
         initNavigation(controller)
 
 
-        //location service
-        val agencyId = Prefs.getInt(Constants.agencyId)
-        val routeDao = appDb().routesDao()
-        val busId = routeDao.fetchBusId(agencyId)
+        if (!AppService.alreadyRunning) {
+            //location service
+            val agencyId = Prefs.getInt(Constants.agencyId)
+            val routeDao = appDb().routesDao()
+            val busId = routeDao.fetchBusId(agencyId)
 
-        val locationIntent = Intent(requireActivity(), AppService::class.java)
-        locationIntent.putExtra("bus_id", "${busId?:0}")
-        requireActivity().startService(locationIntent)
+            val locationIntent = Intent(requireActivity(), AppService::class.java)
+            locationIntent.putExtra("bus_id", "${busId ?: 0}")
+            requireActivity().startService(locationIntent)
 
+        }
 
 
     }
@@ -67,12 +69,12 @@ abstract class BaseFragment : Fragment() {
             .create()
     }
 
-    fun showMessage(str:String){
+    fun showMessage(str: String) {
         Toast.makeText(requireActivity(), "$str", Toast.LENGTH_SHORT).show()
     }
 
-    inline fun <reified T : Activity> routeScreen(){
-        val intent = Intent(requireActivity(),  T::class.java)
+    inline fun <reified T : Activity> routeScreen() {
+        val intent = Intent(requireActivity(), T::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         requireActivity().finishAffinity()
@@ -146,7 +148,6 @@ abstract class BaseFragment : Fragment() {
 
         return stopList
     }
-
 
 
 }

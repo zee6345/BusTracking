@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.NavController
 import com.app.bustracking.R
+import com.app.bustracking.data.local.StopsDao
 
 import com.app.bustracking.databinding.FragmentStopsBinding
 import com.app.bustracking.presentation.ui.StopsAdapter
@@ -23,6 +24,8 @@ class StopsFragment : BaseFragment() {
 //    private val sharedModel: SharedModel by viewModels()
     private var isFavExpand = false
     private var isAllExpand = false
+    private lateinit var stopsDao: StopsDao
+    private var agencyId: Int? = null
 //    private lateinit var progress: AlertDialog
 
 
@@ -41,20 +44,17 @@ class StopsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val progress = showProgress()
         binding.rvLines.setHasFixedSize(true)
 
         binding.toolbar.tvTitle.text = "Stops"
         binding.toolbar.ivSearch.visibility = View.GONE
 
-        val routesDao = appDb().routesDao()
-        val stopsDao = appDb().stopsDao()
-        val travelDao = appDb().travelDao()
 
+        stopsDao = appDb().stopsDao()
 
-        val agencyId = Prefs.getInt(Constants.agencyId)
-        val stops = stopsDao.fetchStops(agencyId)
-        val favouriteStops = stopsDao.fetchFavouriteStops(agencyId)
+        agencyId = Prefs.getInt(Constants.agencyId)
+        val stops = stopsDao.fetchStops(agencyId!!)
+        val favouriteStops = stopsDao.fetchFavouriteStops(agencyId!!)
 
         try {
             if (ARGMAIN != null) {
@@ -65,7 +65,7 @@ class StopsFragment : BaseFragment() {
                     args
                 )
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -125,7 +125,15 @@ class StopsFragment : BaseFragment() {
     }
 
     companion object {
-         var ARGMAIN:Int?=null
+        var ARGMAIN: Int? = null
+    }
+
+    override fun onDestroyView() {
+
+        stopsDao.fetchStops(agencyId!!).removeObservers(viewLifecycleOwner)
+        stopsDao.fetchFavouriteStops(agencyId!!).removeObservers(viewLifecycleOwner)
+
+        super.onDestroyView()
     }
 
 }

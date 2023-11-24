@@ -15,9 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.app.bustracking.R
-import com.app.bustracking.presentation.model.LocationEvent
 import com.app.bustracking.presentation.views.activities.MainActivity
-import com.google.gson.Gson
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.PusherEvent
@@ -37,8 +35,6 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
     private val timerRunnable: Runnable = object : Runnable {
         override fun run() {
             totalRunningTime += 1000 // Increment by 1 second
-//            Log.e("AppTimer", "App has been running for $totalRunningTime milliseconds.")
-
             // Broadcast the totalRunningTime value
             val broadcastIntent = Intent("app_timer_update")
             broadcastIntent.putExtra("total_running_time", totalRunningTime)
@@ -70,9 +66,7 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         intent?.apply {
-//            if (action.equals("com.app.tracking")){
             val busId = getStringExtra("bus_id")
-
             busId?.let {
                 channel.bind("${it}location", this@AppService)
             }
@@ -110,12 +104,10 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
                 notificationManager
             ) else ""
         val notificationBuilder = NotificationCompat.Builder(this, channelId!!)
-        val notification: Notification = notificationBuilder.setOngoing(true)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentIntent(pendingIntent)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .build()
+        val notification: Notification =
+            notificationBuilder.setOngoing(true).setSmallIcon(R.mipmap.ic_launcher)
+                .setPriority(NotificationCompat.PRIORITY_MAX).setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE).build()
 
         startForeground(1002, notification)
 
@@ -143,39 +135,19 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
 
     override fun onConnectionStateChange(change: ConnectionStateChange?) {
         Log.e(
-            "Pusher",
-            "State changed from " + change!!.previousState + " to " + change.currentState
+            "Pusher", "State changed from " + change!!.previousState + " to " + change.currentState
         )
     }
 
     override fun onError(message: String?, code: String?, e: Exception?) {
         Log.e(
-            "Pusher", "There was a problem connecting! " +
-                    "\ncode: " + code +
-                    "\nmessage: " + message +
-                    "\nException: " + e
+            "Pusher",
+            "There was a problem connecting! " + "\ncode: " + code + "\nmessage: " + message + "\nException: " + e
         )
     }
 
     override fun onEvent(event: PusherEvent?) {
         Log.e("Pusher", "Received event with data: " + event.toString());
-
-//        val withoutslashes = removeBackslashes(event.toString())
-//        val gson = Gson()
-//        val locationEvent = gson.fromJson(withoutslashes, LocationEvent::class.java)
-//
-//        println("Event: ${locationEvent.event}")
-//        println("Channel: ${locationEvent.channel}")
-//        println("Latitude: ${locationEvent.data.location.lat}")
-//        println("Longitude: ${locationEvent.data.location.long}")
-//        println("Bus ID: ${locationEvent.data.location.bus_id}")
-//
-////        val json = Gson().toJson(locationData)
-//
-//        val intent = Intent("My_Action_Event")
-//        intent.putExtra("json_data", withoutslashes)
-//        sendBroadcast(intent)
-
         val jsonString = event.toString()
         if (jsonString.isNotEmpty()) {
             val intent = Intent("My_Action_Event")

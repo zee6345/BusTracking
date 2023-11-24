@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
 import com.app.bustracking.R
+import com.app.bustracking.data.local.RoutesDao
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
-import com.app.bustracking.utils.Constants
-import com.app.bustracking.utils.Constants.agencyId
 import com.app.bustracking.utils.Progress
-import com.pixplicity.easyprefs.library.Prefs
 
 const val ARGS = "data"
 const val ARGS_LAT = "lat"
@@ -27,6 +25,7 @@ class RoutesFragment : BaseFragment() {
     private var isFavExpand = false
     private var isAllExpand = false
     private lateinit var progress: AlertDialog
+    private lateinit var routeDao: RoutesDao
 
     override fun initNavigation(navController: NavController) {
         this.navController = navController
@@ -50,21 +49,14 @@ class RoutesFragment : BaseFragment() {
         binding.toolbar.ivSearch.visibility = View.GONE
 
 
-        val travelDao = appDb().travelDao()
-        val routeDao = appDb().routesDao()
+        routeDao = appDb().routesDao()
 
         val favouriteList = routeDao.fetchFavouriteRoutes()
         val routeList = routeDao.fetchRoutes()
 
-//        val agencyId = Prefs.getInt(Constants.agencyId)
-//        val travelList = travelDao.fetchTravels(agencyId)
-//        val favouriteTravelList = travelDao.fetchFavouriteTravels(agencyId)
+        favouriteList.observe(viewLifecycleOwner) {
 
-
-
-        favouriteList.observe(viewLifecycleOwner){
-
-            if (it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 binding.rvFavorite.visibility = View.VISIBLE
                 binding.tvEmpty.visibility = View.GONE
             } else {
@@ -83,9 +75,9 @@ class RoutesFragment : BaseFragment() {
             }
         }
 
-        routeList.observe(viewLifecycleOwner){
+        routeList.observe(viewLifecycleOwner) {
 
-            if (it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 binding.rvLines.visibility = View.VISIBLE
                 binding.tvEmptyLines.visibility = View.GONE
             } else {
@@ -115,5 +107,12 @@ class RoutesFragment : BaseFragment() {
 
     }
 
+    override fun onDestroyView() {
+
+        routeDao.fetchFavouriteRoutes().removeObservers(viewLifecycleOwner)
+        routeDao.fetchRoutes().removeObservers(viewLifecycleOwner)
+
+        super.onDestroyView()
+    }
 
 }

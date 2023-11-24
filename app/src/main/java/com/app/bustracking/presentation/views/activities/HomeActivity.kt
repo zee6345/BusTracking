@@ -5,9 +5,9 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI.setupWithNavController
-import com.app.bustracking.R
 import com.app.bustracking.databinding.ActivityHomeBinding
 import com.app.bustracking.presentation.views.fragments.home.StopsFragment
 import com.app.bustracking.presentation.views.fragments.main.SelectNetworkFragment
@@ -24,6 +24,7 @@ class HomeActivity : BaseActivity() {
     }
 
     private var route: Int = 0;
+    private lateinit var navController: NavController
 
 //    private val navigationReceiver = object : BroadcastReceiver() {
 //        @SuppressLint("LogNotTimber")
@@ -50,15 +51,25 @@ class HomeActivity : BaseActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(com.app.bustracking.R.id.fl_container_02) as NavHostFragment?
         if (navHostFragment != null) {
-            val navController = navHostFragment.navController
+
+//            navController = findNavController(this, com.app.bustracking.R.id.nav_host_fragment)
+//
+//            // Set up the BottomNavigationView with the NavigationController
+//            val appBarConfiguration: AppBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
+//            NavigationUI.setupWithNavController(binding.bottomNav, navController)
+
+
+            navController = navHostFragment.navController
             setupWithNavController(binding.bottomNav, navController)
 
 
 //            binding.bottomNav.setOnNavigationItemSelectedListener { item ->
-//
-//                // Apply animation
+
+            // Apply animation
 //                animateBottomNavigation(item.itemId)
 //
+//                navigateToFragment(item.itemId)
+
 //                true
 //            }
 
@@ -69,6 +80,15 @@ class HomeActivity : BaseActivity() {
 
     }
 
+    private fun navigateToFragment(itemId: Int) {
+        when (itemId) {
+            com.app.bustracking.R.id.mapsFragment -> navController.navigate(com.app.bustracking.R.id.mapsFragment)
+            com.app.bustracking.R.id.routesFragment -> navController.navigate(com.app.bustracking.R.id.routesFragment)
+            com.app.bustracking.R.id.stopsFragment -> navController.navigate(com.app.bustracking.R.id.stopsFragment)
+            com.app.bustracking.R.id.infoFragment -> navController.navigate(com.app.bustracking.R.id.infoFragment)
+            com.app.bustracking.R.id.profileFragment -> navController.navigate(com.app.bustracking.R.id.profileFragment)
+        }
+    }
 
     private fun animateBottomNavigation(itemId: Int) {
         // Get the selected menu item view

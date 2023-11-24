@@ -62,23 +62,23 @@ class AppViewModel @Inject constructor(private val appUseCase: AppUseCase) : Vie
         }
     }
 
-    fun getBusses(travelRequest: TravelRequest) {
-        _getBusList.value = DataState.Loading
-
-        viewModelScope.launch {
-            try {
-                val response = appUseCase.getBusList(travelRequest)
-                if (response.isSuccessful && response.body() != null) {
-                    _getBusList.value = DataState.Success(response.body()!!)
-                } else {
-                    _getBusList.value = DataState.Error(response.errorBody()!!.string())
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _getBusList.value = DataState.Error(e.message.toString())
-            }
-        }
-    }
+//    fun getBusses(travelRequest: TravelRequest) {
+//        _getBusList.value = DataState.Loading
+//
+//        viewModelScope.launch {
+//            try {
+//                val response = appUseCase.getBusList(travelRequest)
+//                if (response.isSuccessful && response.body() != null) {
+//                    _getBusList.value = DataState.Success(response.body()!!)
+//                } else {
+//                    _getBusList.value = DataState.Error(response.errorBody()!!.string())
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                _getBusList.value = DataState.Error(e.message.toString())
+//            }
+//        }
+//    }
 
     fun getTravelRouteList(travelRequest: RouteRequest) {
         _getTravelRoutes.value = DataState.Loading

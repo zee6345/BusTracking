@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.app.bustracking.data.responseModel.Route;
 
@@ -43,5 +44,8 @@ public interface RoutesDao {
 
     @Query("update route set isFavourite=:favourite where routeId=:travelId and isFavourite=1")
     void removeFavourite(int travelId, int favourite);
+
+    @Update
+    void updateFav(Route route);
 
 }

@@ -31,7 +31,6 @@ import com.app.bustracking.R;
 import com.app.bustracking.app.AppService;
 import com.app.bustracking.data.local.RoutesDao;
 import com.app.bustracking.data.local.StopsDao;
-import com.app.bustracking.data.local.TravelDao;
 import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentRoutesMapBinding;
@@ -82,6 +81,12 @@ import retrofit2.Response;
 
 public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallback, PermissionsListener {
 
+    //    List<Marker> markers = new ArrayList<>();
+    SymbolManager symbolManager;
+    Symbol locationMarker;
+    Double latitude = 0.0;
+    Double longitude = 0.0;
+    Style style;
     private NavController navController;
     private FragmentRoutesMapBinding binding;
     private PermissionsManager permissionsManager;
@@ -92,19 +97,13 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     private String LAYER_ID = "LAYER_ID";
     private List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
     private List<LatLng> coordinatesList = new ArrayList<>();
-    //    List<Marker> markers = new ArrayList<>();
-    SymbolManager symbolManager;
-    Symbol locationMarker;
     //    DirectionsRoute directionsRoute;
 //    RouteMapModalSheet routeMapModalSheet;
     //    Style styless;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
-    Double latitude = 0.0;
-    Double longitude = 0.0;
     private String routeColor;
     private Marker marker;
-
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -133,6 +132,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             }
         }
     };
+    private StopsDao stopsDao;
+    private Route route;
 
     private void updateMarkerOnMap(double lat, double lon) {
         LatLng newLatLng = new LatLng(lat, lon);
@@ -152,8 +153,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         return binding.getRoot();
     }
 
-    private Route route;
-
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -165,8 +164,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
         //init dao
         RoutesDao routesDao = appDb().routesDao();
-        StopsDao stopsDao = appDb().stopsDao();
-        TravelDao travelDao = appDb().travelDao();
+        stopsDao = appDb().stopsDao();
 
 
         //fetch data from db
@@ -217,8 +215,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
     }
 
-
-
     public void setupMap() {
         Bitmap customBusIcon = BitmapFactory.decodeResource(getResources(), R.drawable.abc);
         marker = mapboxMap.addMarker(
@@ -243,7 +239,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         } else binding.llParent.rvMapRoutes.setVisibility(View.GONE);
 
         binding.llParent.rvMapRoutes.setHasFixedSize(true);
-        binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), (stop, integer) -> {
+        binding.llParent.rvMapRoutes.setAdapter(new RoutesMapAdapter(route.getStop(), stopsDao, (stop, integer) -> {
 
             try {
 
@@ -258,8 +254,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             return null;
         }));
     }
-
-    Style style;
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
@@ -278,10 +272,12 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                 locationComponent.setRenderMode(RenderMode.NORMAL);
 
                 //
-                style.addImage(ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().getResources(),
-                        com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
-                ));
+//                style.addImage(ICON_ID, BitmapFactory.decodeResource(
+//                        requireActivity().getResources(),
+//                        com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
+//                ));
+
+                style.addImage(ICON_ID, requireActivity().getDrawable(R.drawable.ic_location_marker));
 
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 for (LatLng latLng : coordinatesList) {
@@ -363,7 +359,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                         if (route.getStop().get(i).getStopId() == Integer.parseInt(tag)) {
                             Log.e("mmTAG", route.getStop().get(i).getStop_title().toLowerCase());
 
-
                             Intent filter = new Intent("com.app.navigate");
                             filter.putExtra("route", R.id.stopsFragment);
                             LocalBroadcastManager.getInstance(requireActivity())
@@ -371,28 +366,11 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
                             int stopId = route.getStop().get(i).getStopId();
-//                            Bundle bundle = new Bundle();
-//                            bundle.putInt(RoutesFragmentKt.ARGS, stopId);
-//                            navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
                             HomeActivity.updateData(stopId);
                         }
                     }
 
                 }
-
-//                if (coordinatesList.contains(point)) {
-//                    Log.e("mmmTAG", "" + point + ":: matched");
-//                } else {
-//
-//                    LatLngBounds latLngBounds = new LatLngBounds.Builder()
-//                            .include(coordinatesList.get(0)) // Northeast
-//                            .include(coordinatesList.get(coordinatesList.size() - 1)) // Southwest
-//                            .build();
-//
-//                    mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50), 5000);
-//
-//                }
-
 
                 return true;
             });
@@ -480,9 +458,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
     @Override
     public void onPermissionResult(boolean granted) {
-        if (granted) {
-//            mapboxMap.getStyle(style -> enableLocationComponent(style));
-        } else {
+        if (!granted) {
             Toast.makeText(requireActivity(), "Please allow location permission to use this app!", Toast.LENGTH_LONG).show();
         }
     }

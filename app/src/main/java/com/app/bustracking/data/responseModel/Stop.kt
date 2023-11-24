@@ -18,5 +18,5 @@ data class Stop(
     val stop_time: String? = null,
     val stop_title: String? = null,
     val updated_at: String? = null,
-    val isFavourite:Boolean = false
+    var isFavourite:Boolean = false
 )

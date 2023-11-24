@@ -9,10 +9,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -258,7 +256,7 @@ public class StopsMapFragment extends BaseFragment {
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         bottomSheetBehavior.setHideable(false);
         binding.llStop.rvMapRoutes.setHasFixedSize(true);
-        binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), (stop, integer) -> {
+        binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), stopsDao, (stop, integer) -> {
             animateCamera(mapbox, stop);
             return null;
         }));
@@ -336,10 +334,12 @@ public class StopsMapFragment extends BaseFragment {
         symbolManager.setIconAllowOverlap(true);
 
         // Add a marker at the initial position
-        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(
-                requireActivity().getResources(),
-                com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
-        ));
+//        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(
+//                requireActivity().getResources(),
+//                com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
+//        ));
+
+        style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
 
 
         for (Stop stop : stops) {

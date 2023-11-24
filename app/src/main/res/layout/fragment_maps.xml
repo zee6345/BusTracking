@@ -16,6 +16,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:visibility="gone"
             android:background="@color/theme_color">
 
             <TextView
@@ -83,7 +84,7 @@
         app:elevation="0dp"
         android:id="@+id/fabCameraView"
         android:layout_gravity="end"
-        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:importantForAccessibility="no"
         app:maxImageSize="@dimen/_14sdp"

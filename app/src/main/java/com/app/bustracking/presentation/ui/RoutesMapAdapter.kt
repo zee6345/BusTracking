@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.bustracking.R
+import com.app.bustracking.data.local.StopsDao
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.ItemRouteMapBinding
 
 class RoutesMapAdapter(
     private val itemList: List<Stop>,
+    private val stopsDao: StopsDao,
     val onItemClick: (routes: Stop, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesMapAdapter.ViewHolder>() {
@@ -23,13 +25,19 @@ class RoutesMapAdapter(
             _binding = binding
         }
 
-        fun bind(stop: Stop, onItemClick: (Stop) -> Unit) {
+        fun bind(stop: Stop, stopsDao: StopsDao, onItemClick: (Stop) -> Unit) {
 
             _binding.tvTitle.text = stop.stop_title
-
             _binding.ivCheck.setImageResource(if (stop.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
 
-            _binding.root.setOnClickListener {
+
+            _binding.ivCheck.setOnClickListener {
+                _binding.ivCheck.setImageResource(if (stop.isFavourite) R.drawable.ic_check_unfilled else R.drawable.ic_check_filled)
+                stop.isFavourite = !stop.isFavourite
+                stopsDao.updateFav(stop)
+            }
+
+            _binding.llRoute.setOnClickListener {
                 onItemClick(stop)
             }
 
@@ -49,7 +57,7 @@ class RoutesMapAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val stop = itemList[position]
         stop?.let { stop ->
-            holder.bind(stop) {
+            holder.bind(stop, stopsDao) {
                 onItemClick(it, position)
             }
         }

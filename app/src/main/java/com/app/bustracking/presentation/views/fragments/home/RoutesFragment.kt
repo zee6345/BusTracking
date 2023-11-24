@@ -87,10 +87,10 @@ class RoutesFragment : BaseFragment() {
 
             if (it.isNotEmpty()){
                 binding.rvLines.visibility = View.VISIBLE
-                binding.tvEmpty.visibility = View.GONE
+                binding.tvEmptyLines.visibility = View.GONE
             } else {
                 binding.rvLines.visibility = View.GONE
-                binding.tvEmpty.visibility = View.VISIBLE
+                binding.tvEmptyLines.visibility = View.VISIBLE
             }
 
             binding.rvLines.adapter = RoutesAdapter(it, routeDao) { route, position ->

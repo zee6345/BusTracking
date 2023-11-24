@@ -57,7 +57,6 @@ class StopsFragment : BaseFragment() {
         val favouriteStops = stopsDao.fetchFavouriteStops(agencyId)
 
         try {
-
             if (ARGMAIN != null) {
                 val args = Bundle()
                 args.putInt(ARGS, ARGMAIN!!)

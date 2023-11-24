@@ -8,15 +8,6 @@
     android:orientation="horizontal"
     android:padding="@dimen/_3sdp">
 
-
-    <ImageView
-        android:id="@+id/ivIcon"
-        android:layout_width="@dimen/_24sdp"
-        android:layout_height="@dimen/_24sdp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_stop"
-        app:tint="#80000000" />
-
     <LinearLayout
         android:id="@+id/llRoute"
         android:layout_width="0dp"
@@ -24,12 +15,22 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/_3sdp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/ivIcon"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_stop"
+            app:tint="#80000000" />
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginHorizontal="@dimen/_2sdp"
             android:ellipsize="marquee"
             android:fontFamily="@font/roboto_medium"
@@ -43,7 +44,6 @@
             app:layout_constraintStart_toEndOf="@id/ivIcon"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.509" />
-
 
     </LinearLayout>
 

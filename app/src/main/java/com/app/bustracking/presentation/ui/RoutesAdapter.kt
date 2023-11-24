@@ -1,20 +1,17 @@
 package com.app.bustracking.presentation.ui
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.bustracking.R
 import com.app.bustracking.data.local.RoutesDao
-import com.app.bustracking.data.local.TravelDao
 import com.app.bustracking.data.responseModel.Route
-import com.app.bustracking.data.responseModel.Travel
 import com.app.bustracking.databinding.ItemRouteBinding
-import java.util.Random
+
 
 class RoutesAdapter(
-//    private val itemList: List<Travel>,
     private val itemList: List<Route>,
     private val routesDao: RoutesDao,
     val onItemClick: (route: Route, position: Int) -> Unit
@@ -26,7 +23,6 @@ class RoutesAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val _binding: ItemRouteBinding
-        private var isFavourite = false
 
         init {
             _binding = binding
@@ -39,16 +35,9 @@ class RoutesAdapter(
             _binding.ivCheck.setImageResource(if (route.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
 
             _binding.ivCheck.setOnClickListener {
-
-                _binding.ivCheck.setImageResource(if (isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
-
-                if (isFavourite) {
-                    routesDao.addFavourite(route.routeId, 1)
-                } else {
-                    routesDao.removeFavourite(route.routeId, 0)
-                }
-
-                isFavourite = !isFavourite
+                _binding.ivCheck.setImageResource(if (route.isFavourite) R.drawable.ic_check_unfilled else R.drawable.ic_check_filled)
+                route.isFavourite = !route.isFavourite
+                routesDao.updateFav(route)
             }
 
             _binding.root.setOnClickListener {

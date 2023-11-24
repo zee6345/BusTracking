@@ -27,21 +27,15 @@ private val TAG: String = SelectNetworkFragment::class.simpleName.toString()
 
 class SelectNetworkFragment : BaseFragment() {
 
-    //    private var travelListSize: Int = 0
+
     private lateinit var binding: FragmentSelectNetwrokBinding
     private lateinit var navController: NavController
     private val data: AppViewModel by viewModels()
     private val dataList = mutableListOf<Agency>()
-//    private val stopsList = mutableListOf<Stop>()
 
     companion object {
         var isActivityLaunched = false
     }
-//    val deferredJobs = mutableListOf<Deferred<GetTravelRoutes>>()
-
-//    private val apiClient by lazy {
-//        ApiClient.createService().create(ApiService::class.java)
-//    }
 
     override fun initNavigation(navController: NavController) {
         this.navController = navController
@@ -167,6 +161,10 @@ class SelectNetworkFragment : BaseFragment() {
                     dialog.dismiss()
 
                     val response = it.data as GetTravelList
+                    if (response.travel_list.isEmpty()){
+                        showMessage("No route available!")
+                    }
+
                     response.travel_list.forEach { travel ->
                         travelDao.insert(travel)
 

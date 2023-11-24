@@ -4,10 +4,9 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 
-import android.graphics.BitmapFactory;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,6 +120,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {
         final List<LatLng> coordinator = new ArrayList<>();
         final List<Feature> featuresList = new ArrayList<>();
@@ -138,7 +138,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         symbolManager.setIconAllowOverlap(true);
 
         //
-        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(requireActivity().getResources(), com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default));
+//        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(requireActivity().getResources(), com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default));
+
+        style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
 
 
         for (Stop stop : stops) {

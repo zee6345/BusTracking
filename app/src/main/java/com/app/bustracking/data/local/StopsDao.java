@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.app.bustracking.data.responseModel.Stop;
 
@@ -37,6 +38,9 @@ public interface StopsDao {
 
     @Query("update Stop set isFavourite=:favourite where stopId=:stopId and isFavourite=0")
     void addFavourite(int stopId, int favourite);
+
+    @Update
+    void updateFav(Stop stop);
 
     @Query("update Stop set isFavourite=:favourite where stopId=:stopId and isFavourite=1")
     void removeFavourite(int stopId, int favourite);

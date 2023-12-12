@@ -3,6 +3,7 @@
 
     <style name="NavigationTheme" parent="Theme.BusTracking">
         <item name="android:background">@android:color/transparent</item>
+        <item name="textSize">@dimen/_12sdp</item>
     </style>
 
 

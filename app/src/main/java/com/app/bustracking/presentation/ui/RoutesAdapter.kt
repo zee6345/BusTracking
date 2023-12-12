@@ -12,11 +12,19 @@ import com.app.bustracking.databinding.ItemRouteBinding
 
 
 class RoutesAdapter(
-    private val itemList: List<Route>,
+    private var itemList: List<Route>,
     private val routesDao: RoutesDao,
     val onItemClick: (route: Route, position: Int) -> Unit
 ) :
     RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
+
+//    private var _itemList: List<Route> = ArrayList()
+
+//    fun setRouteList(itemList: List<Route>){
+//        _itemList = itemList
+//        notifyDataSetChanged()
+//    }
+
 
     class ViewHolder(
         binding: ItemRouteBinding,

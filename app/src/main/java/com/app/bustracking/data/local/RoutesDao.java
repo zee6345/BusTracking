@@ -32,7 +32,6 @@ public interface RoutesDao {
     @Query("select bus_id from route where agency_id=:agencyId")
     int fetchBusId(int agencyId);
 
-
     @Query("select * from route where routeId=:travelId")
     Route fetchRoute(int travelId);
 

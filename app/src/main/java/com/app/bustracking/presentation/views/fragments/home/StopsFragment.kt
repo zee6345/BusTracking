@@ -62,7 +62,8 @@ class StopsFragment : BaseFragment() {
                 args.putInt(ARGS, ARGMAIN!!)
                 navController.navigate(
                     R.id.action_stopsFragment_to_stopsMapFragment,
-                    args
+                    args,
+                    navOptions()
                 )
             }
         } catch (e: Exception) {
@@ -84,7 +85,8 @@ class StopsFragment : BaseFragment() {
                 args.putInt(ARGS, stop.stopId)
                 navController.navigate(
                     R.id.action_stopsFragment_to_stopsMapFragment,
-                    args
+                    args,
+                    navOptions()
                 )
             }
         }
@@ -105,7 +107,8 @@ class StopsFragment : BaseFragment() {
                 args.putInt(ARGS, stop.stopId)
                 navController.navigate(
                     R.id.action_stopsFragment_to_stopsMapFragment,
-                    args
+                    args,
+                    navOptions()
                 )
             }
         }

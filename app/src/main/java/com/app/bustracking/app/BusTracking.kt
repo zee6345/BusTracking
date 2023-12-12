@@ -22,7 +22,7 @@ class BusTracking : Application() {
 
         context = this
 
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
         //db
 //        appDb = AppDb.with()!!

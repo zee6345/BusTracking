@@ -47,10 +47,10 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -180,10 +180,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         routeColor = route.getColor();
 
         //map box
-        Mapbox.getInstance(
-                requireActivity(),
-                getString(com.app.bustracking.R.string.mapbox_access_token)
-        );
+//        Mapbox.getInstance(
+//                requireActivity(),
+//                getString(com.app.bustracking.R.string.mapbox_access_token)
+//        );
         binding.mapView.getMapAsync(this);
         binding.mapView.onSaveInstanceState(savedInstanceState);
         mapView = binding.mapView;
@@ -213,6 +213,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             animateCamera(mapboxMap, coordinatesList);
         });
 
+        binding.fabBack.setOnClickListener(v0 -> {
+            navController.popBackStack();
+        });
+
     }
 
     public void setupMap() {
@@ -227,7 +231,26 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
     private void handleBottomSheet(Route route) {
         BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+//        bottomSheetBehavior.setPeekHeight(200, true);
+        bottomSheetBehavior.setHalfExpandedRatio(0.2f);
+
+        bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+//                    case BottomSheetBehavior.STATE_EXPANDED ->
+//                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+//                    case BottomSheetBehavior.STATE_COLLAPSED ->
+//                            bottomSheetBehavior.setHalfExpandedRatio(0.2f);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
         binding.llParent.tvTitle.setText(route.getRoute_title());
         binding.llParent.lvMsg.setVisibility(route.getDescription().isEmpty() ? View.GONE : View.VISIBLE);
@@ -245,7 +268,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
                 Bundle bundle = new Bundle();
                 bundle.putInt(RoutesFragmentKt.ARGS, stop.getStopId());
-                navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle);
+                navController.navigate(R.id.action_routesMapFragment_to_stopsMapFragment, bundle, navOptions());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -420,22 +443,24 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null)
+        if (mapView != null) {
             mapView.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null)
+        if (mapView != null) {
             mapView.onPause();
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mapView != null)
-            mapView.onDestroy();
+//        if (mapView != null)
+//            mapView.onDestroy();
     }
 
     @Override
@@ -465,23 +490,34 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
     @Override
     public void onDestroy() {
-        if (mapView != null)
+        if (mapView != null) {
             mapView.onDestroy();
+        }
         super.onDestroy();
     }
 
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
         try {
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (LatLng latLng : coordinatesList) {
-                builder.include(latLng);
-            }
+//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//            for (LatLng latLng : coordinatesList) {
+//                builder.include(latLng);
+//            }
+//
+//            LatLngBounds bounds = builder.build();
+//
+//            // Padding to control the space around the bounds (in pixels)
+//            int padding = 100;
+//            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
 
-            LatLngBounds bounds = builder.build();
 
-            // Padding to control the space around the bounds (in pixels)
-            int padding = 100;
-            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            mapboxMap.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                            new CameraPosition.Builder()
+                                    .target(coordinatesList.get(0))
+                                    .zoom(11.5)
+                                    .build()
+                    )
+            );
 
         } catch (Exception e) {
             e.printStackTrace();

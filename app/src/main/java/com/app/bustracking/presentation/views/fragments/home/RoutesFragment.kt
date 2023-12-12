@@ -70,7 +70,8 @@ class RoutesFragment : BaseFragment() {
                 args.putInt(ARGS, route.routeId)
                 navController.navigate(
                     R.id.action_routesFragment_to_routesMapFragment,
-                    args
+                    args,
+                    navOptions()
                 )
             }
         }
@@ -90,7 +91,8 @@ class RoutesFragment : BaseFragment() {
                 args.putInt(ARGS, route.routeId)
                 navController.navigate(
                     R.id.action_routesFragment_to_routesMapFragment,
-                    args
+                    args,
+                    navOptions()
                 )
             }
         }

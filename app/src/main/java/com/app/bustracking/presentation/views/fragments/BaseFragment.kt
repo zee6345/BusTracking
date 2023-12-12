@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.app.bustracking.R
 import com.app.bustracking.app.AppService
@@ -57,6 +58,15 @@ abstract class BaseFragment : Fragment() {
         }
 
 
+    }
+
+    fun navOptions(): NavOptions {
+        return NavOptions.Builder()
+            .setEnterAnim(R.anim.slide_in)
+            .setExitAnim(R.anim.slide_out)
+//            .setPopEnterAnim(com.app.bustracking.R.anim.slide_in)
+//            .setPopExitAnim(com.app.bustracking.R.anim.slide_out)
+            .build()
     }
 
     fun appDb(): Database {

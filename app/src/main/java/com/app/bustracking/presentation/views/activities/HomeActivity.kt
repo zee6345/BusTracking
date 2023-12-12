@@ -1,13 +1,11 @@
 package com.app.bustracking.presentation.views.activities
 
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.view.View
 import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI.setupWithNavController
+import androidx.navigation.NavOptions
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.app.bustracking.databinding.ActivityHomeBinding
 import com.app.bustracking.presentation.views.fragments.home.StopsFragment
 import com.app.bustracking.presentation.views.fragments.main.SelectNetworkFragment
@@ -25,19 +23,10 @@ class HomeActivity : BaseActivity() {
 
     private var route: Int = 0;
     private lateinit var navController: NavController
-
-//    private val navigationReceiver = object : BroadcastReceiver() {
-//        @SuppressLint("LogNotTimber")
-//        override fun onReceive(p0: Context?, p1: Intent?) {
-//            p1?.apply {
-//                if (action == "com.app.navigate") {
-//                    val route = p1.getIntExtra("route", 0)
-//                    Log.e(TAG, "onReceive: $route")
-//                }
-//            }
-//
-//        }
-//    }
+    val navOptions: NavOptions = NavOptions.Builder()
+        .setEnterAnim(com.app.bustracking.R.anim.slide_in)
+        .setExitAnim(com.app.bustracking.R.anim.slide_out)
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,70 +36,56 @@ class HomeActivity : BaseActivity() {
         //reset
         SelectNetworkFragment.isActivityLaunched = false
 
+        navController = findNavController(com.app.bustracking.R.id.fl_container_02)
+        NavigationUI.setupWithNavController(binding.bottomNav, navController);
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(com.app.bustracking.R.id.fl_container_02) as NavHostFragment?
-        if (navHostFragment != null) {
+        binding.motionLayout.transitionToStart()
 
-//            navController = findNavController(this, com.app.bustracking.R.id.nav_host_fragment)
-//
-//            // Set up the BottomNavigationView with the NavigationController
-//            val appBarConfiguration: AppBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
-//            NavigationUI.setupWithNavController(binding.bottomNav, navController)
+        binding.bottomNav.setOnNavigationItemSelectedListener { item ->
+            binding.motionLayout.transitionToEnd()
+            var destinationId = 0
+            when (item.itemId) {
+                com.app.bustracking.R.id.mapsFragment -> destinationId =
+                    com.app.bustracking.R.id.mapsFragment
 
+                com.app.bustracking.R.id.routesFragment -> destinationId =
+                    com.app.bustracking.R.id.routesFragment
 
-            navController = navHostFragment.navController
-            setupWithNavController(binding.bottomNav, navController)
+                com.app.bustracking.R.id.stopsFragment -> destinationId =
+                    com.app.bustracking.R.id.stopsFragment
 
+                com.app.bustracking.R.id.infoFragment -> destinationId =
+                    com.app.bustracking.R.id.infoFragment
 
-//            binding.bottomNav.setOnNavigationItemSelectedListener { item ->
+                com.app.bustracking.R.id.profileFragment -> destinationId =
+                    com.app.bustracking.R.id.profileFragment
+            }
 
-            // Apply animation
-//                animateBottomNavigation(item.itemId)
-//
-//                navigateToFragment(item.itemId)
-
-//                true
-//            }
-
+            if (destinationId != 0) {
+                navController.navigate(destinationId, Bundle(), navOptions)
+                return@setOnNavigationItemSelectedListener true;
+            } else {
+                return@setOnNavigationItemSelectedListener false;
+            }
         }
 
-//        val filter = IntentFilter("com.app.navigate")
-//        LocalBroadcastManager.getInstance(this).registerReceiver(navigationReceiver, filter)
+//        try {
+//
+//            navController = findNavController(R.id.fl_container_02)
+//            binding.bottomNav.setupWithNavController(navController)
+//
+//
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
 
-    }
+//        val navHostFragment = supportFragmentManager.findFragmentById(com.app.bustracking.R.id.fl_container_02) as NavHostFragment?
+//        if (navHostFragment != null) {
+//            navController = navHostFragment.navController
+//            setupWithNavController(binding.bottomNav, navController)
+//        }
 
-    private fun navigateToFragment(itemId: Int) {
-        when (itemId) {
-            com.app.bustracking.R.id.mapsFragment -> navController.navigate(com.app.bustracking.R.id.mapsFragment)
-            com.app.bustracking.R.id.routesFragment -> navController.navigate(com.app.bustracking.R.id.routesFragment)
-            com.app.bustracking.R.id.stopsFragment -> navController.navigate(com.app.bustracking.R.id.stopsFragment)
-            com.app.bustracking.R.id.infoFragment -> navController.navigate(com.app.bustracking.R.id.infoFragment)
-            com.app.bustracking.R.id.profileFragment -> navController.navigate(com.app.bustracking.R.id.profileFragment)
-        }
-    }
 
-    private fun animateBottomNavigation(itemId: Int) {
-        // Get the selected menu item view
-        val view: View = binding.bottomNav.findViewById(itemId)
-
-        // Create translation animations
-        val translationY = ObjectAnimator.ofFloat(view, "translationY", 0f, -20f, 0f)
-
-        // Combine the animations into a set
-        val animatorSet = AnimatorSet()
-        animatorSet.play(translationY)
-
-        // Set the duration of the animations
-        animatorSet.duration = 500
-
-        // Start the animations
-        animatorSet.start()
-    }
-
-    override fun onDestroy() {
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(navigationReceiver)
-        super.onDestroy()
     }
 
     companion object {

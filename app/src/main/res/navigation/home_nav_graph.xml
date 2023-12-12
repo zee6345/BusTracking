@@ -12,6 +12,10 @@
         tools:layout="@layout/fragment_info">
         <action
             android:id="@+id/action_infoFragment_to_mapsFragment2"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
     </fragment>
 
@@ -22,16 +26,24 @@
         tools:layout="@layout/fragment_maps">
         <action
             android:id="@+id/action_mapsFragment_to_stopsMapFragment"
-            app:destination="@id/stopsMapFragment" />
+            app:destination="@id/stopsMapFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null" />
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_mapsFragment2"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
     </fragment>
     <fragment
@@ -41,24 +53,44 @@
         tools:layout="@layout/fragment_routes">
         <action
             android:id="@+id/action_routesFragment_to_routesMapFragment"
-            app:destination="@id/routesMapFragment" />
+            app:destination="@id/routesMapFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null" />
         <action
             android:id="@+id/action_routesFragment_to_mapsFragment2"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/routesMapFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.RoutesMapFragment"
         android:label="fragment_routes_map"
-        tools:layout="@layout/fragment_routes_map" >
+        tools:layout="@layout/fragment_routes_map">
         <action
             android:id="@+id/action_routesMapFragment_to_routesFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/routesFragment" />
         <action
             android:id="@+id/action_routesMapFragment_to_stopsMapFragment"
-            app:destination="@id/stopsMapFragment" />
+            app:destination="@id/stopsMapFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null" />
         <action
             android:id="@+id/action_routesMapFragment_to_mapsFragment2"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
     </fragment>
 
@@ -66,20 +98,28 @@
         android:id="@+id/stopsFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.StopsFragment"
         android:label="fragment_stops_map"
-        tools:layout="@layout/fragment_stops" >
+        tools:layout="@layout/fragment_stops">
         <action
             android:id="@+id/action_stopsFragment_to_stopsMapFragment"
             app:destination="@id/stopsMapFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/stopsMapFragment"
         android:name="com.app.bustracking.presentation.views.fragments.home.StopsMapFragment"
-        tools:layout="@layout/fragment_stops_map"
-        android:label="StopsMapFragment" >
+        android:label="StopsMapFragment"
+        tools:layout="@layout/fragment_stops_map">
         <action
             android:id="@+id/action_stopsMapFragment_to_mapsFragment"
+            app:enterAnim="@null"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
     </fragment>
 </navigation>

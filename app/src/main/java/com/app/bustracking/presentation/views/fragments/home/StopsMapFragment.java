@@ -38,10 +38,9 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -150,7 +149,7 @@ public class StopsMapFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Mapbox.getInstance(requireActivity(), getString(com.app.bustracking.R.string.mapbox_access_token));
+//        Mapbox.getInstance(requireActivity(), getString(com.app.bustracking.R.string.mapbox_access_token));
 
         //init dao
         routesDao = appDb().routesDao();
@@ -172,8 +171,7 @@ public class StopsMapFragment extends BaseFragment {
 
         Stop fetchedStop = stopsDao.fetchStop(stopId);
 
-        mapView.getMapAsync(mapboxMap ->
-        {
+        mapView.getMapAsync(mapboxMap -> {
             mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS),
                     style -> {
                         this.mapbox = mapboxMap;
@@ -243,6 +241,10 @@ public class StopsMapFragment extends BaseFragment {
         binding.fabCameraView.setOnClickListener(v -> {
             animateCamera(mapbox, coordinatesList);
         });
+
+        binding.fabBack.setOnClickListener(v0 -> {
+            navController.popBackStack();
+        });
     }
 
 
@@ -253,7 +255,7 @@ public class StopsMapFragment extends BaseFragment {
          * show stop with route title
          */
         bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         bottomSheetBehavior.setHideable(false);
         binding.llStop.rvMapRoutes.setHasFixedSize(true);
         binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), stopsDao, (stop, integer) -> {
@@ -305,16 +307,25 @@ public class StopsMapFragment extends BaseFragment {
 
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
         try {
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (LatLng latLng : coordinatesList) {
-                builder.include(latLng);
-            }
+//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//            for (LatLng latLng : coordinatesList) {
+//                builder.include(latLng);
+//            }
+//
+//            LatLngBounds bounds = builder.build();
+//
+//            // Padding to control the space around the bounds (in pixels)
+//            int padding = 100;
+//            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
 
-            LatLngBounds bounds = builder.build();
-
-            // Padding to control the space around the bounds (in pixels)
-            int padding = 100;
-            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            mapboxMap.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                            new CameraPosition.Builder()
+                                    .target(coordinatesList.get(0))
+                                    .zoom(11.5)
+                                    .build()
+                    )
+            );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -421,22 +432,17 @@ public class StopsMapFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null)
+        if (mapView != null) {
             mapView.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null)
+        if (mapView != null) {
             mapView.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mapView != null)
-            mapView.onDestroy();
+        }
     }
 
     @Override
@@ -448,9 +454,9 @@ public class StopsMapFragment extends BaseFragment {
 
     @Override
     public void onDestroy() {
-        if (mapView != null)
+        if (mapView != null) {
             mapView.onDestroy();
-
+        }
         super.onDestroy();
     }
 

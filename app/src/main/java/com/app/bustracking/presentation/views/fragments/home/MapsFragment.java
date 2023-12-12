@@ -32,9 +32,9 @@ import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -83,7 +83,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token));
+//        Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token));
 
         mapView = binding.mapBoxView;
         mapView.onCreate(savedInstanceState);
@@ -104,17 +104,26 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
         try {
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (LatLng latLng : coordinatesList) {
-                builder.include(latLng);
-            }
 
-            LatLngBounds bounds = builder.build();
+            mapboxMap.animateCamera(
+                    CameraUpdateFactory.newCameraPosition(
+                            new CameraPosition.Builder()
+                                    .target(coordinatesList.get(0))
+                                    .zoom(11.5)
+                                    .build()
+                    )
+            );
 
-            // Padding to control the space around the bounds (in pixels)
-            int padding = 100;
-            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
-
+//            int padding = 100;
+//            if (coordinatesList.size() > 10) {
+//                coordinatesList.subList(10, coordinatesList.size()).clear();
+//            }
+//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+//            for (LatLng latLng : coordinatesList) {
+//                builder.include(latLng);
+//            }
+//            LatLngBounds bounds = builder.build();
+//            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -213,19 +222,17 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null) mapView.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mapView != null) mapView.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mapView != null) mapView.onDestroy();
+        if (mapView != null) {
+            mapView.onPause();
+        }
     }
 
     @Override
@@ -237,7 +244,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
 
-        if (mapView != null) mapView.onDestroy();
+        if (mapView != null) {
+            mapView.onDestroy();
+        }
 
 //        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(appTimerReceiver)
 

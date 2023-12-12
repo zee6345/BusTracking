@@ -92,20 +92,6 @@
         app:backgroundTint="@color/white_90"
         app:borderWidth="0dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        app:fabSize="mini"
-        app:elevation="0dp"
-        android:visibility="gone"
-        app:maxImageSize="@dimen/_14sdp"
-        android:layout_marginTop="@dimen/_90sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:importantForAccessibility="no"
-        android:src="@drawable/ic_location"
-        app:backgroundTint="@color/white_90"
-        app:borderWidth="0dp" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

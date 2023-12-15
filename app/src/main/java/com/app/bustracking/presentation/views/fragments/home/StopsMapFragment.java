@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
+import com.app.bustracking.app.AppService;
 import com.app.bustracking.data.local.RoutesDao;
 import com.app.bustracking.data.local.StopsDao;
 import com.app.bustracking.data.responseModel.Route;
@@ -87,12 +88,13 @@ public class StopsMapFragment extends BaseFragment {
     private MapView mapView;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null && intent.getAction().equals("My_Action_Event")) {
+            if (intent.getAction() != null && intent.getAction().equals("My_Action_Event")) {
                 String jsonData = intent.getStringExtra("json_data");
-                if (jsonData != null || !jsonData.isEmpty()) {
+                if (jsonData != null && !jsonData.isEmpty()) {
                     try {
                         JSONObject jsonObject = new JSONObject(jsonData);
                         String data = jsonObject.getString("data");
@@ -107,6 +109,8 @@ public class StopsMapFragment extends BaseFragment {
                         symbolManager.update(locationMarker);
 
                     } catch (JSONException e) {
+                        e.printStackTrace();
+                    }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
@@ -145,18 +149,20 @@ public class StopsMapFragment extends BaseFragment {
         return binding.getRoot();
     }
 
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 //        Mapbox.getInstance(requireActivity(), getString(com.app.bustracking.R.string.mapbox_access_token));
 
+        IntentFilter filter = new IntentFilter(AppService.RECEIVER_ACTION);
+        requireActivity().registerReceiver(broadcastReceiver, filter);
+
         //init dao
         routesDao = appDb().routesDao();
         stopsDao = appDb().stopsDao();
 
-        IntentFilter filter = new IntentFilter("My_Action_Event");
-        requireActivity().registerReceiver(broadcastReceiver, filter);
 
         mapView = binding.mapBoxView;
         mapView.onCreate(savedInstanceState);
@@ -175,6 +181,9 @@ public class StopsMapFragment extends BaseFragment {
             mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS),
                     style -> {
                         this.mapbox = mapboxMap;
+
+                        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
+                        mapboxMap.setMaxZoomPreference(12);
 
                         LocationComponent locationComponent = mapboxMap.getLocationComponent();
                         locationComponent.activateLocationComponent(requireActivity(), style);
@@ -457,6 +466,9 @@ public class StopsMapFragment extends BaseFragment {
         if (mapView != null) {
             mapView.onDestroy();
         }
+
+//        requireActivity().unregisterReceiver(broadcastReceiver);
+
         super.onDestroy();
     }
 

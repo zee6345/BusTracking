@@ -104,12 +104,12 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     private Double longitudeBus = 74.3077318;
     private String routeColor;
     private Marker marker;
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent != null && intent.getAction().equals("My_Action_Event")) {
-                String jsonData = intent.getStringExtra("json_data");
-                if (jsonData != null || !jsonData.isEmpty()) {
+            if (intent.getAction() != null && intent.getAction().equals(AppService.RECEIVER_ACTION)) {
+                String jsonData = intent.getStringExtra(AppService.RECEIVER_DATA);
+                if (jsonData != null && !jsonData.isEmpty()) {
                     try {
                         JSONObject jsonObject = new JSONObject(jsonData);
                         String data = jsonObject.getString("data");
@@ -158,7 +158,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        IntentFilter filter = new IntentFilter("My_Action_Event");
+        IntentFilter filter = new IntentFilter(AppService.RECEIVER_ACTION);
         requireActivity().registerReceiver(broadcastReceiver, filter);
 
 
@@ -193,6 +193,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         intent.putExtra("bus_id", route.getBus_id() + "");
         requireActivity().startService(intent);
 
+
         for (Stop stop : route.getStop()) {
             String tag = String.valueOf(stop.getStopId());  // Replace this with the actual way you get the tag for each stop
             Feature feature = Feature.fromGeometry(Point.fromLngLat(
@@ -224,7 +225,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         marker = mapboxMap.addMarker(
                 new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
-                        .title("Bus Marker")
+                        .title("On the way")
                         .icon(IconFactory.getInstance(requireContext()).fromBitmap(customBusIcon))
         );
     }
@@ -233,7 +234,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
 //        bottomSheetBehavior.setPeekHeight(200, true);
-        bottomSheetBehavior.setHalfExpandedRatio(0.2f);
+        bottomSheetBehavior.setHalfExpandedRatio(0.25f);
 
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -255,6 +256,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         binding.llParent.tvTitle.setText(route.getRoute_title());
         binding.llParent.lvMsg.setVisibility(route.getDescription().isEmpty() ? View.GONE : View.VISIBLE);
         binding.llParent.tvText.setText(route.getDescription());
+        binding.llParent.lvConnectVehicle.setVisibility(route.isVehicleConnected() ? View.VISIBLE : View.GONE);
 
 
         if (!route.getStop().isEmpty()) {
@@ -281,6 +283,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
+
+        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
+        mapboxMap.setMaxZoomPreference(12);
+
         if (!coordinatesList.isEmpty()) {
 
             mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
@@ -456,12 +462,15 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-//        if (mapView != null)
+//    @Override
+//    public void onDestroyView() {
+//        if (mapView != null) {
 //            mapView.onDestroy();
-    }
+//        }
+//        super.onDestroyView();
+//    }
+
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -493,6 +502,9 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         if (mapView != null) {
             mapView.onDestroy();
         }
+
+//        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(broadcastReceiver);
+
         super.onDestroy();
     }
 

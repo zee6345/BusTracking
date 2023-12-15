@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.app.bustracking.R
+import com.app.bustracking.app.AppService
 import com.app.bustracking.databinding.FragmentProfileBinding
 import com.app.bustracking.presentation.views.activities.MainActivity
 
@@ -55,8 +57,12 @@ class ProfileFragment : BaseFragment() {
             Prefs.clear()
             Prefs.getAll().clear()
 
+
+            requireActivity().stopService(Intent(requireActivity(), AppService::class.java))
+
             //exit app
             (requireActivity() as AppCompatActivity).finishAffinity()
+
         })
 
 
@@ -72,6 +78,11 @@ class ProfileFragment : BaseFragment() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
+
+        }
+
+        binding.llLanguage.setOnClickListener {
+            Toast.makeText(requireActivity(), "coming soon!", Toast.LENGTH_SHORT).show()
         }
 
         binding.llInformation.setOnClickListener {

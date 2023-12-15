@@ -51,8 +51,10 @@ class HomeActivity : BaseActivity() {
                 com.app.bustracking.R.id.routesFragment -> destinationId =
                     com.app.bustracking.R.id.routesFragment
 
-                com.app.bustracking.R.id.stopsFragment -> destinationId =
-                    com.app.bustracking.R.id.stopsFragment
+                com.app.bustracking.R.id.stopsFragment -> {
+                    StopsFragment.ARGMAIN = null  //reset args
+                    destinationId = com.app.bustracking.R.id.stopsFragment
+                }
 
                 com.app.bustracking.R.id.infoFragment -> destinationId =
                     com.app.bustracking.R.id.infoFragment

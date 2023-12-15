@@ -24,5 +24,6 @@ data class Route(
     val trip_distance: String,
     val type: String? = null,
     val updated_at: String? = null,
-    var isFavourite: Boolean = false
+    var isFavourite: Boolean = false,
+    var isVehicleConnected:Boolean = false
 ) : Serializable

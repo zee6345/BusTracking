@@ -45,6 +45,7 @@ class StopsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.rvLines.setHasFixedSize(true)
+        binding.rvFavorite.setHasFixedSize(true)
 
         binding.toolbar.tvTitle.text = "Stops"
         binding.toolbar.ivSearch.visibility = View.GONE

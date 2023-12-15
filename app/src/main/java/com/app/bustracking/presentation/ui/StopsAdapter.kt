@@ -9,6 +9,7 @@ import com.app.bustracking.R
 import com.app.bustracking.data.local.StopsDao
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.ItemRouteBinding
+import com.app.bustracking.databinding.ItemStopBinding
 import java.util.Random
 
 class StopsAdapter(
@@ -19,10 +20,10 @@ class StopsAdapter(
     RecyclerView.Adapter<StopsAdapter.ViewHolder>() {
 
     class ViewHolder(
-        binding: ItemRouteBinding,
+        binding: ItemStopBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val _binding: ItemRouteBinding
+        private val _binding: ItemStopBinding
 //        private var isFavourite = false
 
 
@@ -83,7 +84,7 @@ class StopsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(ItemRouteBinding.inflate(inflater, parent, false))
+        return ViewHolder(ItemStopBinding.inflate(inflater, parent, false))
     }
 
     override fun getItemCount(): Int {

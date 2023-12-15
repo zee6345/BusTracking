@@ -11,7 +11,6 @@
     android:padding="@dimen/_10sdp"
     app:behavior_hideable="true"
     app:behavior_peekHeight="90dp"
-
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <View
@@ -80,7 +79,47 @@
             android:ellipsize="marquee"
             android:fontFamily="@font/roboto_medium"
             android:singleLine="true"
-            android:text="No connected vehicles"
+            android:text="Pont Nbail chourse a la phare"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivCheck"
+            app:layout_constraintHorizontal_bias="0.316"
+            app:layout_constraintStart_toEndOf="@id/ivIcon"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lvConnectVehicle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:visibility="visible">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:cardCornerRadius="@dimen/_16sdp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_10sdp"
+                android:background="@color/theme_color"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:paddingStart="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:singleLine="true"
+            android:text="1 connected vehicle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ivCheck"
             app:layout_constraintHorizontal_bias="0.316"

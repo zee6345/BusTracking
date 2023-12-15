@@ -31,6 +31,7 @@
         android:elevation="@dimen/_10sdp"
         android:padding="@dimen/_5sdp"
         app:itemActiveIndicatorStyle="@style/NavigationTheme"
+        app:compatShadowEnabled="true"
         app:itemBackground="@drawable/ic_custom_selector"
         app:itemIconTint="@color/ic_nav_selector"
         app:itemRippleColor="@null"

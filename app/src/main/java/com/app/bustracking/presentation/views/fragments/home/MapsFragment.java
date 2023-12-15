@@ -96,7 +96,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
         mapView.getMapAsync(this);
 
-
         binding.fabCameraView.setOnClickListener(v -> {
             animateCamera(mapbox, coordinatesList);
         });
@@ -255,6 +254,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
+
+        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
+        mapboxMap.setMaxZoomPreference(12);
 
         // Assuming routeList is a list of routes with stops
         List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes

@@ -28,6 +28,9 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
 
     companion object {
         var alreadyRunning = false
+        const val RECEIVER_ACTION = "My_Action_Event"
+        const val RECEIVER_DATA = "json_data"
+
     }
 
     private val timerHandler = Handler(Looper.getMainLooper())
@@ -150,8 +153,11 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
         Log.e("Pusher", "Received event with data: " + event.toString());
         val jsonString = event.toString()
         if (jsonString.isNotEmpty()) {
-            val intent = Intent("My_Action_Event")
-            intent.putExtra("json_data", jsonString)
+            val intent = Intent(RECEIVER_ACTION)
+            intent.putExtra(RECEIVER_DATA, jsonString)
+
+//            LocalBroadcastManager.getInstance(this)
+//                .sendBroadcast(intent)
             sendBroadcast(intent)
         }
     }

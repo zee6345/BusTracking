@@ -12,4 +12,13 @@
     <color name="theme_color">#DE0065</color>
     <color name="a">#FCC50000</color>
 
+
+    <array name="colorArray">
+        <item>@color/theme_color</item>
+        <item>#009688</item>
+        <item>#FF9800</item>
+        <!-- Add more color items as needed -->
+    </array>
+
+
 </resources>

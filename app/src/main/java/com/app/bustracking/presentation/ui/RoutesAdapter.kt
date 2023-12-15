@@ -1,30 +1,27 @@
 package com.app.bustracking.presentation.ui
 
 
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.app.bustracking.R
 import com.app.bustracking.data.local.RoutesDao
 import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.databinding.ItemRouteBinding
 
 
 class RoutesAdapter(
-    private var itemList: List<Route>,
+
     private val routesDao: RoutesDao,
     val onItemClick: (route: Route, position: Int) -> Unit
-) :
-    RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
 
-//    private var _itemList: List<Route> = ArrayList()
+    private var itemList:List<Route> = emptyList()
 
-//    fun setRouteList(itemList: List<Route>){
-//        _itemList = itemList
-//        notifyDataSetChanged()
-//    }
-
+    fun updateList(newList: List<Route>) {
+        itemList = newList
+        notifyDataSetChanged() // Notify the adapter that the data set has changed
+    }
 
     class ViewHolder(
         binding: ItemRouteBinding,
@@ -40,10 +37,10 @@ class RoutesAdapter(
         fun bind(route: Route, routesDao: RoutesDao, onItemClick: (Route) -> Unit) {
 
             _binding.tvTitle.text = "${route.route_title}"
-            _binding.ivCheck.setImageResource(if (route.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
+            _binding.ivCheck.setImageResource(if (route.isFavourite) com.app.bustracking.R.drawable.ic_check_filled else com.app.bustracking.R.drawable.ic_check_unfilled)
 
             _binding.ivCheck.setOnClickListener {
-                _binding.ivCheck.setImageResource(if (route.isFavourite) R.drawable.ic_check_unfilled else R.drawable.ic_check_filled)
+                _binding.ivCheck.setImageResource(if (route.isFavourite) com.app.bustracking.R.drawable.ic_check_unfilled else com.app.bustracking.R.drawable.ic_check_filled)
                 route.isFavourite = !route.isFavourite
                 routesDao.updateFav(route)
             }
@@ -51,6 +48,14 @@ class RoutesAdapter(
             _binding.root.setOnClickListener {
                 onItemClick(route)
             }
+
+            //hide connected status
+            _binding.lvMsg.visibility = if (route.isVehicleConnected) View.VISIBLE else View.GONE
+
+//            route.color?.let {
+//                _binding.ivIcon.background = ColorDrawable(Integer.parseInt(route.color.replace("#","")))
+//            }
+
 
         }
 
@@ -65,6 +70,20 @@ class RoutesAdapter(
 //
 //            // Create and return the random color
 //            return ColorDrawable(backgroundColor)
+//        }
+
+
+//        private fun getRandomColor(context: Context): Drawable? {
+//            // Retrieve the color array from resources
+//            val colors = context.resources.obtainTypedArray(com.app.bustracking.R.array.colorArray)
+//            // Get a random index
+//            val randomIndex = (Math.random() * colors.length()).toInt()
+//            // Get the color resource ID at the random index
+//            val colorResourceId = colors.getResourceId(randomIndex, 0)
+//            // Recycle the TypedArray to avoid memory leaks
+//            colors.recycle()
+//            // Get the actual color value using the resource ID
+//            return ColorDrawable(ContextCompat.getColor(context, colorResourceId))
 //        }
 
     }

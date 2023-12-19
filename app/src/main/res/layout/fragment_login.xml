@@ -34,10 +34,10 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:padding="@dimen/_10sdp"
         android:text="Welcome!"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/poppins_medium"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="@dimen/_18sdp"
+        android:textSize="@dimen/_20sdp"
          />
 
 
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_10sdp"
         android:padding="@dimen/_10sdp"
-        android:fontFamily="@font/roboto_medium"
+        android:fontFamily="@font/poppins_regular"
         android:text="Login to your existing account"
         android:textAlignment="center"
         android:textColor="#464646"
@@ -78,6 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:ccp_showFlag="false"
+
             app:ccp_showNameCode="false" />
 
         <EditText
@@ -90,7 +91,7 @@
             android:hint="Number"
             android:inputType="phone"
             android:padding="@dimen/_3sdp"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/poppins_regular"
             android:singleLine="true" />
 
 
@@ -196,7 +197,7 @@
         android:background="@drawable/ic_background_button"
         android:text="Sign In"
         android:textAllCaps="false"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/poppins_medium"
         android:textColor="@color/white"
         android:textSize="@dimen/_14sdp" />
 

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_weight="1"
-        android:fontFamily="@font/roboto_medium"
+        android:fontFamily="@font/poppins_regular"
         android:text="A marina"
         android:textSize="@dimen/_12sdp" />
 
@@ -21,9 +21,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_10sdp"
-        android:fontFamily="@font/roboto_medium"
+        android:fontFamily="@font/poppins_regular"
         android:paddingHorizontal="@dimen/_10sdp"
-        android:text="21:30"
+        android:text="-"
         android:textSize="@dimen/_12sdp" />
 
 

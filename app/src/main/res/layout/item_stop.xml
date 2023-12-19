@@ -53,7 +53,7 @@
             android:layout_marginHorizontal="@dimen/_2sdp"
             android:ellipsize="marquee"
             android:paddingStart="@dimen/_5sdp"
-            android:fontFamily="@font/roboto_regular"
+            android:fontFamily="@font/poppins_regular"
             android:gravity="start|center"
             android:singleLine="true"
             android:text="Ligne 3 Bressuire-Hospital CHNDS"

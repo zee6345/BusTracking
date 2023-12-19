@@ -16,12 +16,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -104,6 +106,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     private Double longitudeBus = 74.3077318;
     private String routeColor;
     private Marker marker;
+    private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -144,6 +147,24 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     @Override
     public void initNavigation(@NonNull NavController navController) {
         this.navController = navController;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (bottomSheetBehavior != null && bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                } else {
+                    bottomSheetBehavior = null;
+                    navController.navigate(R.id.routesFragment);
+                }
+            }
+        });
+
     }
 
     @Nullable
@@ -215,7 +236,11 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         });
 
         binding.fabBack.setOnClickListener(v0 -> {
-            navController.popBackStack();
+            if (bottomSheetBehavior != null && bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            } else {
+                navController.navigate(R.id.routesFragment);
+            }
         });
 
     }
@@ -231,19 +256,31 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     }
 
     private void handleBottomSheet(Route route) {
-        BottomSheetBehavior<LinearLayout> bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
+
+        TypedValue typedValue = new TypedValue();
+        int actionBarHeight = 0;
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
+        }
+        int maxBottomSheetHeight = getResources().getDisplayMetrics().heightPixels - actionBarHeight;
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.llParent.bottomLayout);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
 //        bottomSheetBehavior.setPeekHeight(200, true);
         bottomSheetBehavior.setHalfExpandedRatio(0.25f);
+//        bottomSheetBehavior.setPeekHeight(maxBottomSheetHeight, true);
+        bottomSheetBehavior.setHideable(false);
 
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-//                    case BottomSheetBehavior.STATE_EXPANDED ->
-//                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
-//                    case BottomSheetBehavior.STATE_COLLAPSED ->
-//                            bottomSheetBehavior.setHalfExpandedRatio(0.2f);
+                Log.e("mmTAG", "onStateChanged: " + newState);
+
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
+                    bottomSheetBehavior.setHalfExpandedRatio(0.25f);
+                } else if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+
                 }
             }
 
@@ -284,8 +321,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
-        mapboxMap.setMaxZoomPreference(12);
+//        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
+//        mapboxMap.setMaxZoomPreference(12);
 
         if (!coordinatesList.isEmpty()) {
 
@@ -469,7 +506,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 //        }
 //        super.onDestroyView();
 //    }
-
 
 
     @Override

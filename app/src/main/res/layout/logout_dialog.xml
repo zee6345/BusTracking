@@ -18,6 +18,7 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:text="You sure want to logout?"
             android:textColor="@color/theme_color"
+            android:fontFamily="@font/poppins_regular"
             android:textSize="@dimen/_18sdp"
             android:textStyle="bold" />
 
@@ -36,9 +37,10 @@
                 android:id="@+id/buttonDismiss"
                 android:background="@drawable/ic_background_button"
                 android:text="Cancel"
+                android:fontFamily="@font/poppins_medium"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_16sdp" />
+                android:textSize="@dimen/_12sdp" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:layout_width="0dp"
@@ -49,8 +51,9 @@
                 android:background="@drawable/ic_background_button_dismiss"
                 android:text="Yes"
                 android:textAllCaps="false"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_16sdp" />
+                android:textSize="@dimen/_12sdp" />
 
         </LinearLayout>
 

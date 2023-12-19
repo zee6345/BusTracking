@@ -27,7 +27,10 @@ class StopMapTimeAdapter(
 
             _binding.tvStopName.text = stop.stop_title
 
-            _binding.tvStopTime.text = stop.stop_time ?: "-"
+            stop.stop_time?.let {
+                _binding.tvStopTime.text = if (it.isEmpty()) "-" else stop.stop_time
+            }
+
 
             _binding.root.setOnClickListener {
                 onItemClick(stop)

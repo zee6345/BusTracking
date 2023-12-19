@@ -24,16 +24,16 @@
             android:layout_height="@dimen/_24sdp"
             android:layout_gravity="center_vertical"
             android:src="@drawable/ic_stop"
-            app:tint="#80000000" />
+            app:tint="#676767" />
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="@dimen/_2sdp"
+            android:layout_marginHorizontal="@dimen/_3sdp"
             android:ellipsize="marquee"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/poppins_regular"
             android:gravity="start"
             android:singleLine="true"
             android:text="Ligne 3 Bressuire-Hospital CHNDS"

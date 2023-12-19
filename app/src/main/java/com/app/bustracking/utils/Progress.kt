@@ -9,18 +9,24 @@ import androidx.appcompat.app.AlertDialog
 import com.app.bustracking.R
 import com.app.bustracking.databinding.ItemProgressBinding
 import com.app.bustracking.databinding.LogoutDialogBinding
+import com.app.bustracking.databinding.NoRouteDialogBinding
 
 class Progress(val context: Context) {
 
     private lateinit var _dialog: AlertDialog
 
     fun showProgress(): AlertDialog {
-        val customDialog: View = LayoutInflater.from(context).inflate(R.layout.item_progress, null)
-        val binding: ItemProgressBinding = ItemProgressBinding.bind(customDialog)
+        val customDialog: View = LayoutInflater.from(context).inflate(R.layout.no_route_dialog, null)
+        val binding: NoRouteDialogBinding = NoRouteDialogBinding.bind(customDialog)
         val alert = AlertDialog.Builder(context)
         alert.setView(binding.root)
         _dialog = alert.create()
         _dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        binding.buttonDismiss.setOnClickListener {
+            _dialog.dismiss()
+        }
+
         return _dialog
     }
 

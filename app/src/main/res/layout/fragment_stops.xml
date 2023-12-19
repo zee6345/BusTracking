@@ -32,6 +32,7 @@
             android:layout_margin="@dimen/_3sdp"
             android:text="Favorite Stops"
             android:textAlignment="center"
+            android:fontFamily="@font/poppins_medium"
             android:textColor="@color/black"
             android:textSize="@dimen/_14sdp" />
 
@@ -51,12 +52,13 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="vertical"
             android:layout_height="wrap_content"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
+            android:fontFamily="@font/poppins_regular"
             android:id="@+id/tvEmpty"
             android:paddingHorizontal="@dimen/_20sdp"
             android:text="Here you will find your favorite stops"
@@ -86,6 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_3sdp"
             android:text="All Stops"
+            android:fontFamily="@font/poppins_medium"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_14sdp" />
@@ -116,6 +119,7 @@
             android:text="Here you will find a lines"
             android:textAlignment="textStart"
             android:id="@+id/tvEmptyLines"
+            android:fontFamily="@font/poppins_regular"
             android:visibility="gone" />
 
     </RelativeLayout>

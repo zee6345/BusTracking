@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +83,7 @@ public class StopsMapFragment extends BaseFragment {
     RoutesDao routesDao;
     StopsDao stopsDao;
     BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
-    BottomSheetBehavior<LinearLayout> bottomStopTimeSheet;
+    BottomSheetBehavior<LinearLayout> bottomStopTimeSheet = null;
     private NavController navController;
     private FragmentStopsMapBinding binding;
     private MapView mapView;
@@ -110,7 +111,7 @@ public class StopsMapFragment extends BaseFragment {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -126,11 +127,13 @@ public class StopsMapFragment extends BaseFragment {
             @Override
             public void handleOnBackPressed() {
 
-                if (bottomStopTimeSheet != null) {
-                    if (bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_EXPANDED || bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                        bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
-                    }
-                    this.remove();
+                if (bottomStopTimeSheet != null && (bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_EXPANDED || bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_COLLAPSED)) {
+
+                    bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+//                    this.remove();
+                } else {
+                    navController.navigate(R.id.stopsFragment);
                 }
             }
         });
@@ -182,8 +185,8 @@ public class StopsMapFragment extends BaseFragment {
                     style -> {
                         this.mapbox = mapboxMap;
 
-                        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
-                        mapboxMap.setMaxZoomPreference(12);
+//                        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
+//                        mapboxMap.setMaxZoomPreference(12);
 
                         LocationComponent locationComponent = mapboxMap.getLocationComponent();
                         locationComponent.activateLocationComponent(requireActivity(), style);
@@ -252,7 +255,13 @@ public class StopsMapFragment extends BaseFragment {
         });
 
         binding.fabBack.setOnClickListener(v0 -> {
-            navController.popBackStack();
+            if (bottomStopTimeSheet != null && (bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_EXPANDED || bottomStopTimeSheet.getState() == BottomSheetBehavior.STATE_COLLAPSED)) {
+
+                bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+            } else {
+                navController.navigate(R.id.stopsFragment);
+            }
         });
     }
 
@@ -260,12 +269,24 @@ public class StopsMapFragment extends BaseFragment {
     private void handleBottomSheet(Stop stops) throws Exception {
         List<LatLng> coordinatesList = new ArrayList<>();
 
+        TypedValue typedValue = new TypedValue();
+        int actionBarHeight = 0;
+        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
+        }
+        int maxBottomSheetHeight = getResources().getDisplayMetrics().heightPixels - actionBarHeight;
+
+
         /**
          * show stop with route title
          */
         bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         bottomSheetBehavior.setHideable(false);
+
+        bottomSheetBehavior.setPeekHeight(maxBottomSheetHeight);
+
+
         binding.llStop.rvMapRoutes.setHasFixedSize(true);
         binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), stopsDao, (stop, integer) -> {
             animateCamera(mapbox, stop);
@@ -280,6 +301,7 @@ public class StopsMapFragment extends BaseFragment {
         bottomStopTimeSheet = BottomSheetBehavior.from(binding.llStopTime.bottomTimeSheet);
         bottomStopTimeSheet.setHideable(true);
         bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+        bottomStopTimeSheet.setPeekHeight(maxBottomSheetHeight);
 
 
         int routeId = stopsDao.fetchRouteId(stops.getStopId());

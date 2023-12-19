@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.NavController
 import com.app.bustracking.R
 import com.app.bustracking.data.local.StopsDao
@@ -31,6 +32,16 @@ class StopsFragment : BaseFragment() {
 
     override fun initNavigation(navController: NavController) {
         this.navController = navController
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(object :OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                navController.navigate(R.id.mapsFragment)
+            }
+        })
     }
 
     override fun onCreateView(

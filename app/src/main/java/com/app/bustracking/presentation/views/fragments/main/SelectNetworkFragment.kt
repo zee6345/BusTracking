@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import com.app.bustracking.data.requestModel.RouteRequest
@@ -21,6 +22,7 @@ import com.app.bustracking.presentation.viewmodel.AppViewModel
 import com.app.bustracking.presentation.views.activities.HomeActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
+import com.app.bustracking.utils.Progress
 import com.pixplicity.easyprefs.library.Prefs
 
 private val TAG: String = SelectNetworkFragment::class.simpleName.toString()
@@ -32,6 +34,8 @@ class SelectNetworkFragment : BaseFragment() {
     private lateinit var navController: NavController
     private val data: AppViewModel by viewModels()
     private val dataList = mutableListOf<Agency>()
+
+    private lateinit var progress: AlertDialog
 
     companion object {
         var isActivityLaunched = false
@@ -61,6 +65,7 @@ class SelectNetworkFragment : BaseFragment() {
 
 
         val dialog = showProgress()
+        progress = Progress(requireActivity()).showProgress()
 
         val routesDao = appDb().routesDao()
         val stopsDao = appDb().stopsDao()
@@ -162,7 +167,10 @@ class SelectNetworkFragment : BaseFragment() {
 
                     val response = it.data as GetTravelList
                     if (response.travel_list.isEmpty()){
-                        showMessage("No route available!")
+
+//                        showMessage("No route available!")
+                        progress.show()
+
                     }
 
                     response.travel_list.forEach { travel ->

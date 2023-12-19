@@ -75,6 +75,10 @@ abstract class BaseFragment : Fragment() {
             .create()
     }
 
+    fun noRouteDialog(){
+
+    }
+
     fun showMessage(str: String) {
         Toast.makeText(requireActivity(), "$str", Toast.LENGTH_SHORT).show()
     }

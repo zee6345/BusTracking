@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import com.app.bustracking.R
@@ -19,6 +19,9 @@ import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -66,6 +69,16 @@ class RoutesFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                navController.navigate(R.id.mapsFragment)
+            }
+        })
     }
 
     override fun initNavigation(navController: NavController) {
@@ -126,6 +139,7 @@ class RoutesFragment : BaseFragment() {
 
         binding.rvLines.adapter = lineAdapter
         binding.rvFavorite.adapter = favAdapter
+
 
 
         updateUI(favouriteRoutes, routesList)

@@ -2,11 +2,11 @@
 <androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/motion_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/motion_layout"
-    tools:context=".presentation.views.activities.HomeActivity"
-    app:layoutDescription="@xml/activity_home_scene">
+    app:layoutDescription="@xml/activity_home_scene"
+    tools:context=".presentation.views.activities.HomeActivity">
 
 
     <fragment
@@ -30,12 +30,14 @@
         android:background="@drawable/ic_nav_background"
         android:elevation="@dimen/_10sdp"
         android:padding="@dimen/_5sdp"
-        app:itemActiveIndicatorStyle="@style/NavigationTheme"
         app:compatShadowEnabled="true"
+        app:itemActiveIndicatorStyle="@style/NavigationTheme"
         app:itemBackground="@drawable/ic_custom_selector"
+        app:itemIconSize="@dimen/_14sdp"
         app:itemIconTint="@color/ic_nav_selector"
         app:itemRippleColor="@null"
-        app:itemIconSize="@dimen/_14sdp"
+        app:itemTextAppearanceActive="@font/poppins_medium"
+        app:itemTextAppearanceInactive="@font/poppins_regular"
         app:itemTextColor="@color/white"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"

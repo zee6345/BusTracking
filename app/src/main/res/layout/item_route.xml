@@ -13,8 +13,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         app:cardCornerRadius="@dimen/_16sdp">
-
 
         <TextView
             android:id="@+id/ivIcon"
@@ -32,10 +32,10 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/_3sdp"
+        android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -45,10 +45,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_2sdp"
             android:ellipsize="marquee"
-            android:paddingStart="@dimen/_5sdp"
-            android:fontFamily="@font/roboto_regular"
+            android:fontFamily="@font/poppins_regular"
             android:gravity="start|center"
+            android:paddingStart="@dimen/_5sdp"
             android:singleLine="true"
+            android:textColor="@color/black"
             android:text="Ligne 3 Bressuire-Hospital CHNDS"
             android:textSize="@dimen/_12sdp"
             app:layout_constraintBottom_toTopOf="@id/tvText"
@@ -63,9 +64,9 @@
             android:id="@+id/lvMsg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center|start"
             android:orientation="horizontal"
             android:paddingStart="@dimen/_5sdp"
-            android:gravity="center|start"
             android:visibility="visible">
 
             <androidx.cardview.widget.CardView
@@ -75,10 +76,10 @@
 
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="@dimen/_10sdp"
                     android:id="@+id/ivMsgIcon"
+                    android:layout_width="@dimen/_10sdp"
                     android:layout_height="@dimen/_10sdp"
-                    android:background="@color/theme_color"/>
+                    android:background="@color/theme_color" />
 
             </androidx.cardview.widget.CardView>
 
@@ -87,6 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="marquee"
+                android:fontFamily="@font/poppins_regular"
                 android:paddingStart="@dimen/_3sdp"
                 android:singleLine="true"
                 android:text="1 connected vehicle"

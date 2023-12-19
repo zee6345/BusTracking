@@ -6,6 +6,10 @@
         <item name="textSize">@dimen/_12sdp</item>
     </style>
 
+    <style name="BottomNavigationViewStyle" parent="Widget.Design.BottomNavigationView">
+        <item name="android:fontFamily">@font/poppins_medium</item>
+    </style>
+
 
     <style name="NoRipple">
         <item name="android:clickable">true</item>

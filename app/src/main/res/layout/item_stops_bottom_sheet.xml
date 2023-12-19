@@ -41,8 +41,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/poppins_regular"
             android:gravity="start"
+            android:textColor="@color/black"
             android:singleLine="true"
             android:text="Ligne 3 Bressuire-Hospital CHNDS"
             android:textSize="@dimen/_14sdp"
@@ -58,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/poppins_regular"
             android:singleLine="true"
             android:text="desctiption" />
 

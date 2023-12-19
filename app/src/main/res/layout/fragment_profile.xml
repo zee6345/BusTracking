@@ -68,8 +68,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/_10sdp"
+            android:fontFamily="@font/poppins_medium"
             android:lineSpacingExtra="@dimen/_10sdp"
-            android:text="v3.1.2"
+            android:text="DAKAR DEM DIKK"
+            android:textColor="@color/black"
             android:id="@+id/tvAgency"
             android:textSize="@dimen/_14sdp" />
 
@@ -81,7 +83,7 @@
         android:id="@+id/llChangeNetwork"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
@@ -98,8 +100,10 @@
             android:layout_marginStart="@dimen/_20sdp"
             android:lineSpacingExtra="@dimen/_10sdp"
             android:text="Change network"
+            android:fontFamily="@font/poppins_medium"
+
             android:textSize="@dimen/_14sdp"
-            android:textStyle="bold" />
+             />
 
 
     </LinearLayout>
@@ -107,7 +111,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
@@ -124,8 +128,9 @@
             android:layout_marginStart="@dimen/_20sdp"
             android:lineSpacingExtra="@dimen/_10sdp"
             android:text="Favorite"
+            android:fontFamily="@font/poppins_medium"
             android:textSize="@dimen/_14sdp"
-            android:textStyle="bold" />
+             />
 
 
     </LinearLayout>
@@ -134,7 +139,7 @@
         android:id="@+id/llInformation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
@@ -152,7 +157,7 @@
             android:lineSpacingExtra="@dimen/_10sdp"
             android:text="Information"
             android:textSize="@dimen/_14sdp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppins_medium" />
 
 
     </LinearLayout>
@@ -160,7 +165,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:visibility="gone"
         android:layout_marginEnd="@dimen/_10sdp"
@@ -188,7 +193,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/llLanguage"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
@@ -206,7 +211,7 @@
             android:lineSpacingExtra="@dimen/_10sdp"
             android:text="Language"
             android:textSize="@dimen/_14sdp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppins_medium" />
 
 
     </LinearLayout>
@@ -215,7 +220,7 @@
         android:id="@+id/llLogout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:orientation="horizontal">
@@ -233,7 +238,7 @@
             android:lineSpacingExtra="@dimen/_10sdp"
             android:text="Logout"
             android:textSize="@dimen/_14sdp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppins_medium" />
 
 
     </LinearLayout>

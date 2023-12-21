@@ -42,8 +42,6 @@
                 android:layout_height="match_parent"
                 mapbox:mapbox_cameraTargetLat="0"
                 mapbox:mapbox_cameraTargetLng="0"
-                mapbox:mapbox_cameraZoomMax="14"
-                mapbox:mapbox_cameraZoomMin="4"
                 mapbox:mapbox_cameraZoom="9.0" />
 
             <LinearLayout
@@ -67,7 +65,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/_3sdp"
+                    android:singleLine="true"
                     android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="Click on a stop or a line to access real - time information"
                     android:textSize="@dimen/_9sdp" />
 

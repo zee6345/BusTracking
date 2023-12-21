@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -136,6 +137,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         }
     };
     private StopsDao stopsDao;
+    private RoutesDao routesDao;
     private Route route;
 
     private void updateMarkerOnMap(double lat, double lon) {
@@ -184,7 +186,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
         //init dao
-        RoutesDao routesDao = appDb().routesDao();
+        routesDao = appDb().routesDao();
         stopsDao = appDb().stopsDao();
 
 
@@ -294,6 +296,16 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         binding.llParent.lvMsg.setVisibility(route.getDescription().isEmpty() ? View.GONE : View.VISIBLE);
         binding.llParent.tvText.setText(route.getDescription());
         binding.llParent.lvConnectVehicle.setVisibility(route.isVehicleConnected() ? View.VISIBLE : View.GONE);
+        binding.llParent.ivCheck.setImageResource(route.isFavourite() ? com.app.bustracking.R.drawable.ic_check_filled : com.app.bustracking.R.drawable.ic_check_unfilled);
+        binding.llParent.ivCheck.setOnClickListener(v -> {
+            binding.llParent.ivCheck.setImageResource(route.isFavourite() ? com.app.bustracking.R.drawable.ic_check_unfilled : com.app.bustracking.R.drawable.ic_check_filled);
+            route.setFavourite(!route.isFavourite());
+            routesDao.updateFav(route);
+        });
+
+
+        binding.llParent.ivIcon.setText(getStartingCharacters(route.getRoute_title() != null ? route.getRoute_title() : ""));
+        binding.llParent.ivHeader.setBackground(new ColorDrawable(Color.parseColor(route.getColor())));
 
 
         if (!route.getStop().isEmpty()) {
@@ -454,6 +466,14 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
     }
 
+    private String getStartingCharacters(String inputString) {
+        // Remove leading and trailing spaces
+        String trimmedString = inputString.trim();
+
+        // Extract the starting 2 characters
+        return trimmedString.substring(0, Math.min(2, trimmedString.length()));
+    }
+
 
     private void drawRouteOnMap(@NonNull Style style, DirectionsRoute route) {
         try {
@@ -475,7 +495,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             style.addLayer(new LineLayer("route-layer", "route-source").withProperties(
 //                PropertyFactory.lineColor(Color.RED),
                     PropertyFactory.lineColor(Color.parseColor(routeColor)),
-                    PropertyFactory.lineWidth(3f)
+                    PropertyFactory.lineWidth(6f)
             ));
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.bustracking.R
 import com.app.bustracking.app.AppService
 import com.app.bustracking.data.local.RoutesDao
@@ -36,11 +38,12 @@ class RoutesFragment : BaseFragment() {
     private lateinit var binding: FragmentRoutesBinding
     private lateinit var navController: NavController
 
-    private var isFavExpand = false
-    private var isAllExpand = false
     private lateinit var lineAdapter: RoutesAdapter
     private lateinit var favAdapter: RoutesAdapter
     private lateinit var routeDao: RoutesDao
+
+    private var isFavExpand = false
+    private var isAllExpand = false
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -116,6 +119,12 @@ class RoutesFragment : BaseFragment() {
         val routesList = routeDao.fetchRoutes()
 
 
+        binding.rvLines.setHasFixedSize(true)
+        binding.rvFavorite.setHasFixedSize(true)
+        binding.rvLines.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvFavorite.layoutManager = LinearLayoutManager(requireContext())
+
+
         favAdapter = RoutesAdapter(routeDao) { route, position ->
             val args = Bundle()
             args.putInt(ARGS, route.routeId)
@@ -141,9 +150,7 @@ class RoutesFragment : BaseFragment() {
         binding.rvFavorite.adapter = favAdapter
 
 
-
         updateUI(favouriteRoutes, routesList)
-
 
         handleClickEvents()
 
@@ -166,8 +173,6 @@ class RoutesFragment : BaseFragment() {
         binding.toolbar.tvTitle.text = "Routes"
         binding.toolbar.ivSearch.visibility = View.GONE
 
-        binding.rvLines.setHasFixedSize(true)
-        binding.rvFavorite.setHasFixedSize(true)
     }
 
     private fun updateUI(
@@ -199,13 +204,4 @@ class RoutesFragment : BaseFragment() {
             lineAdapter.updateList(it)
         }
     }
-
-    override fun onDestroy() {
-
-
-//        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(broadcastReceiver)
-
-        super.onDestroy()
-    }
-
 }

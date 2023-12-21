@@ -26,4 +26,8 @@ data class Route(
     val updated_at: String? = null,
     var isFavourite: Boolean = false,
     var isVehicleConnected:Boolean = false
-) : Serializable
+) : Serializable{
+    override fun toString(): String {
+        return "Route(routeId=$routeId, agency_id=$agency_id, bus_id=$bus_id, color=$color, created_at=$created_at, description=$description, direction_id=$direction_id, latitude=$latitude, longitude=$longitude, route_title=$route_title, stop=$stop, travel_id=$travel_id, trip_distance='$trip_distance', type=$type, updated_at=$updated_at, isFavourite=$isFavourite, isVehicleConnected=$isVehicleConnected)"
+    }
+}

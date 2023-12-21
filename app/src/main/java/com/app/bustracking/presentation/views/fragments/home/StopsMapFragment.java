@@ -436,7 +436,7 @@ public class StopsMapFragment extends BaseFragment {
                         style.addLayer(new LineLayer("route-layer-" + route.hashCode(),
                                 "route-source-" + route.hashCode())
                                 .withProperties(
-                                        PropertyFactory.lineWidth(4f),
+                                        PropertyFactory.lineWidth(6f),
                                         PropertyFactory.lineColor(Color.parseColor(route.getColor()))
                                 ));
                     }

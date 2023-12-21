@@ -1,6 +1,8 @@
 package com.app.bustracking.presentation.ui
 
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +13,15 @@ import com.app.bustracking.databinding.ItemRouteBinding
 
 
 class RoutesAdapter(
-
     private val routesDao: RoutesDao,
     val onItemClick: (route: Route, position: Int) -> Unit
 ) : RecyclerView.Adapter<RoutesAdapter.ViewHolder>() {
 
-    private var itemList:List<Route> = emptyList()
+    private var itemList: List<Route> = emptyList()
 
     fun updateList(newList: List<Route>) {
         itemList = newList
-        notifyDataSetChanged() // Notify the adapter that the data set has changed
+        notifyDataSetChanged()
     }
 
     class ViewHolder(
@@ -38,6 +39,15 @@ class RoutesAdapter(
 
             _binding.tvTitle.text = "${route.route_title}"
             _binding.ivCheck.setImageResource(if (route.isFavourite) com.app.bustracking.R.drawable.ic_check_filled else com.app.bustracking.R.drawable.ic_check_unfilled)
+            route.color?.let {
+                val headerColor = Color.parseColor(it)
+                _binding.ivHeader.background = ColorDrawable(headerColor)
+            }
+
+            route.route_title?.let {
+                _binding.tvHeader.text = getStartingCharacters(it)
+            }
+
 
             _binding.ivCheck.setOnClickListener {
                 _binding.ivCheck.setImageResource(if (route.isFavourite) com.app.bustracking.R.drawable.ic_check_unfilled else com.app.bustracking.R.drawable.ic_check_filled)
@@ -51,40 +61,16 @@ class RoutesAdapter(
 
             //hide connected status
             _binding.lvMsg.visibility = if (route.isVehicleConnected) View.VISIBLE else View.GONE
-
-//            route.color?.let {
-//                _binding.ivIcon.background = ColorDrawable(Integer.parseInt(route.color.replace("#","")))
-//            }
-
-
         }
 
+        private fun getStartingCharacters(inputString: String): String {
+            // Remove leading and trailing spaces
+            val trimmedString = inputString.trim()
 
-//        private fun generateRandomColor(): ColorDrawable {
-//            val random = Random()
-//            val red = random.nextInt(256) // Random value between 0 and 255 for red
-//            val green = random.nextInt(256) // Random value between 0 and 255 for green
-//            val blue = random.nextInt(256) // Random value between 0 and 255 for blue
-//
-//            val backgroundColor = Color.rgb(red, green, blue)
-//
-//            // Create and return the random color
-//            return ColorDrawable(backgroundColor)
-//        }
+            // Extract the starting 2 characters
+            return trimmedString.substring(0, minOf(2, trimmedString.length))
+        }
 
-
-//        private fun getRandomColor(context: Context): Drawable? {
-//            // Retrieve the color array from resources
-//            val colors = context.resources.obtainTypedArray(com.app.bustracking.R.array.colorArray)
-//            // Get a random index
-//            val randomIndex = (Math.random() * colors.length()).toInt()
-//            // Get the color resource ID at the random index
-//            val colorResourceId = colors.getResourceId(randomIndex, 0)
-//            // Recycle the TypedArray to avoid memory leaks
-//            colors.recycle()
-//            // Get the actual color value using the resource ID
-//            return ColorDrawable(ContextCompat.getColor(context, colorResourceId))
-//        }
 
     }
 

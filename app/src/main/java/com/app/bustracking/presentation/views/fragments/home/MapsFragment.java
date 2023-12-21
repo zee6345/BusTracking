@@ -201,7 +201,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
                         style.addSource(geoJsonSource);
 
                         // Add layer
-                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(), "route-source-" + route.hashCode()).withProperties(PropertyFactory.lineWidth(4f), PropertyFactory.lineColor(Color.parseColor(route.getColor()))));
+                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(), "route-source-" + route.hashCode()).withProperties(PropertyFactory.lineWidth(6f), PropertyFactory.lineColor(Color.parseColor(route.getColor()))));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

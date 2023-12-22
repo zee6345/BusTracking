@@ -186,8 +186,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
         //init dao
-        routesDao = appDb().routesDao();
-        stopsDao = appDb().stopsDao();
+        routesDao = getAppDb().routesDao();
+        stopsDao = getAppDb().stopsDao();
 
 
         //fetch data from db

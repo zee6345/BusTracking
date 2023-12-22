@@ -44,14 +44,14 @@ public interface RoutesDao {
     @Query("select * from route where routeId=:travelId")
     Route fetchRoute(int travelId);
 
-    @Query("select color from route where travel_id=:travelId")
-    String fetchRouteColor(int travelId);
-
-    @Query("update route set isFavourite=:favourite where routeId=:travelId and isFavourite=0")
-    void addFavourite(int travelId, int favourite);
-
-    @Query("update route set isFavourite=:favourite where routeId=:travelId and isFavourite=1")
-    void removeFavourite(int travelId, int favourite);
+//    @Query("select color from route where travel_id=:travelId")
+//    String fetchRouteColor(int travelId);
+//
+//    @Query("update route set isFavourite=:favourite where routeId=:travelId and isFavourite=0")
+//    void addFavourite(int travelId, int favourite);
+//
+//    @Query("update route set isFavourite=:favourite where routeId=:travelId and isFavourite=1")
+//    void removeFavourite(int travelId, int favourite);
 
     @Update
     void updateFav(Route route);

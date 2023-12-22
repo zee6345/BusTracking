@@ -2,10 +2,15 @@ package com.app.bustracking.presentation.views.activities
 
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.NavigationUI.setupWithNavController
+import androidx.navigation.ui.NavigationUiSaveStateControl
 import com.app.bustracking.databinding.ActivityHomeBinding
 import com.app.bustracking.presentation.views.fragments.home.StopsFragment
 import com.app.bustracking.presentation.views.fragments.main.SelectNetworkFragment
@@ -28,6 +33,7 @@ class HomeActivity : BaseActivity() {
         .setExitAnim(com.app.bustracking.R.anim.slide_out)
         .build()
 
+    @OptIn(NavigationUiSaveStateControl::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = binding
@@ -36,13 +42,12 @@ class HomeActivity : BaseActivity() {
         //reset
         SelectNetworkFragment.isActivityLaunched = false
 
-        navController = findNavController(com.app.bustracking.R.id.fl_container_02)
-        NavigationUI.setupWithNavController(binding.bottomNav, navController);
 
-        binding.motionLayout.transitionToStart()
+        navController = findNavController(com.app.bustracking.R.id.fl_container_02)
+        setupWithNavController(binding.bottomNav, navController)
+
 
         binding.bottomNav.setOnNavigationItemSelectedListener { item ->
-            binding.motionLayout.transitionToEnd()
             var destinationId = 0
             when (item.itemId) {
                 com.app.bustracking.R.id.mapsFragment -> destinationId =
@@ -52,7 +57,6 @@ class HomeActivity : BaseActivity() {
                     com.app.bustracking.R.id.routesFragment
 
                 com.app.bustracking.R.id.stopsFragment -> {
-                    StopsFragment.ARGMAIN = null  //reset args
                     destinationId = com.app.bustracking.R.id.stopsFragment
                 }
 
@@ -71,17 +75,11 @@ class HomeActivity : BaseActivity() {
             }
         }
 
-//        try {
-//
-//            navController = findNavController(R.id.fl_container_02)
-//            binding.bottomNav.setupWithNavController(navController)
-//
-//
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
 
-//        val navHostFragment = supportFragmentManager.findFragmentById(com.app.bustracking.R.id.fl_container_02) as NavHostFragment?
+
+
+//        val navHostFragment =
+//            supportFragmentManager.findFragmentById(com.app.bustracking.R.id.fl_container_02) as NavHostFragment?
 //        if (navHostFragment != null) {
 //            navController = navHostFragment.navController
 //            setupWithNavController(binding.bottomNav, navController)

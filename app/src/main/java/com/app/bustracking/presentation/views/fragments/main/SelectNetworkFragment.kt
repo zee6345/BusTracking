@@ -67,9 +67,9 @@ class SelectNetworkFragment : BaseFragment() {
         val dialog = showProgress()
         progress = Progress(requireActivity()).showProgress()
 
-        val routesDao = appDb().routesDao()
-        val stopsDao = appDb().stopsDao()
-        val travelDao = appDb().travelDao()
+        val routesDao = appDb.routesDao()
+        val stopsDao = appDb.stopsDao()
+        val travelDao = appDb.travelDao()
 
 
         //if agency already selected, route to main

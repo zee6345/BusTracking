@@ -9,12 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.app.bustracking.R
 import com.app.bustracking.app.AppService
 import com.app.bustracking.data.local.Database
+import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.utils.Constants
 import com.pixplicity.easyprefs.library.Prefs
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +25,10 @@ import dagger.hilt.android.AndroidEntryPoint
 abstract class BaseFragment : Fragment() {
 
     abstract fun initNavigation(navController: NavController)
+
+    val appDb by lazy {
+        Database.init(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +48,7 @@ abstract class BaseFragment : Fragment() {
 //        if (!AppService.alreadyRunning) {
         //location service
         val agencyId = Prefs.getInt(Constants.agencyId)
-        val routeDao = appDb().routesDao()
+        val routeDao = appDb.routesDao()
         val busId = routeDao.fetchBusId(agencyId)
 
         val locationIntent = Intent(requireActivity(), AppService::class.java)
@@ -50,6 +56,8 @@ abstract class BaseFragment : Fragment() {
         requireActivity().startService(locationIntent)
 
 //        }
+
+
 
 
 
@@ -64,19 +72,10 @@ abstract class BaseFragment : Fragment() {
             .build()
     }
 
-    fun appDb(): Database {
-        return Database.init(requireActivity())
-    }
-
-
     fun showProgress(): AlertDialog {
         return AlertDialog.Builder(requireActivity(), R.style.TransparentAlertDialogTheme)
             .setView(R.layout.item_progress)
             .create()
-    }
-
-    fun noRouteDialog(){
-
     }
 
     fun showMessage(str: String) {

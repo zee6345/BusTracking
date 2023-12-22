@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
@@ -31,7 +32,6 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
-import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -73,6 +73,18 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         this.navController = navController;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                requireActivity().finish();
+            }
+        });
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -91,8 +103,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         binding.tvTitle.setText("Maps");
 
         //fetch data from db
-        routesDao = appDb().routesDao();
-        stopsDao = appDb().stopsDao();
+        routesDao = getAppDb().routesDao();
+        stopsDao = getAppDb().stopsDao();
 
         mapView.getMapAsync(this);
 
@@ -104,14 +116,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
         try {
 
-            mapboxMap.animateCamera(
-                    CameraUpdateFactory.newCameraPosition(
-                            new CameraPosition.Builder()
-                                    .target(coordinatesList.get(0))
-                                    .zoom(11.5)
-                                    .build()
-                    )
-            );
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(coordinatesList.get(0)).zoom(11.5).build()));
 
 //            int padding = 100;
 //            if (coordinatesList.size() > 10) {

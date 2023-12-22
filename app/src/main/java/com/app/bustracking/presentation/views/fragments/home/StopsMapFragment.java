@@ -163,8 +163,8 @@ public class StopsMapFragment extends BaseFragment {
         requireActivity().registerReceiver(broadcastReceiver, filter);
 
         //init dao
-        routesDao = appDb().routesDao();
-        stopsDao = appDb().stopsDao();
+        routesDao = getAppDb().routesDao();
+        stopsDao = getAppDb().stopsDao();
 
 
         mapView = binding.mapBoxView;
@@ -172,6 +172,10 @@ public class StopsMapFragment extends BaseFragment {
 
         try {
             stopId = getArguments().getInt(RoutesFragmentKt.ARGS);
+
+            //reset
+            StopsFragment.Companion.setARGMAIN(null);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -6,7 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,9 +22,6 @@ import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -44,6 +42,8 @@ class RoutesFragment : BaseFragment() {
 
     private var isFavExpand = false
     private var isAllExpand = false
+
+    private var isLoaded = false
 
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -77,7 +77,7 @@ class RoutesFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true){
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navController.navigate(R.id.mapsFragment)
             }
@@ -114,7 +114,7 @@ class RoutesFragment : BaseFragment() {
 
         initData()
 
-        routeDao = appDb().routesDao()
+        routeDao = appDb.routesDao()
         val favouriteRoutes = routeDao.fetchFavouriteRoutes()
         val routesList = routeDao.fetchRoutes()
 
@@ -152,8 +152,8 @@ class RoutesFragment : BaseFragment() {
 
         updateUI(favouriteRoutes, routesList)
 
-        handleClickEvents()
 
+        handleClickEvents()
 
     }
 
@@ -176,8 +176,8 @@ class RoutesFragment : BaseFragment() {
     }
 
     private fun updateUI(
-        favouriteRoutes: LiveData<MutableList<Route>>,
-        routesList: LiveData<MutableList<Route>>
+        favouriteRoutes: LiveData<List<Route>>,
+        routesList: LiveData<List<Route>>
     ) {
 
         favouriteRoutes.observe(viewLifecycleOwner) {

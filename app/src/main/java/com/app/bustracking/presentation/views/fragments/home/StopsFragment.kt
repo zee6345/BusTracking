@@ -62,7 +62,7 @@ class StopsFragment : BaseFragment() {
         binding.toolbar.ivSearch.visibility = View.GONE
 
 
-        stopsDao = appDb().stopsDao()
+        stopsDao = appDb.stopsDao()
 
         agencyId = Prefs.getInt(Constants.agencyId)
         val stops = stopsDao.fetchStops(agencyId!!)

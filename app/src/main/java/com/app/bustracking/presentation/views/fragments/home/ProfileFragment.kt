@@ -10,6 +10,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import com.app.bustracking.BuildConfig
 import com.app.bustracking.R
 import com.app.bustracking.app.AppService
 import com.app.bustracking.databinding.FragmentProfileBinding
@@ -18,6 +19,7 @@ import com.app.bustracking.presentation.views.activities.MainActivity
 import com.app.bustracking.presentation.views.fragments.BaseFragment
 import com.app.bustracking.utils.Constants
 import com.app.bustracking.utils.Progress
+import com.bumptech.glide.Glide
 import com.pixplicity.easyprefs.library.Prefs
 
 
@@ -36,7 +38,7 @@ class ProfileFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true){
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navController.navigate(R.id.mapsFragment)
             }
@@ -58,7 +60,16 @@ class ProfileFragment : BaseFragment() {
         binding.toolbar.ivSearch.visibility = View.GONE
 
         val agencyName = Prefs.getString(Constants.agencyName)
-        binding.tvAgency.text = agencyName
+        val agencyIcon = Prefs.getString(Constants.agencyIcon)
+
+
+        binding.tvAgency.text = "v ${BuildConfig.VERSION_NAME}"
+        binding.AgencyName.text = agencyName
+        Glide.with(requireActivity())
+            .load(agencyIcon)
+            .into(binding.agencyIcon)
+
+
 
         progress = Progress(requireActivity()).showProgress(onCancel = {
             progress.dismiss()
@@ -80,10 +91,9 @@ class ProfileFragment : BaseFragment() {
         binding.llChangeNetwork.setOnClickListener {
 
             //clear prefs
-//            Prefs.clear()
-//            Prefs.getAll().clear()
             Prefs.remove(Constants.agencyId)
             Prefs.remove(Constants.agencyName)
+
 
             val intent = Intent(requireActivity(), MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -93,6 +103,10 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.llLanguage.setOnClickListener {
+            Toast.makeText(requireActivity(), "coming soon!", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.llFavourite.setOnClickListener {
             Toast.makeText(requireActivity(), "coming soon!", Toast.LENGTH_SHORT).show()
         }
 

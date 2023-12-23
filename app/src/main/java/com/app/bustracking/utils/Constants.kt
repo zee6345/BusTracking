@@ -2,6 +2,7 @@ package com.app.bustracking.utils
 
 object Constants {
 
+    const val agencyIcon = "agency_icon"
     const val agencyId = "agent_id"
     const val agencyName = "agent_name"
     const val isLogin = "isUserAlreadyLogin"

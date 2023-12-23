@@ -7,6 +7,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
+import com.app.bustracking.app.AppService;
 import com.app.bustracking.data.local.RoutesDao;
 import com.app.bustracking.data.local.StopsDao;
 import com.app.bustracking.data.responseModel.Route;
@@ -25,6 +27,7 @@ import com.app.bustracking.databinding.FragmentMapsBinding;
 import com.app.bustracking.presentation.model.CustomMapObject;
 import com.app.bustracking.presentation.views.activities.HomeActivity;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
+import com.app.bustracking.utils.OnLocationReceive;
 import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
@@ -56,7 +59,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback, OnLocationReceive {
 
     MapboxMap mapbox;
     RoutesDao routesDao;
@@ -101,6 +104,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         mapView.onCreate(savedInstanceState);
 
         binding.tvTitle.setText("Maps");
+
+        AppService.onLocationReceive = MapsFragment.this;
+
 
         //fetch data from db
         routesDao = getAppDb().routesDao();
@@ -148,12 +154,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
 
         SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
-        symbolManager.setIconAllowOverlap(true);
+        symbolManager.setIconAllowOverlap(false);
+
 
         //
 //        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(requireActivity().getResources(), com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default));
-
         style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
+
 
 
         for (Stop stop : stops) {
@@ -178,7 +185,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         // Add a GeoJson source for markers
         style.addSource(new GeoJsonSource("source-id-" + route.hashCode(), FeatureCollection.fromFeatures(featuresList)));
         // Add a SymbolLayer to display markers
-        style.addLayer(new SymbolLayer(LAYER_ID, "source-id-" + route.hashCode()).withProperties(iconImage("icon-id-" + route.hashCode()), iconAllowOverlap(true), iconIgnorePlacement(true)));
+        style.addLayer(new SymbolLayer(LAYER_ID, "source-id-" + route.hashCode()).withProperties(iconImage("icon-id-" + route.hashCode()), iconAllowOverlap(false), iconIgnorePlacement(true)));
 
 
         MapboxDirections directionsClient = MapboxDirections.builder().origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude())).destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude())).accessToken(getString(R.string.mapbox_access_token)).overview("full").profile("driving-traffic").steps(true).build();
@@ -349,5 +356,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         } else {
             return null; // Return null if no match is found within the threshold
         }
+    }
+
+    @Override
+    public void onLocationReceive(String jsonData) {
+//        Log.e("mTAG", "onLocationReceive: "  + jsonData);
     }
 }

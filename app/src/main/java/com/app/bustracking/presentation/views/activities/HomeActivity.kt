@@ -2,15 +2,10 @@ package com.app.bustracking.presentation.views.activities
 
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.NavigationUI.setupWithNavController
-import androidx.navigation.ui.NavigationUiSaveStateControl
 import com.app.bustracking.databinding.ActivityHomeBinding
 import com.app.bustracking.presentation.views.fragments.home.StopsFragment
 import com.app.bustracking.presentation.views.fragments.main.SelectNetworkFragment
@@ -33,7 +28,6 @@ class HomeActivity : BaseActivity() {
         .setExitAnim(com.app.bustracking.R.anim.slide_out)
         .build()
 
-    @OptIn(NavigationUiSaveStateControl::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = binding
@@ -74,8 +68,6 @@ class HomeActivity : BaseActivity() {
                 return@setOnNavigationItemSelectedListener false;
             }
         }
-
-
 
 
 //        val navHostFragment =

@@ -9,24 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.app.bustracking.R
 import com.app.bustracking.app.AppService
 import com.app.bustracking.data.local.Database
-import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.utils.Constants
+import com.app.bustracking.utils.OnLocationReceive
 import com.pixplicity.easyprefs.library.Prefs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment(), OnLocationReceive {
 
     abstract fun initNavigation(navController: NavController)
 
-    val appDb by lazy {
+    val appDb: Database by lazy {
         Database.init(requireActivity())
     }
 
@@ -38,11 +37,14 @@ abstract class BaseFragment : Fragment() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val controller = NavHostFragment.findNavController(this)
         initNavigation(controller)
+
+        AppService.onLocationReceive = this@BaseFragment
 
 
 //        if (!AppService.alreadyRunning) {
@@ -58,10 +60,8 @@ abstract class BaseFragment : Fragment() {
 //        }
 
 
-
-
-
     }
+
 
     fun navOptions(): NavOptions {
         return NavOptions.Builder()
@@ -87,6 +87,10 @@ abstract class BaseFragment : Fragment() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         requireActivity().finishAffinity()
+    }
+
+    override fun onLocationReceive(jsonData: String?) {
+        //ignore
     }
 
 }

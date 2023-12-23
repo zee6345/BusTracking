@@ -40,6 +40,7 @@ import com.app.bustracking.databinding.FragmentRoutesMapBinding;
 import com.app.bustracking.presentation.ui.RoutesMapAdapter;
 import com.app.bustracking.presentation.views.activities.HomeActivity;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
+import com.app.bustracking.utils.OnLocationReceive;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -82,7 +83,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallback, PermissionsListener {
+public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallback, PermissionsListener, OnLocationReceive {
 
     //    List<Marker> markers = new ArrayList<>();
     SymbolManager symbolManager;
@@ -181,9 +182,10 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        IntentFilter filter = new IntentFilter(AppService.RECEIVER_ACTION);
-        requireActivity().registerReceiver(broadcastReceiver, filter);
+//        IntentFilter filter = new IntentFilter(AppService.RECEIVER_ACTION);
+//        requireActivity().registerReceiver(broadcastReceiver, filter);
 
+        AppService.onLocationReceive = RoutesMapFragment.this;
 
         //init dao
         routesDao = getAppDb().routesDao();
@@ -588,6 +590,31 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             );
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onLocationReceive(String jsonData) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonData);
+            String data = jsonObject.getString("data");
+            String location = new JSONObject(data).getString("location");
+            double lat = new JSONObject(location).getDouble("lat");
+            double lon = new JSONObject(location).getDouble("long");
+
+            latitudeBus = lat;
+            longitudeBus = lon;
+
+//                        locationMarker.setLatLng(new LatLng(lat, lon));
+//                        symbolManager.update(locationMarker);
+
+            requireActivity().runOnUiThread(()->{
+                updateMarkerOnMap(lat, lon);
+            });
+
+
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }

@@ -40,7 +40,7 @@ class StopsAdapter(
             _binding.ivCheck.setOnClickListener {
                 _binding.ivCheck.setImageResource(if (travel.isFavourite) R.drawable.ic_check_filled else R.drawable.ic_check_unfilled)
                 travel.isFavourite = !travel.isFavourite
-                stopsDao.updateFav(travel)
+                stopsDao.updateStop(travel)
             }
 
 //            _binding.tvText.text = travel.travel_description

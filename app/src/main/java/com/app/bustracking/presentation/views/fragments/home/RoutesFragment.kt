@@ -22,6 +22,7 @@ import com.app.bustracking.data.responseModel.Route
 import com.app.bustracking.databinding.FragmentRoutesBinding
 import com.app.bustracking.presentation.ui.RoutesAdapter
 import com.app.bustracking.presentation.views.fragments.BaseFragment
+import com.app.bustracking.utils.OnLocationReceive
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -31,7 +32,7 @@ const val ARGS_LNG = "lng"
 
 const val TAG = "mmTAG"
 
-class RoutesFragment : BaseFragment() {
+class RoutesFragment : BaseFragment(), OnLocationReceive {
 
     private lateinit var binding: FragmentRoutesBinding
     private lateinit var navController: NavController
@@ -92,10 +93,10 @@ class RoutesFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
 
-        requireActivity().registerReceiver(
-            broadcastReceiver,
-            IntentFilter(AppService.RECEIVER_ACTION)
-        )
+//        requireActivity().registerReceiver(
+//            broadcastReceiver,
+//            IntentFilter(AppService.RECEIVER_ACTION)
+//        )
 
 
     }
@@ -173,6 +174,8 @@ class RoutesFragment : BaseFragment() {
         binding.toolbar.tvTitle.text = "Routes"
         binding.toolbar.ivSearch.visibility = View.GONE
 
+        AppService.onLocationReceive = this@RoutesFragment
+
     }
 
     private fun updateUI(
@@ -202,6 +205,33 @@ class RoutesFragment : BaseFragment() {
             }
 
             lineAdapter.updateList(it)
+        }
+    }
+
+    override fun onLocationReceive(jsonData: String?) {
+        try {
+            val jsonObject = JSONObject(jsonData!!)
+            val data = jsonObject.getString("data")
+            val location = JSONObject(data).getString("location")
+            val lat = JSONObject(location).getDouble("lat")
+            val lon = JSONObject(location).getDouble("long")
+            val busId = JSONObject(location).getInt("bus_id")
+
+            //update vehicle status in database
+            val route = routeDao.fetchRouteByBusId(busId)
+            route.forEach {
+                it.isVehicleConnected = true
+                routeDao.updateVehicleStatus(it)
+            }
+
+        } catch (e: JSONException) {
+            e.printStackTrace()
+
+            val route = routeDao.fetchAllRoutes()
+            route.forEach {
+                it.isVehicleConnected = false
+                routeDao.updateVehicleStatus(it)
+            }
         }
     }
 }

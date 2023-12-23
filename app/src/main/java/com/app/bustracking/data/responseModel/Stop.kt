@@ -15,7 +15,7 @@ data class Stop(
     val lat: String? = null,
     val lng: String? = null,
     val route_id: Int? = null,
-    val stop_time: String? = null,
+    var stop_time: String? = null,
     val stop_title: String? = null,
     val updated_at: String? = null,
     var isFavourite:Boolean = false

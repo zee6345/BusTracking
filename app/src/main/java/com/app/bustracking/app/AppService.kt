@@ -16,6 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.app.bustracking.R
 import com.app.bustracking.presentation.views.activities.MainActivity
+import com.app.bustracking.utils.OnLocationReceive
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.PusherEvent
@@ -30,8 +31,9 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
         var alreadyRunning = false
         const val RECEIVER_ACTION = "My_Action_Event"
         const val RECEIVER_DATA = "json_data"
-
+        lateinit var onLocationReceive: OnLocationReceive
     }
+
 
     private val timerHandler = Handler(Looper.getMainLooper())
     private var totalRunningTime: Long = 0
@@ -117,7 +119,6 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
         //content
         pusher.connect(this, ConnectionState.ALL)
 
-
     }
 
     private fun startTimer() {
@@ -137,20 +138,22 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
     }
 
     override fun onConnectionStateChange(change: ConnectionStateChange?) {
-        Log.e(
+        Log.i(
             "Pusher", "State changed from " + change!!.previousState + " to " + change.currentState
         )
     }
 
     override fun onError(message: String?, code: String?, e: Exception?) {
-        Log.e(
+        Log.i(
             "Pusher",
             "There was a problem connecting! " + "\ncode: " + code + "\nmessage: " + message + "\nException: " + e
         )
+
+//        onLocationReceive.onLocationReceive("")
     }
 
     override fun onEvent(event: PusherEvent?) {
-        Log.e("Pusher", "Received event with data: " + event.toString());
+        Log.i("Pusher", "Received event with data: " + event.toString());
         val jsonString = event.toString()
         if (jsonString.isNotEmpty()) {
             val intent = Intent(RECEIVER_ACTION)
@@ -158,7 +161,16 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
 
 //            LocalBroadcastManager.getInstance(this)
 //                .sendBroadcast(intent)
-            sendBroadcast(intent)
+
+
+//            sendBroadcast(intent)
+
+            try {
+                onLocationReceive.onLocationReceive(jsonString)
+            } catch (e: Exception) {
+
+            }
+
         }
     }
 

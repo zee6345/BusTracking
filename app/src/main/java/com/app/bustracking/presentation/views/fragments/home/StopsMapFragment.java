@@ -8,7 +8,8 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -32,14 +33,19 @@ import com.app.bustracking.databinding.FragmentStopsMapBinding;
 import com.app.bustracking.presentation.ui.RoutesMapAdapter;
 import com.app.bustracking.presentation.ui.StopMapTimeAdapter;
 import com.app.bustracking.presentation.views.fragments.BaseFragment;
+import com.app.bustracking.utils.OnLocationReceive;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+import com.mapbox.api.directions.v5.models.LegStep;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -69,7 +75,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class StopsMapFragment extends BaseFragment {
+public class StopsMapFragment extends BaseFragment implements OnLocationReceive {
 
     public static final String TAG = StopsMapFragment.class.getSimpleName();
     public static String ARGS = "data";
@@ -84,6 +90,10 @@ public class StopsMapFragment extends BaseFragment {
     StopsDao stopsDao;
     BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     BottomSheetBehavior<LinearLayout> bottomStopTimeSheet = null;
+    Double latitude = 0.0;
+    Double longitude = 0.0;
+
+    private Marker marker;
     private NavController navController;
     private FragmentStopsMapBinding binding;
     private MapView mapView;
@@ -159,12 +169,14 @@ public class StopsMapFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 //        Mapbox.getInstance(requireActivity(), getString(com.app.bustracking.R.string.mapbox_access_token));
 
-        IntentFilter filter = new IntentFilter(AppService.RECEIVER_ACTION);
-        requireActivity().registerReceiver(broadcastReceiver, filter);
+//        IntentFilter filter = new IntentFilter(AppService.RECEIVER_ACTION);
+//        requireActivity().registerReceiver(broadcastReceiver, filter);
 
         //init dao
         routesDao = getAppDb().routesDao();
         stopsDao = getAppDb().stopsDao();
+
+        AppService.onLocationReceive = StopsMapFragment.this;
 
 
         mapView = binding.mapBoxView;
@@ -189,6 +201,8 @@ public class StopsMapFragment extends BaseFragment {
                     style -> {
                         this.mapbox = mapboxMap;
 
+                        setupMap();
+
 //                        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
 //                        mapboxMap.setMaxZoomPreference(12);
 
@@ -202,6 +216,7 @@ public class StopsMapFragment extends BaseFragment {
                         List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
                         for (Route route : routeList) {
                             if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
+
                                 drawRouteOnMap(mapboxMap, style, route);
 
                                 //animate camera
@@ -219,17 +234,13 @@ public class StopsMapFragment extends BaseFragment {
 
                 mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 15));
 
-
                 LatLng closestCoordinate = getClosestCoordinate(point);
                 if (closestCoordinate != null) {
                     Stop stop = stopsDao.stopByLatLng(closestCoordinate.getLatitude(), closestCoordinate.getLongitude());
 
                     //refresh bottom sheet
-                    try {
-                        handleBottomSheet(stop);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    handleBottomSheet(stop);
+
                 }
 
                 return true;
@@ -237,11 +248,7 @@ public class StopsMapFragment extends BaseFragment {
         });
 
 
-        try {
-            handleBottomSheet(fetchedStop);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        handleBottomSheet(fetchedStop);
 
 
         try {
@@ -270,74 +277,85 @@ public class StopsMapFragment extends BaseFragment {
     }
 
 
-    private void handleBottomSheet(Stop stops) throws Exception {
-        List<LatLng> coordinatesList = new ArrayList<>();
+    private void handleBottomSheet(Stop stops) {
+        try {
+            List<LatLng> coordinatesList = new ArrayList<>();
 
-        TypedValue typedValue = new TypedValue();
-        int actionBarHeight = 0;
-        if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
+            int routeId = stopsDao.fetchRouteId(stops.getStopId());
+            Route route = routesDao.fetchRouteById(routeId);
+
+            for (Stop stop : route.getStop()) {
+                coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
+            }
+
+            TypedValue typedValue = new TypedValue();
+            int actionBarHeight = 0;
+            if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
+            }
+            int maxBottomSheetHeight = getResources().getDisplayMetrics().heightPixels - actionBarHeight;
+
+
+            /**
+             * show stop with route title
+             */
+            bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            bottomSheetBehavior.setHideable(false);
+            bottomSheetBehavior.setPeekHeight(maxBottomSheetHeight);
+
+            binding.llStop.tvTitle.setVisibility(route.getRoute_title() == null ? View.GONE : View.VISIBLE);
+            binding.llStop.tvTitle.setText(route.getRoute_title());
+
+            binding.llStop.tvDesc.setVisibility(route.getDescription() == null ? View.GONE : View.VISIBLE);
+            binding.llStop.tvDesc.setText(route.getDescription());
+
+            binding.llStop.llRoute.setOnClickListener(v -> {
+
+                bottomSheetBehavior.setHideable(true);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+                //animate whole view
+                animateCamera(mapbox, coordinatesList);
+
+            });
+
+            binding.llStop.rvMapRoutes.setHasFixedSize(true);
+            binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), stopsDao, (stop, integer) -> {
+                animateCamera(mapbox, stop);
+                return null;
+            }));
+
+
+            /**
+             * show stop time for route
+             */
+
+            bottomStopTimeSheet = BottomSheetBehavior.from(binding.llStopTime.bottomTimeSheet);
+            bottomStopTimeSheet.setHideable(true);
+            bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
+            bottomStopTimeSheet.setPeekHeight(maxBottomSheetHeight);
+
+
+            binding.llStopTime.tvTitle.setVisibility(route.getRoute_title() == null ? View.GONE : View.VISIBLE);
+            binding.llStopTime.tvTitle.setText(route.getRoute_title());
+
+            binding.llStopTime.tvDesc.setVisibility(route.getDescription() == null ? View.GONE : View.VISIBLE);
+            binding.llStopTime.tvDesc.setText(route.getDescription());
+
+
+            binding.llStopTime.tvStopTimes.setHasFixedSize(true);
+
+            stopsDao.fetchAllStopsWithObserver().observe(getViewLifecycleOwner(), stops1 -> {
+                binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(stops1, (stop, integer) -> null));
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        int maxBottomSheetHeight = getResources().getDisplayMetrics().heightPixels - actionBarHeight;
-
-
-        /**
-         * show stop with route title
-         */
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.llStop.bottomLayout);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        bottomSheetBehavior.setHideable(false);
-
-        bottomSheetBehavior.setPeekHeight(maxBottomSheetHeight);
-
-
-        binding.llStop.rvMapRoutes.setHasFixedSize(true);
-        binding.llStop.rvMapRoutes.setAdapter(new RoutesMapAdapter(Collections.singletonList(stops), stopsDao, (stop, integer) -> {
-            animateCamera(mapbox, stop);
-            return null;
-        }));
-
-
-        /**
-         * show stop time for route
-         */
-
-        bottomStopTimeSheet = BottomSheetBehavior.from(binding.llStopTime.bottomTimeSheet);
-        bottomStopTimeSheet.setHideable(true);
-        bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_HIDDEN);
-        bottomStopTimeSheet.setPeekHeight(maxBottomSheetHeight);
-
-
-        int routeId = stopsDao.fetchRouteId(stops.getStopId());
-        Route route = routesDao.fetchRouteById(routeId);
-
-        for (Stop stop : route.getStop()) {
-            coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
-        }
-
-
-        binding.llStop.tvTitle.setVisibility(route.getRoute_title() == null ? View.GONE : View.VISIBLE);
-        binding.llStop.tvTitle.setText(route.getRoute_title());
-
-        binding.llStop.tvDesc.setVisibility(route.getDescription() == null ? View.GONE : View.VISIBLE);
-        binding.llStop.tvDesc.setText(route.getDescription());
-
-        binding.llStop.llRoute.setOnClickListener(v -> {
-
-            bottomSheetBehavior.setHideable(true);
-            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-
-            bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-
-            //animate whole view
-            animateCamera(mapbox, coordinatesList);
-
-        });
-
-        binding.llStopTime.tvStopTimes.setHasFixedSize(true);
-        binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(route.getStop(), (stop, integer) -> null));
-
     }
 
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
@@ -380,11 +398,6 @@ public class StopsMapFragment extends BaseFragment {
         symbolManager.setIconAllowOverlap(true);
 
         // Add a marker at the initial position
-//        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(
-//                requireActivity().getResources(),
-//                com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default
-//        ));
-
         style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
 
 
@@ -427,9 +440,10 @@ public class StopsMapFragment extends BaseFragment {
                     if (response.body() != null && !response.body().routes().isEmpty()) {
                         DirectionsRoute directionsRoute = response.body().routes().get(0);
 
-                        //
+
                         LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
                         List<Point> points = lineString.coordinates();
+
                         GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{
                                 Feature.fromGeometry(LineString.fromLngLats(points))
                         }));
@@ -443,6 +457,28 @@ public class StopsMapFragment extends BaseFragment {
                                         PropertyFactory.lineWidth(6f),
                                         PropertyFactory.lineColor(Color.parseColor(route.getColor()))
                                 ));
+
+
+                        List<LegStep> steps = directionsRoute.legs().get(0).steps();
+
+                        // Iterate up to steps.size() - 1 to avoid index out of bound error
+                        if (steps != null && !steps.isEmpty()) {
+                            int minSize = Math.min(steps.size() - 1, stops.size() - 1);
+
+                            for (int i = 0; i < minSize; i++) {
+                                LegStep step = steps.get(i);
+                                Stop startStop = stops.get(i);
+                                Stop endStop = stops.get(i + 1);
+
+                                // Update the duration for the start stop
+                                if (startStop != null && endStop != null) {
+                                    double legDuration = step.duration();
+                                    startStop.setStop_time(formatDuration(legDuration));
+                                    stopsDao.updateStop(startStop);
+                                }
+                            }
+                        }
+
                     }
 
                 } catch (Exception e) {
@@ -452,7 +488,6 @@ public class StopsMapFragment extends BaseFragment {
 
             @Override
             public void onFailure(Call<DirectionsResponse> call, Throwable t) {
-                // Handle failure
                 t.printStackTrace();
             }
         });
@@ -460,7 +495,6 @@ public class StopsMapFragment extends BaseFragment {
 
     private void animateCamera(MapboxMap mapboxMap, Stop stop) {
         LatLng latLng = new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng()));
-        // Padding to control the space around the bounds (in pixels)
         mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
@@ -544,4 +578,66 @@ public class StopsMapFragment extends BaseFragment {
             return null; // Return null if no match is found within the threshold
         }
     }
+
+    public void setupMap() {
+        Bitmap customBusIcon = BitmapFactory.decodeResource(getResources(), R.drawable.abc);
+        marker = mapbox.addMarker(
+                new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title("On the way")
+                        .icon(IconFactory.getInstance(requireContext()).fromBitmap(customBusIcon))
+        );
+    }
+
+    @Override
+    public void onLocationReceive(String jsonData) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonData);
+            String data = jsonObject.getString("data");
+            String location = new JSONObject(data).getString("location");
+            double lat = new JSONObject(location).getDouble("lat");
+            double lon = new JSONObject(location).getDouble("long");
+
+            latitudeBus = lat;
+            longitudeBus = lon;
+
+
+            requireActivity().runOnUiThread(() -> {
+                updateMarkerOnMap(lat, lon);
+            });
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateMarkerOnMap(double lat, double lon) {
+        if (marker != null && mapbox != null) {
+            LatLng newLatLng = new LatLng(lat, lon);
+            marker.setPosition(newLatLng);
+            mapbox.animateCamera(CameraUpdateFactory.newLatLng(newLatLng));
+        }
+    }
+
+    public String formatDuration(double durationInSeconds) {
+        int hours = (int) (durationInSeconds / 3600);
+        int minutes = (int) ((durationInSeconds % 3600) / 60);
+        int seconds = (int) (durationInSeconds % 60);
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
+    }
+
+//    private String formatDuration(double durationInSeconds) {
+//        // Format the duration as needed (e.g., convert seconds to minutes, hours, etc.)
+//        // Implement your logic to format the duration based on your requirements
+//        return String.format(Locale.getDefault(), "%.2f minutes", durationInSeconds / 60);
+//    }
+
+
 }

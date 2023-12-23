@@ -34,7 +34,7 @@ class RoutesMapAdapter(
             _binding.ivCheck.setOnClickListener {
                 _binding.ivCheck.setImageResource(if (stop.isFavourite) R.drawable.ic_check_unfilled else R.drawable.ic_check_filled)
                 stop.isFavourite = !stop.isFavourite
-                stopsDao.updateFav(stop)
+                stopsDao.updateStop(stop)
             }
 
             _binding.llRoute.setOnClickListener {

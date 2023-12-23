@@ -81,8 +81,15 @@ class SelectNetworkFragment : BaseFragment() {
         binding.rvNetwork.setHasFixedSize(true)
         val selectNetworkAdapter = SelectNetworkAdapter { obj, _ ->
 
+            //clear old prefs
+//            Prefs.remove(Constants.agencyId)
+//            Prefs.remove(Constants.agencyName)
+
+
+            //add selected to prefs
             Prefs.putInt(Constants.agencyId, obj.id)
             Prefs.putString(Constants.agencyName, obj.name)
+            Prefs.putString(Constants.agencyIcon, obj.photo)
 
             //get travel list by agency id
             data.getTravels(TravelRequest(obj.id))

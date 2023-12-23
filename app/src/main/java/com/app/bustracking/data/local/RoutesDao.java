@@ -26,14 +26,17 @@ public interface RoutesDao {
     @Query("select * from route where isFavourite=1")
     LiveData<List<Route>> fetchFavouriteRoutes();
 
-    @Query("select * from route where isFavourite=1")
-    List<Route> fetchFavouriteRouteList();
-
-    @Query("select * from route where isFavourite=0")
-    List<Route> fetchRoutesList();
+//    @Query("select * from route where isFavourite=1")
+//    List<Route> fetchFavouriteRouteList();
+//
+//    @Query("select * from route where isFavourite=0")
+//    List<Route> fetchRoutesList();
 
     @Query("select * from route where routeId=:routeId")
     Route fetchRouteById(int routeId);
+
+    @Query("select * from route where routeId=:routeId")
+    LiveData<Route> fetchRouteByIdWithObserver(int routeId);
 
     @Query("select * from route where bus_id=:busId")
     List<Route> fetchRouteByBusId(int busId);

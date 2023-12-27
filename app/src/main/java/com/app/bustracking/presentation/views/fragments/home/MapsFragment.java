@@ -3,11 +3,14 @@ package com.app.bustracking.presentation.views.fragments.home;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 
 import com.app.bustracking.R;
@@ -35,9 +39,13 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -50,6 +58,7 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +107,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token));
 
         mapView = binding.mapBoxView;
         mapView.onCreate(savedInstanceState);
@@ -121,53 +129,148 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
 
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
         try {
+//            mapboxMap.animateCamera(
+//                    CameraUpdateFactory.newCameraPosition(
+//                            new CameraPosition.Builder().target(coordinatesList.get(0)).zoom(11.5).build()
+//                    )
+//            );
 
-            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder().target(coordinatesList.get(0)).zoom(11.5).build()));
+            LatLng start = new LatLng(coordinatesList.get(0).getLatitude(), coordinatesList.get(0).getLongitude());
+            LatLng end = new LatLng(coordinatesList.get(coordinatesList.size() - 1).getLatitude(), coordinatesList.get(coordinatesList.size() - 1).getLongitude());
 
-//            int padding = 100;
-//            if (coordinatesList.size() > 10) {
-//                coordinatesList.subList(10, coordinatesList.size()).clear();
-//            }
-//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-//            for (LatLng latLng : coordinatesList) {
-//                builder.include(latLng);
-//            }
-//            LatLngBounds bounds = builder.build();
-//            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                    .include(start)
+                    .include(end)
+                    .build();
+
+            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 100), 2000);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
+//    @SuppressLint("UseCompatLoadingForDrawables")
+//    private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {
+////        final List<LatLng> coordinator = new ArrayList<>();
+//        final List<Feature> featuresList = new ArrayList<>();
+//        final List<Point> pointsList = new ArrayList<>();
+//        List<Point> stopPoints = new ArrayList<>();
+//
+//        // Assuming route.getStop() contains a list of Stop objects with latitude and longitude
+//        List<Stop> stops = route.getStop();
+//
+//        String LAYER_ID = "layer-id-" + route.hashCode();
+//        layerId.add("layer-id-" + route.hashCode());
+//
+//
+////        SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
+////        symbolManager.setIconAllowOverlap(false);
+//        style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
+//
+//
+//
+//        for (Stop stop : stops) {
+//            LatLng latLng = new LatLng(Double.parseDouble(Objects.requireNonNull(stop.getLat())), Double.parseDouble(Objects.requireNonNull(stop.getLng())));
+////            coordinator.add(latLng);
+//            pointsList.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
+////            stopPoints.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
+//
+//            String tag = String.valueOf(stop.getStopId());  // Replace this with the actual way you get the tag for each stop
+//            Point point = Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()));
+//
+//            customMapObjectList.add(new CustomMapObject(route.getRouteId(), new LatLng(point.latitude(), point.longitude())));
+//
+//            Feature feature = Feature.fromGeometry(point);
+//            feature.addStringProperty("tag", tag);
+//            featuresList.add(feature);
+//
+//            //add coordinates markers
+//    //            Drawable drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_location_marker);
+//    //            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+//    //            Canvas canvas = new Canvas(bitmap);
+//    //            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+//    //            drawable.draw(canvas);
+//    //            Icon icon = IconFactory.getInstance(requireContext()).fromBitmap(bitmap);
+//    //            MarkerOptions markerOptions = new MarkerOptions()
+//    //                    .position(latLng)
+//    //                    .icon(icon);
+//    //            mapboxMap.addMarker(markerOptions);
+//
+//        }
+//
+//
+//        // Add a GeoJson source for markers
+//        style.addSource(new GeoJsonSource("source-id-" + route.hashCode(), FeatureCollection.fromFeatures(featuresList)));
+//        // Add a SymbolLayer to display markers
+//        style.addLayer(new SymbolLayer(LAYER_ID, "source-id-" + route.hashCode())
+//                .withProperties(
+//                        iconImage("icon-id-" + route.hashCode()),
+//                        iconAllowOverlap(false),
+//                        iconIgnorePlacement(true)
+//                )
+//        );
+//
+//
+//        MapboxDirections directionsClient = MapboxDirections.builder().origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude())).destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude())).accessToken(getString(R.string.mapbox_access_token)).overview("full").profile("driving-traffic").steps(true).build();
+//
+//
+//        // Request directions for the stops
+//        directionsClient.enqueueCall(new Callback<>() {
+//            @Override
+//            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+//                try {
+//                    if (response.body() != null && !response.body().routes().isEmpty()) {
+//                        DirectionsRoute directionsRoute = response.body().routes().get(0);
+//
+//                        //
+//                        LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
+//                        List<Point> points = lineString.coordinates();
+//                        GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{Feature.fromGeometry(LineString.fromLngLats(points))}));
+//
+//                        //
+//                        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+//                        locationComponent.activateLocationComponent(requireActivity(), style);
+//                        locationComponent.setCameraMode(CameraMode.TRACKING);
+//                        locationComponent.setRenderMode(RenderMode.NORMAL);
+//
+//                        style.addSource(geoJsonSource);
+//
+//                        // Add layer
+//                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(), "route-source-" + route.hashCode()).withProperties(PropertyFactory.lineWidth(6f), PropertyFactory.lineColor(Color.parseColor(route.getColor()))));
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<DirectionsResponse> call, Throwable t) {
+//                // Handle failure
+//                t.printStackTrace();
+//            }
+//        });
+//
+//
+//    }
+
+
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {
-        final List<LatLng> coordinator = new ArrayList<>();
         final List<Feature> featuresList = new ArrayList<>();
         final List<Point> pointsList = new ArrayList<>();
 
         // Assuming route.getStop() contains a list of Stop objects with latitude and longitude
         List<Stop> stops = route.getStop();
-        List<Point> stopPoints = new ArrayList<>();
 
         String LAYER_ID = "layer-id-" + route.hashCode();
         layerId.add("layer-id-" + route.hashCode());
 
-
-        SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
-        symbolManager.setIconAllowOverlap(false);
-
-
-        //
-//        style.addImage("icon-id-" + route.hashCode(), BitmapFactory.decodeResource(requireActivity().getResources(), com.mapbox.mapboxsdk.R.drawable.mapbox_marker_icon_default));
-        style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
-
-
+        // Add custom icon for the stops
+        style.addImage("icon-id-" + route.hashCode(), BitmapUtils.getBitmapFromDrawable(requireActivity().getDrawable(R.drawable.ic_location_marker)));
 
         for (Stop stop : stops) {
-            LatLng latLng = new LatLng(Double.parseDouble(Objects.requireNonNull(stop.getLat())), Double.parseDouble(Objects.requireNonNull(stop.getLng())));
-            coordinator.add(latLng);
+            LatLng latLng = new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng()));
             pointsList.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
-            stopPoints.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
 
             String tag = String.valueOf(stop.getStopId());  // Replace this with the actual way you get the tag for each stop
             Point point = Point.fromLngLat(Double.parseDouble(stop.getLng()), Double.parseDouble(stop.getLat()));
@@ -176,22 +279,33 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
 
             Feature feature = Feature.fromGeometry(point);
             feature.addStringProperty("tag", tag);
-//            featuresList.add(Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude())));
             featuresList.add(feature);
-
         }
 
-
         // Add a GeoJson source for markers
-        style.addSource(new GeoJsonSource("source-id-" + route.hashCode(), FeatureCollection.fromFeatures(featuresList)));
+        GeoJsonSource stopsSource = new GeoJsonSource("stops-source-id-" + route.hashCode(), FeatureCollection.fromFeatures(featuresList));
+        style.addSource(stopsSource);
+
         // Add a SymbolLayer to display markers
-        style.addLayer(new SymbolLayer(LAYER_ID, "source-id-" + route.hashCode()).withProperties(iconImage("icon-id-" + route.hashCode()), iconAllowOverlap(false), iconIgnorePlacement(true)));
+        SymbolLayer stopsLayer = new SymbolLayer("stops-layer-id-" + route.hashCode(), "stops-source-id-" + route.hashCode())
+                .withProperties(
+                        iconImage("icon-id-" + route.hashCode()),
+                        iconAllowOverlap(false),
+                        iconIgnorePlacement(true),
+                        iconOffset(new Float[] {0f, -5f}) // Adjust if necessary
+                );
+        style.addLayer(stopsLayer);
 
+        // Request and draw the route
+        MapboxDirections directionsClient = MapboxDirections.builder()
+                .origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude()))
+                .destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude()))
+                .accessToken(getString(R.string.mapbox_access_token))
+                .overview("full")
+                .profile("driving-traffic")
+                .steps(true)
+                .build();
 
-        MapboxDirections directionsClient = MapboxDirections.builder().origin(Point.fromLngLat(pointsList.get(0).longitude(), pointsList.get(0).latitude())).destination(Point.fromLngLat(pointsList.get(pointsList.size() - 1).longitude(), pointsList.get(pointsList.size() - 1).latitude())).accessToken(getString(R.string.mapbox_access_token)).overview("full").profile("driving-traffic").steps(true).build();
-
-
-        // Request directions for the stops
         directionsClient.enqueueCall(new Callback<>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
@@ -199,21 +313,18 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
                     if (response.body() != null && !response.body().routes().isEmpty()) {
                         DirectionsRoute directionsRoute = response.body().routes().get(0);
 
-                        //
                         LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
                         List<Point> points = lineString.coordinates();
                         GeoJsonSource geoJsonSource = new GeoJsonSource("route-source-" + route.hashCode(), FeatureCollection.fromFeatures(new Feature[]{Feature.fromGeometry(LineString.fromLngLats(points))}));
 
-                        //
-                        LocationComponent locationComponent = mapboxMap.getLocationComponent();
-                        locationComponent.activateLocationComponent(requireActivity(), style);
-                        locationComponent.setCameraMode(CameraMode.TRACKING);
-                        locationComponent.setRenderMode(RenderMode.NORMAL);
-
                         style.addSource(geoJsonSource);
 
-                        // Add layer
-                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(), "route-source-" + route.hashCode()).withProperties(PropertyFactory.lineWidth(6f), PropertyFactory.lineColor(Color.parseColor(route.getColor()))));
+                        // Add layer for the route
+                        style.addLayerBelow(new LineLayer("route-layer-" + route.hashCode(), "route-source-" + route.hashCode())
+                                .withProperties(
+                                        PropertyFactory.lineWidth(6f),
+                                        PropertyFactory.lineColor(Color.parseColor(route.getColor()))
+                                ), "stops-layer-id-" + route.hashCode());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -226,9 +337,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
                 t.printStackTrace();
             }
         });
-
-
     }
+
 
     @Override
     public void onResume() {
@@ -259,26 +369,25 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
             mapView.onDestroy();
         }
 
-//        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(appTimerReceiver)
-
         super.onDestroy();
     }
 
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
-
-//        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
-//        mapboxMap.setMaxZoomPreference(12);
+        mapboxMap.getUiSettings().setAttributionEnabled(false);
+        mapboxMap.getUiSettings().setLogoEnabled(false);
+        mapboxMap.getUiSettings().setCompassEnabled(false);
 
         // Assuming routeList is a list of routes with stops
         List<Route> routeList = routesDao.fetchAllRoutes(); // Replace with your actual method to get routes
 
-        mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS), style -> {
+        mapboxMap.setStyle(new Style.Builder().fromUri(Style.TRAFFIC_DAY), style -> {
             this.mapbox = mapboxMap;
             for (Route route : routeList) {
                 if (route != null && route.getStop() != null && !route.getStop().isEmpty()) {
 
                     drawRouteOnMap(mapboxMap, style, route);
+
                     //animate camera
                     for (Stop stop : route.getStop()) {
                         coordinatesList.add(new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng())));
@@ -297,9 +406,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
                     stopId = stopsDao.stopIdByLatLng(closestCoordinate.getLatitude(), closestCoordinate.getLongitude());
                 }
                 if (stopId != 0) {
-//                    Bundle bundle = new Bundle();
-//                    bundle.putInt(RoutesFragmentKt.ARGS, stopId);
-//                    navController.navigate(R.id.action_mapsFragment_to_stopsMapFragment, bundle);
                     HomeActivity.updateData(stopId);
                 }
             } catch (Exception e) {
@@ -360,6 +466,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, On
 
     @Override
     public void onLocationReceive(String jsonData) {
-//        Log.e("mTAG", "onLocationReceive: "  + jsonData);
+        //ignore
     }
 }

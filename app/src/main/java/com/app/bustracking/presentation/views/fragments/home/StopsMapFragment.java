@@ -49,6 +49,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -99,6 +100,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
     private MapView mapView;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
+    private String LAYER_ID = "LAYER_ID";
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -197,7 +199,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
         Stop fetchedStop = stopsDao.fetchStop(stopId);
 
         mapView.getMapAsync(mapboxMap -> {
-            mapboxMap.setStyle(new Style.Builder().fromUri(Style.MAPBOX_STREETS),
+            mapboxMap.setStyle(new Style.Builder().fromUri(Style.TRAFFIC_DAY),
                     style -> {
                         this.mapbox = mapboxMap;
 
@@ -256,6 +258,9 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
             LatLng latLng = new LatLng(lat, lng);
             // Padding to control the space around the bounds (in pixels)
             mapbox.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+
+
+
         } catch (Exception e) {
 
         }
@@ -348,7 +353,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
 
             binding.llStopTime.tvStopTimes.setHasFixedSize(true);
 
-            stopsDao.fetchAllStopsWithObserver().observe(getViewLifecycleOwner(), stops1 -> {
+            stopsDao.fetchAllStopsWithObserver(routeId).observe(getViewLifecycleOwner(), stops1 -> {
                 binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(stops1, (stop, integer) -> null));
             });
 
@@ -371,14 +376,25 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
 //            int padding = 100;
 //            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
 
-            mapboxMap.animateCamera(
-                    CameraUpdateFactory.newCameraPosition(
-                            new CameraPosition.Builder()
-                                    .target(coordinatesList.get(0))
-                                    .zoom(11.5)
-                                    .build()
-                    )
-            );
+//            mapboxMap.animateCamera(
+//                    CameraUpdateFactory.newCameraPosition(
+//                            new CameraPosition.Builder()
+//                                    .target(coordinatesList.get(0))
+//                                    .zoom(11.5)
+//                                    .build()
+//                    )
+//            );
+
+
+            LatLng start = new LatLng(coordinatesList.get(0).getLatitude(), coordinatesList.get(0).getLongitude());
+            LatLng end = new LatLng(coordinatesList.get(coordinatesList.size() - 1).getLatitude(), coordinatesList.get(coordinatesList.size() - 1).getLongitude());
+
+            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                    .include(start)
+                    .include(end)
+                    .build();
+
+            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 100), 2000);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -386,16 +402,16 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
     }
 
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {
-        final List<LatLng> coordinator = new ArrayList<>();
+//        final List<LatLng> coordinator = new ArrayList<>();
         final List<Feature> featuresList = new ArrayList<>();
         final List<Point> pointsList = new ArrayList<>();
 
         // Assuming route.getStop() contains a list of Stop objects with latitude and longitude
         List<Stop> stops = route.getStop();
-        List<Point> stopPoints = new ArrayList<>();
+//        List<Point> stopPoints = new ArrayList<>();
 
-        SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
-        symbolManager.setIconAllowOverlap(true);
+//        SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
+//        symbolManager.setIconAllowOverlap(true);
 
         // Add a marker at the initial position
         style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
@@ -403,10 +419,10 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
 
         for (Stop stop : stops) {
             LatLng latLng = new LatLng(Double.parseDouble(Objects.requireNonNull(stop.getLat())), Double.parseDouble(Objects.requireNonNull(stop.getLng())));
-            coordinator.add(latLng);
+//            coordinator.add(latLng);
             featuresList.add(Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude())));
             pointsList.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
-            stopPoints.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
+//            stopPoints.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
         }
 
 
@@ -416,7 +432,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
         style.addLayer(new SymbolLayer("layer-id-" + route.hashCode(), "source-id-" + route.hashCode())
                 .withProperties(
                         iconImage("icon-id-" + route.hashCode()),
-                        iconAllowOverlap(true),
+                        iconAllowOverlap(false),
                         iconIgnorePlacement(true)
                 )
         );
@@ -451,14 +467,16 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                         style.addSource(geoJsonSource);
 
                         // Add layer
-                        style.addLayer(new LineLayer("route-layer-" + route.hashCode(),
+                        style.addLayerBelow(new LineLayer("route-layer-" + route.hashCode(),
                                 "route-source-" + route.hashCode())
                                 .withProperties(
                                         PropertyFactory.lineWidth(6f),
                                         PropertyFactory.lineColor(Color.parseColor(route.getColor()))
-                                ));
+                                ), LAYER_ID);
 
 
+
+                        // for realtime time calculations
                         List<LegStep> steps = directionsRoute.legs().get(0).steps();
 
                         // Iterate up to steps.size() - 1 to avoid index out of bound error
@@ -526,8 +544,6 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
         if (mapView != null) {
             mapView.onDestroy();
         }
-
-//        requireActivity().unregisterReceiver(broadcastReceiver);
 
         super.onDestroy();
     }

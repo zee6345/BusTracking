@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -54,7 +53,6 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -108,6 +106,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     private Double longitudeBus = 74.3077318;
     private String routeColor;
     private Marker marker;
+    //    DirectionsRoute directionsRoute;
     private BottomSheetBehavior<LinearLayout> bottomSheetBehavior;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -220,7 +219,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
 
         for (Stop stop : route.getStop()) {
-            String tag = String.valueOf(stop.getStopId());  // Replace this with the actual way you get the tag for each stop
+            String tag = String.valueOf(stop.getStopId());
             Feature feature = Feature.fromGeometry(Point.fromLngLat(
                     Double.parseDouble(stop.getLng()),
                     Double.parseDouble(stop.getLat())));
@@ -278,7 +277,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         bottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                Log.e("mmTAG", "onStateChanged: " + newState);
+
 
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
@@ -334,13 +333,16 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
+        mapboxMap.getUiSettings().setAttributionEnabled(false);
+        mapboxMap.getUiSettings().setLogoEnabled(false);
+        mapboxMap.getUiSettings().setCompassEnabled(false);
 
 //        mapboxMap.setMinZoomPreference(6); // Set your minimum zoom level
 //        mapboxMap.setMaxZoomPreference(12);
 
         if (!coordinatesList.isEmpty()) {
 
-            mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
+            mapboxMap.setStyle(new Style.Builder().fromUri(Style.TRAFFIC_DAY), style -> {
                 this.style = style;
 
                 setupMap();
@@ -374,7 +376,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                 style.addLayer(new SymbolLayer(LAYER_ID, SOURCE_ID)
                         .withProperties(
                                 iconImage(ICON_ID),
-                                iconAllowOverlap(true),
+                                iconAllowOverlap(false),
                                 iconIgnorePlacement(true)
                         )
                 );
@@ -397,9 +399,9 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
                     public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                         if (response.body() != null && !response.body().routes().isEmpty()) {
 
-                            DirectionsRoute route = response.body().routes().get(0);
+                            DirectionsRoute directionsRoute = response.body().routes().get(0);
 
-                            drawRouteOnMap(style, route);
+                            drawRouteOnMap(style, directionsRoute);
 
                         }
                     }
@@ -494,11 +496,24 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 
             style.addSource(geoJsonSource);
 
-            style.addLayer(new LineLayer("route-layer", "route-source").withProperties(
+            style.addLayerBelow(new LineLayer("route-layer", "route-source").withProperties(
 //                PropertyFactory.lineColor(Color.RED),
                     PropertyFactory.lineColor(Color.parseColor(routeColor)),
                     PropertyFactory.lineWidth(6f)
-            ));
+            ), LAYER_ID);
+
+
+            List<Point> bounds = route.routeOptions().coordinates();
+            LatLng start = new LatLng(bounds.get(0).latitude(), bounds.get(0).longitude());
+            LatLng end = new LatLng(bounds.get(bounds.size() - 1).latitude(), bounds.get(bounds.size() - 1).longitude());
+
+            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                    .include(start)
+                    .include(end)
+                    .build();
+
+            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 100), 2000);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -520,14 +535,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
             mapView.onPause();
         }
     }
-
-//    @Override
-//    public void onDestroyView() {
-//        if (mapView != null) {
-//            mapView.onDestroy();
-//        }
-//        super.onDestroyView();
-//    }
 
 
     @Override
@@ -560,9 +567,6 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         if (mapView != null) {
             mapView.onDestroy();
         }
-
-//        LocalBroadcastManager.getInstance(requireActivity()).unregisterReceiver(broadcastReceiver);
-
         super.onDestroy();
     }
 
@@ -580,14 +584,25 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 //            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
 
 
-            mapboxMap.animateCamera(
-                    CameraUpdateFactory.newCameraPosition(
-                            new CameraPosition.Builder()
-                                    .target(coordinatesList.get(0))
-                                    .zoom(11.5)
-                                    .build()
-                    )
-            );
+//            List<Point> bounds = directionsRoute.routeOptions().coordinates();
+            LatLng start = new LatLng(coordinatesList.get(0).getLatitude(), coordinatesList.get(0).getLongitude());
+            LatLng end = new LatLng(coordinatesList.get(coordinatesList.size() - 1).getLatitude(), coordinatesList.get(coordinatesList.size() - 1).getLongitude());
+
+            LatLngBounds latLngBounds = new LatLngBounds.Builder()
+                    .include(start)
+                    .include(end)
+                    .build();
+
+            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 100), 2000);
+
+//            mapboxMap.animateCamera(
+//                    CameraUpdateFactory.newCameraPosition(
+//                            new CameraPosition.Builder()
+//                                    .target(coordinatesList.get(0))
+//                                    .zoom(11.5)
+//                                    .build()
+//                    )
+//            );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -609,7 +624,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
 //                        locationMarker.setLatLng(new LatLng(lat, lon));
 //                        symbolManager.update(locationMarker);
 
-            requireActivity().runOnUiThread(()->{
+            requireActivity().runOnUiThread(() -> {
                 updateMarkerOnMap(lat, lon);
             });
 

@@ -45,6 +45,9 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_favroutiesFragment"
+            app:destination="@id/favroutiesFragment" />
     </fragment>
     <fragment
         android:id="@+id/routesFragment"
@@ -121,5 +124,21 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@null"
             app:popUpTo="@id/mapsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favroutiesFragment"
+        android:name="com.app.bustracking.presentation.views.fragments.home.FavroutiesFragment"
+        android:label="fragment_favrouties"
+        tools:layout="@layout/fragment_favrouties" >
+        <action
+            android:id="@+id/action_favroutiesFragment_pop_including_profileFragment"
+            app:popUpTo="@id/profileFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_favroutiesFragment_to_stopsMapFragment"
+            app:destination="@id/stopsMapFragment" />
+        <action
+            android:id="@+id/action_favroutiesFragment_to_routesMapFragment"
+            app:destination="@id/routesMapFragment" />
     </fragment>
 </navigation>

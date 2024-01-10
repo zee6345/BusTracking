@@ -107,7 +107,7 @@ class ProfileFragment : BaseFragment() {
         }
 
         binding.llFavourite.setOnClickListener {
-            Toast.makeText(requireActivity(), "coming soon!", Toast.LENGTH_SHORT).show()
+            navController.navigate(R.id.action_profileFragment_to_favroutiesFragment)
         }
 
         binding.llInformation.setOnClickListener {

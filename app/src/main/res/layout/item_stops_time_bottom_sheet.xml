@@ -160,7 +160,7 @@
                 app:ds_inactiveTrackColor="@color/track_color"
                 app:ds_maxProgress="100"
                 app:ds_orientation="vertical"
-                app:ds_progress="2"
+                app:ds_progress="0"
                 app:ds_thumbColor="#6E6A6A"
                 app:ds_thumbRadius="6dp"
                 app:ds_tickMarkColor="#66A19F9F"

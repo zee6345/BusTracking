@@ -454,6 +454,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                 .overview("full")
                 .profile("driving-traffic")
                 .steps(true)
+                .enableRefresh(true)
                 .build();
 
 

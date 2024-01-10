@@ -23,6 +23,9 @@ public interface StopsDao {
     @Query("select * from Stop where isFavourite=1 and agency_id=:agencyId")
     LiveData<List<Stop>> fetchFavouriteStops(int agencyId);
 
+    @Query("select * from Stop where isFavourite=1")
+    LiveData<List<Stop>> fetchAllFavouriteStops();
+
     @Query("select * from Stop where route_id=:routeId")
     LiveData<List<Stop>> fetchAllStopsWithObserver(int routeId);
 
@@ -31,7 +34,6 @@ public interface StopsDao {
 
     @Query("select route_id from stop where stopId=:stopId")
     int fetchRouteId(int stopId);
-
 
     @Query("select stopId from stop where lat=:lat and lng=:lng")
     int stopIdByLatLng(double lat, double lng);

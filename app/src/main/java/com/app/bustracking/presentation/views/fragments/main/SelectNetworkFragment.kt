@@ -3,6 +3,7 @@ package com.app.bustracking.presentation.views.fragments.main
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -173,7 +174,7 @@ class SelectNetworkFragment : BaseFragment() {
                     dialog.dismiss()
 
                     val response = it.data as GetTravelList
-                    if (response.travel_list.isEmpty()){
+                    if (response.travel_list.isEmpty()) {
 
 //                        showMessage("No route available!")
                         progress.show()
@@ -196,6 +197,49 @@ class SelectNetworkFragment : BaseFragment() {
 
         }
 
+//        data.getTravelRoutes.observe(viewLifecycleOwner) {
+//            when (it) {
+//                is DataState.Loading -> {
+//                    dialog.show()
+//                }
+//
+//                is DataState.Error -> {
+//                    dialog.dismiss()
+//                }
+//
+//                is DataState.Success -> {
+//                    dialog.dismiss()
+//
+//                    val routesWithStops = it.data as GetTravelRoutes
+//
+//                    routesWithStops.route_list.forEach { route ->
+//                        routesDao.insert(route)
+//                    }
+//
+//                    var allStopsAdded = false // Flag to track when all stops are added
+//
+//                    routesWithStops.route_list.forEach { route ->
+//                        route.stop.forEachIndexed { index, stop ->
+//                            stopsDao.insert(stop)
+//                            if (index == route.stop.size - 1 && route == routesWithStops.route_list.last()) {
+//                                allStopsAdded = true
+//                            }
+//                        }
+//
+//                        if (allStopsAdded) {
+//                            allStopsAdded = false
+//                            routeScreen<HomeActivity>()
+//                            return@forEach
+//                        }
+//
+//                    }
+//                }
+//
+//                else -> {}
+//            }
+//
+//        }
+
         data.getTravelRoutes.observe(viewLifecycleOwner) {
             when (it) {
                 is DataState.Loading -> {
@@ -211,33 +255,35 @@ class SelectNetworkFragment : BaseFragment() {
 
                     val routesWithStops = it.data as GetTravelRoutes
 
+                    // Insert routes
                     routesWithStops.route_list.forEach { route ->
                         routesDao.insert(route)
                     }
 
-                    routesWithStops.route_list.forEach { route ->
-                        route.stop.forEachIndexed { index, stop ->
+                    // Insert stops and set a flag when all stops are added
+                    var lastStopProcessed = false
+                    for ((routeIndex, route) in routesWithStops.route_list.withIndex()) {
+                        route.stop.forEach { stop ->
                             stopsDao.insert(stop)
-
-                            val isLastStop = index == route.stop.size - 1
-                            if (isLastStop && routesWithStops.route_list.last() == route) {
-
-                                if (!isActivityLaunched) {
-                                    // Launch your activity here
-                                    routeScreen<HomeActivity>()
-                                    isActivityLaunched = true
-
-                                }
-
-                            }
                         }
+
+                        // If it's the last stop of the last route, raise the flag
+                        if (routeIndex == routesWithStops.route_list.size - 1) {
+                            lastStopProcessed = true
+                        }
+                    }
+
+                    // After all stops are added, launch the HomeActivity once
+                    if (lastStopProcessed) {
+                        routeScreen<HomeActivity>()
                     }
                 }
 
                 else -> {}
             }
-
         }
+
+
 
     }
 

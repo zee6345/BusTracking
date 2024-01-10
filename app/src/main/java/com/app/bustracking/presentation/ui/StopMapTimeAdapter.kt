@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.app.bustracking.data.responseModel.Stop
 import com.app.bustracking.databinding.ItemStopTimeBinding
+import com.mapbox.mapboxsdk.geometry.LatLng
 
 class StopMapTimeAdapter(
     private val itemList: List<Stop>,
@@ -13,26 +14,31 @@ class StopMapTimeAdapter(
     RecyclerView.Adapter<StopMapTimeAdapter.ViewHolder>() {
 
     class ViewHolder(
-        binding: ItemStopTimeBinding,
+        val binding: ItemStopTimeBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val _binding: ItemStopTimeBinding
-
-        init {
-            _binding = binding
-        }
 
         fun bind(stop: Stop, onItemClick: (Stop) -> Unit) {
 
-
-            _binding.tvStopName.text = stop.stop_title
+            binding.tvStopName.text = stop.stop_title
 
             stop.stop_time?.let {
-                _binding.tvStopTime.text = if (it.isEmpty()) "-" else stop.stop_time
+                binding.tvStopTime.text = if (it.isEmpty()) "-" else stop.stop_time
             }
 
+//            stop.lat?.let {
+//                binding.verticalSeekBar.setCoordinatesList(
+//                    LatLng(
+//                        stop.lat.toDouble(),
+//                        stop.lng!!.toDouble()
+//                    )
+//                )
+//            }
 
-            _binding.root.setOnClickListener {
+
+
+
+            binding.root.setOnClickListener {
                 onItemClick(stop)
             }
 

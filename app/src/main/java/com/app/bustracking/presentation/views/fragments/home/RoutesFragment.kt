@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -116,6 +113,7 @@ class RoutesFragment : BaseFragment(), OnLocationReceive {
         initData()
 
         routeDao = appDb.routesDao()
+        val travelDao = appDb.travelDao()
         val favouriteRoutes = routeDao.fetchFavouriteRoutes()
         val routesList = routeDao.fetchRoutes()
 
@@ -126,7 +124,7 @@ class RoutesFragment : BaseFragment(), OnLocationReceive {
         binding.rvFavorite.layoutManager = LinearLayoutManager(requireContext())
 
 
-        favAdapter = RoutesAdapter(routeDao) { route, position ->
+        favAdapter = RoutesAdapter(routeDao, travelDao) { route, position ->
             val args = Bundle()
             args.putInt(ARGS, route.routeId)
             navController.navigate(
@@ -136,7 +134,7 @@ class RoutesFragment : BaseFragment(), OnLocationReceive {
             )
         }
 
-        lineAdapter = RoutesAdapter(routeDao) { route, position ->
+        lineAdapter = RoutesAdapter(routeDao, travelDao) { route, position ->
             val args = Bundle()
             args.putInt(ARGS, route.routeId)
             navController.navigate(

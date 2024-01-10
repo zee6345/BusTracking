@@ -6,6 +6,12 @@
     android:orientation="horizontal"
     android:padding="@dimen/_4sdp">
 
+    <com.app.bustracking.utils.VerticalSeekBarView
+        android:id="@+id/verticalSeekBar"
+        android:layout_width="@dimen/_26sdp"
+        android:visibility="gone"
+        android:layout_height="match_parent" />
+
     <TextView
         android:id="@+id/tvStopName"
         android:layout_width="0dp"

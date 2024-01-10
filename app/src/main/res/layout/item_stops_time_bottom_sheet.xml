@@ -56,14 +56,135 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tvStopTimes"
+    <!--    <SeekBar-->
+    <!--        android:id="@+id/sb"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:max="10"-->
+    <!--        android:theme="@style/Widget.AppCompat.SeekBar.Discrete"-->
+    <!--        android:thumb="@drawable/ic_location" />-->
+
+    <!--    <SeekBar-->
+    <!--        android:id="@+id/busTrackingSeekBar"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:enabled="false"-->
+    <!--        android:max="100"-->
+    <!--        android:progress="30"-->
+    <!--        android:progressDrawable="@drawable/custom_progress_bar"-->
+    <!--        android:thumb="@drawable/custom_thumb" />-->
+
+    <!--    <com.warkiz.widget.IndicatorSeekBar-->
+    <!--        android:id="@+id/verticalSeekBar"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:isb_indicator_color="@color/white_90"-->
+    <!--        app:isb_indicator_text_color="@color/colorAccent"-->
+    <!--        app:isb_indicator_text_size="18sp"-->
+    <!--        app:isb_max="100"-->
+    <!--        app:isb_min="0"-->
+    <!--        app:isb_only_thumb_draggable="false"-->
+    <!--        app:isb_progress="25"-->
+    <!--        app:isb_seek_smoothly="true"-->
+    <!--        app:isb_show_indicator="rounded_rectangle"-->
+    <!--        app:isb_show_thumb_text="false"-->
+    <!--        app:isb_show_tick_marks_type="oval"-->
+    <!--        app:isb_show_tick_texts="false"-->
+    <!--        app:isb_thumb_color="@color/theme_color"-->
+    <!--        app:isb_thumb_size="20dp"-->
+    <!--        app:isb_tick_marks_drawable="@drawable/ic_points"-->
+    <!--        app:isb_tick_marks_size="13dp"-->
+    <!--        app:isb_tick_texts_size="15sp"-->
+    <!--        app:isb_ticks_count="10"-->
+    <!--        app:isb_track_background_color="@color/thumb_color"-->
+    <!--        app:isb_track_background_size="2dp"-->
+    <!--        app:isb_track_progress_color="@color/theme_color"-->
+    <!--        app:isb_track_progress_size="4dp" />-->
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="@dimen/_10sdp"
-        android:orientation="vertical"
-        android:visibility="visible"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_stop_time" />
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <!--            <com.mohammedalaa.seekbar.RangeSeekBarView-->
+            <!--                android:id="@+id/range_seekbar"-->
+            <!--                android:layout_width="@dimen/_26sdp"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:visibility="gone"-->
+            <!--                app:barHeight="15dp"-->
+            <!--                app:baseColor="#D9D9D9"-->
+            <!--                app:circleFillColor="@color/green"-->
+            <!--                app:circleRadius="15dp"-->
+            <!--                app:circleTextColor="@color/white"-->
+            <!--                app:circleTextSize="@dimen/value_bar_circleTextSize"-->
+            <!--                app:currentValue="60"-->
+            <!--                app:fillColor="#D9D9D9"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toTopOf="parent"-->
+            <!--                app:maxValue="100"-->
+            <!--                app:minValue="10"-->
+            <!--                app:orientation="TOP_TO_BOTTOM"-->
+            <!--                app:stepValue="5" />-->
+
+            <!--            <SeekBar-->
+            <!--                android:id="@+id/sbr"-->
+            <!--                android:layout_width="@dimen/_26sdp"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:max="10"-->
+            <!--                android:theme="@style/Widget.AppCompat.SeekBar.Discrete"-->
+            <!--                android:thumb="@drawable/ic_location"-->
+            <!--                android:visibility="visible" />-->
+
+            <!--            <com.app.bustracking.utils.VerticalSeekBar-->
+            <!--                android:id="@+id/temp"-->
+            <!--                android:layout_width="@dimen/_26sdp"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:theme="@style/Widget.AppCompat.SeekBar.Discrete"-->
+            <!--                android:thumb="@drawable/ic_location"-->
+            <!--                />-->
+
+            <hearsilent.discreteslider.DiscreteSlider
+                android:id="@+id/trackingSeekbar"
+                android:layout_width="@dimen/_26sdp"
+                android:layout_height="match_parent"
+                android:background="#4DA19F9F"
+                app:ds_count="10"
+                app:ds_inactiveTrackColor="@color/track_color"
+                app:ds_maxProgress="100"
+                app:ds_orientation="vertical"
+                app:ds_progress="2"
+                app:ds_thumbColor="#6E6A6A"
+                app:ds_thumbRadius="6dp"
+                app:ds_tickMarkColor="#66A19F9F"
+                app:ds_tickMarkDashLength="1dp"
+                app:ds_tickMarkInactiveColor="#66A19F9F"
+                app:ds_tickMarkPatterns="dot"
+                app:ds_tickMarkStep="1"
+                app:ds_trackColor="@color/track_color"
+                app:ds_trackWidth="@dimen/_5sdp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tvStopTimes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                android:visibility="visible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_stop_time" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
 
 </LinearLayout>

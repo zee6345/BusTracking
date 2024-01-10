@@ -17,20 +17,24 @@ public interface TravelDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insert(Travel travel);
 
-    @Query("select * from Travel where isFavourite=0 and agency_id=:agencyId")
-    LiveData<List<Travel>> fetchTravels(int agencyId);
+    @Query("select travel_name from travel where travelId=:travelId")
+    String travelName(int travelId);
 
-    @Query("Select * from Travel where agency_id=:agencyID ")
-    List<Travel> fetchAllTravels(int agencyID);
-    @Query("select * from Travel where isFavourite=1 and agency_id=:agencyId")
-    LiveData<List<Travel>> fetchFavouriteTravels(int agencyId);
+//    @Query("select * from Travel where isFavourite=0 and agency_id=:agencyId")
+//    LiveData<List<Travel>> fetchTravels(int agencyId);
+//
+//    @Query("Select * from Travel where agency_id=:agencyID ")
+//    List<Travel> fetchAllTravels(int agencyID);
+//    @Query("select * from Travel where isFavourite=1 and agency_id=:agencyId")
+//    LiveData<List<Travel>> fetchFavouriteTravels(int agencyId);
+//
+//    @Query("update travel set isFavourite=:favourite where travelId=:travelId and isFavourite=0")
+//    void addFavourite(int travelId, int favourite);
+//
+//    @Query("update travel set isFavourite=:favourite where travelId=:travelId and isFavourite=1")
+//    void removeFavourite(int travelId, int favourite);
+//
+//    @Update
+//    void updateFavourite(Travel travel);
 
-    @Query("update travel set isFavourite=:favourite where travelId=:travelId and isFavourite=0")
-    void addFavourite(int travelId, int favourite);
-
-    @Query("update travel set isFavourite=:favourite where travelId=:travelId and isFavourite=1")
-    void removeFavourite(int travelId, int favourite);
-
-    @Update
-    void updateFavourite(Travel travel);
 }

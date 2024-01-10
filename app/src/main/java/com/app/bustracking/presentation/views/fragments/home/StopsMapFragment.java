@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,6 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
@@ -62,6 +62,8 @@ import com.mapbox.mapboxsdk.style.layers.LineLayer;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.turf.TurfConstants;
+import com.mapbox.turf.TurfMeasurement;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,14 +95,17 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
     BottomSheetBehavior<LinearLayout> bottomStopTimeSheet = null;
     Double latitude = 0.0;
     Double longitude = 0.0;
-
+    final List<Point> pointsList = new ArrayList<>();
+    double minLat = Double.POSITIVE_INFINITY;
+    double maxLat = Double.NEGATIVE_INFINITY;
+    double minLng = Double.POSITIVE_INFINITY;
+    double maxLng = Double.NEGATIVE_INFINITY;
     private Marker marker;
     private NavController navController;
     private FragmentStopsMapBinding binding;
     private MapView mapView;
     private Double latitudeBus = 31.5300229;
     private Double longitudeBus = 74.3077318;
-    private String LAYER_ID = "LAYER_ID";
 
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -130,6 +135,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
             }
         }
     };
+    private String LAYER_ID = "LAYER_ID";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -259,10 +265,8 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
             // Padding to control the space around the bounds (in pixels)
             mapbox.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
-
-
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
 
@@ -349,9 +353,43 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
 
             binding.llStopTime.tvDesc.setVisibility(route.getDescription() == null ? View.GONE : View.VISIBLE);
             binding.llStopTime.tvDesc.setText(route.getDescription());
-
-
             binding.llStopTime.tvStopTimes.setHasFixedSize(true);
+
+
+
+
+
+//            new Thread(() -> {
+//                int progress = 0;
+//                while (progress <= 100) {
+//                    final int finalProgress = progress;
+//                    requireActivity().runOnUiThread(() -> binding.llStopTime.trackingSeekbar.setProgress(finalProgress));
+//
+//                    try {
+//                        Thread.sleep(1500); // Delay for 300 milliseconds
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    progress += 1;
+//                }
+//            }).start();
+
+
+//            final List<Point> pointsList = new ArrayList<>();
+//            for (LatLng obj : coordinatesList) {
+//                pointsList.add(Point.fromLngLat(obj.getLongitude(), obj.getLatitude()));
+//            }
+
+//            double distanceToStart = TurfMeasurement.distance(Point.fromLngLat(latitude, longitude), pointsList.get(0), TurfConstants.UNIT_METERS);
+//            double distanceToEnd = TurfMeasurement.distance(Point.fromLngLat(latitude, longitude), pointsList.get(pointsList.size() - 1), TurfConstants.UNIT_METERS);
+//            double totalDistance = TurfMeasurement.distance(pointsList.get(0), pointsList.get(pointsList.size() - 1), TurfConstants.UNIT_METERS);
+//            int progress = (int) ((1 - (distanceToEnd / totalDistance)) * 100); // Calculate relative progress
+//            Log.e(TAG, "startDistance " + distanceToStart + "  ==>  endDistance  " + distanceToEnd + "  ==>  totalDistance  " + totalDistance);
+
+
+            binding.llStopTime.trackingSeekbar.setCount(coordinatesList.size());
+
 
             stopsDao.fetchAllStopsWithObserver(routeId).observe(getViewLifecycleOwner(), stops1 -> {
                 binding.llStopTime.tvStopTimes.setAdapter(new StopMapTimeAdapter(stops1, (stop, integer) -> null));
@@ -363,29 +401,9 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
         }
     }
 
+
     private void animateCamera(MapboxMap mapboxMap, List<LatLng> coordinatesList) {
         try {
-//            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-//            for (LatLng latLng : coordinatesList) {
-//                builder.include(latLng);
-//            }
-//
-//            LatLngBounds bounds = builder.build();
-//
-//            // Padding to control the space around the bounds (in pixels)
-//            int padding = 100;
-//            mapboxMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
-
-//            mapboxMap.animateCamera(
-//                    CameraUpdateFactory.newCameraPosition(
-//                            new CameraPosition.Builder()
-//                                    .target(coordinatesList.get(0))
-//                                    .zoom(11.5)
-//                                    .build()
-//                    )
-//            );
-
-
             LatLng start = new LatLng(coordinatesList.get(0).getLatitude(), coordinatesList.get(0).getLongitude());
             LatLng end = new LatLng(coordinatesList.get(coordinatesList.size() - 1).getLatitude(), coordinatesList.get(coordinatesList.size() - 1).getLongitude());
 
@@ -402,16 +420,9 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
     }
 
     private void drawRouteOnMap(final MapboxMap mapboxMap, final Style style, final Route route) {
-//        final List<LatLng> coordinator = new ArrayList<>();
         final List<Feature> featuresList = new ArrayList<>();
-        final List<Point> pointsList = new ArrayList<>();
-
-        // Assuming route.getStop() contains a list of Stop objects with latitude and longitude
+//        final List<Point> pointsList = new ArrayList<>();
         List<Stop> stops = route.getStop();
-//        List<Point> stopPoints = new ArrayList<>();
-
-//        SymbolManager symbolManager = new SymbolManager(binding.mapBoxView, mapboxMap, style);
-//        symbolManager.setIconAllowOverlap(true);
 
         // Add a marker at the initial position
         style.addImage("icon-id-" + route.hashCode(), requireActivity().getDrawable(R.drawable.ic_location_marker));
@@ -419,10 +430,8 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
 
         for (Stop stop : stops) {
             LatLng latLng = new LatLng(Double.parseDouble(Objects.requireNonNull(stop.getLat())), Double.parseDouble(Objects.requireNonNull(stop.getLng())));
-//            coordinator.add(latLng);
             featuresList.add(Feature.fromGeometry(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude())));
             pointsList.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
-//            stopPoints.add(Point.fromLngLat(latLng.getLongitude(), latLng.getLatitude()));
         }
 
 
@@ -455,6 +464,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                 try {
                     if (response.body() != null && !response.body().routes().isEmpty()) {
                         DirectionsRoute directionsRoute = response.body().routes().get(0);
+                        List<LegStep> steps = directionsRoute.legs().get(0).steps();
 
 
                         LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
@@ -475,11 +485,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                                 ), LAYER_ID);
 
 
-
                         // for realtime time calculations
-                        List<LegStep> steps = directionsRoute.legs().get(0).steps();
-
-                        // Iterate up to steps.size() - 1 to avoid index out of bound error
                         if (steps != null && !steps.isEmpty()) {
                             int minSize = Math.min(steps.size() - 1, stops.size() - 1);
 
@@ -488,14 +494,30 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                                 Stop startStop = stops.get(i);
                                 Stop endStop = stops.get(i + 1);
 
-                                // Update the duration for the start stop
+                                // Calculate the duration between start and end stops
                                 if (startStop != null && endStop != null) {
                                     double legDuration = step.duration();
-                                    startStop.setStop_time(formatDuration(legDuration));
+
+                                    // Check if startStop.getDuration() is null or empty
+                                    double previousDuration = (startStop.getStop_time() != null && !startStop.getStop_time().isEmpty()) ?
+                                            Double.parseDouble(startStop.getStop_time()) : 0.0;
+
+                                    double stopDuration = legDuration - previousDuration;
+
+                                    // Update the duration field of the start stop
+                                    startStop.setStop_time(Double.toString(stopDuration));
+
+                                    // Assuming you have a method to update the stop in your database
                                     stopsDao.updateStop(startStop);
+
+//                                    Log.e(TAG, "onResponse: " + startStop.getStopId() + " name ==> " + startStop.getStop_title() + " startStop ==> " + startStop.getStop_time());
+
+                                } else {
+                                    Log.e(TAG, "onResponse: " + startStop.getStopId() + " name ==> " + startStop.getStop_title() + " is null ");
                                 }
                             }
                         }
+
 
                     }
 
@@ -510,6 +532,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
             }
         });
     }
+
 
     private void animateCamera(MapboxMap mapboxMap, Stop stop) {
         LatLng latLng = new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng()));
@@ -603,6 +626,23 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                         .title("On the way")
                         .icon(IconFactory.getInstance(requireContext()).fromBitmap(customBusIcon))
         );
+
+        mapbox.setOnMarkerClickListener(marker -> {
+//            Toast.makeText(requireContext(), "Bus Marker Clicked!", Toast.LENGTH_SHORT).show();
+            // Or, perform other actions like:
+            // - Displaying more information about the bus
+            // - Zooming the map to the marker's location
+            // - Triggering navigation to the bus's stop
+
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            bottomStopTimeSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+            return true;
+        });
+
+
     }
 
     @Override
@@ -617,9 +657,19 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
             latitudeBus = lat;
             longitudeBus = lon;
 
+            double distanceToStart = TurfMeasurement.distance(Point.fromLngLat(lat, lon), pointsList.get(0), TurfConstants.UNIT_METERS);
+            double distanceToEnd = TurfMeasurement.distance(Point.fromLngLat(lat, lon), pointsList.get(pointsList.size() - 1), TurfConstants.UNIT_METERS);
+            double totalDistance = TurfMeasurement.distance(pointsList.get(0), pointsList.get(pointsList.size() - 1), TurfConstants.UNIT_METERS);
+            int progress = (int) ((1 - (distanceToEnd / totalDistance)) * 100); // Calculate relative progress
+
+            Log.e(TAG, "startDistance " + distanceToStart + "  ==>  endDistance  " + distanceToEnd + "  ==>  totalDistance  " + totalDistance);
+
 
             requireActivity().runOnUiThread(() -> {
                 updateMarkerOnMap(lat, lon);
+
+                binding.llStopTime.trackingSeekbar.setProgress(progress);
+
             });
 
         } catch (JSONException e) {

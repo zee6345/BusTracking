@@ -21,18 +21,19 @@
             android:layout_height="wrap_content">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
+                android:layout_width="@dimen/_26sdp"
+                android:layout_height="@dimen/_26sdp"
                 android:id="@+id/ivHeader"
                 android:background="@color/theme_color" />
 
             <TextView
                 android:id="@+id/tvHeader"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
+                android:layout_width="@dimen/_26sdp"
+                android:layout_height="@dimen/_26sdp"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
                 android:text="L3"
+                android:textSize="@dimen/_12sdp"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:visibility="visible" />

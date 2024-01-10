@@ -11,6 +11,10 @@
 
     <color name="theme_color">#DE0065</color>
     <color name="a">#FCC50000</color>
+    <color name="thumb_color">#D9D9D9</color>
+
+    <color name="track_color">#33A19F9F</color>
+
 
 
     <array name="colorArray">

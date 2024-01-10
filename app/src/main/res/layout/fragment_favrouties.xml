@@ -119,7 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/_20sdp"
-            android:text="Here you will find a lines"
+            android:text="Here you will find your favorite stops"
             android:textAlignment="textStart"
             android:fontFamily="@font/poppins_regular"
             android:visibility="gone" />

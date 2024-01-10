@@ -1,9 +1,11 @@
 package com.app.bustracking.presentation.views.fragments.main
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -240,7 +242,7 @@ class SelectNetworkFragment : BaseFragment() {
 //
 //        }
 
-        data.getTravelRoutes.observe(viewLifecycleOwner) {
+        data.getTravelRoutes.observe(viewLifecycleOwner) { it ->
             when (it) {
                 is DataState.Loading -> {
                     dialog.show()
@@ -255,34 +257,63 @@ class SelectNetworkFragment : BaseFragment() {
 
                     val routesWithStops = it.data as GetTravelRoutes
 
-                    // Insert routes
-                    routesWithStops.route_list.forEach { route ->
-                        routesDao.insert(route)
-                    }
+//                    // Insert routes
+//                    routesWithStops.route_list.forEach { route ->
+//                        routesDao.insert(route)
+//                    }
+//
+//                    // Insert stops and set a flag when all stops are added
+//                    var lastStopProcessed = false
+//                    for ((routeIndex, route) in routesWithStops.route_list.withIndex()) {
+//                        route.stop.forEach { stop ->
+//                            stopsDao.insert(stop)
+//                        }
+//
+//                        // If it's the last stop of the last route, raise the flag
+//                        if (routeIndex == routesWithStops.route_list.size - 1) {
+//                            lastStopProcessed = true
+//                        }
+//                    }
+//
+//                    // After all stops are added, launch the HomeActivity once
+//                    if (lastStopProcessed) {
+//                        routeScreen<HomeActivity>()
+//                    }
 
-                    // Insert stops and set a flag when all stops are added
-                    var lastStopProcessed = false
-                    for ((routeIndex, route) in routesWithStops.route_list.withIndex()) {
+
+                    // Insert routes first
+                    routesWithStops.route_list.forEach { route -> routesDao.insert(route) }
+
+                    // Track stop insertions and launch activity only once
+                    var allStopsProcessed = false
+                    routesWithStops.route_list.forEach { route ->
                         route.stop.forEach { stop ->
                             stopsDao.insert(stop)
-                        }
 
-                        // If it's the last stop of the last route, raise the flag
-                        if (routeIndex == routesWithStops.route_list.size - 1) {
-                            lastStopProcessed = true
-                        }
-                    }
+//                            Handler(Looper.getMainLooper()).postDelayed({
 
-                    // After all stops are added, launch the HomeActivity once
-                    if (lastStopProcessed) {
-                        routeScreen<HomeActivity>()
+                                if (!allStopsProcessed) {
+
+                                    allStopsProcessed = true // Flag set after first stop insertion
+
+
+                                    val intent = Intent(requireActivity(), HomeActivity::class.java)
+                                    startActivity(intent)
+                                    requireActivity().finishAffinity()
+
+
+
+                                }
+
+//                            }, 300)
+
+                        }
                     }
                 }
 
                 else -> {}
             }
         }
-
 
 
     }

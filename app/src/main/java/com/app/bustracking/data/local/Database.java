@@ -18,7 +18,6 @@ public abstract class Database extends RoomDatabase {
     public abstract TravelDao travelDao();
     public abstract RoutesDao routesDao();
 
-
     public static Database init(Context context) {
         return Room.databaseBuilder(context, Database.class, "AppDB")
                 .fallbackToDestructiveMigration()

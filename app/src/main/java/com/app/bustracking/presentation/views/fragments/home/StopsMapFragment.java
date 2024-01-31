@@ -40,6 +40,8 @@ import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.directions.v5.models.LegStep;
+import com.mapbox.api.matrix.v1.MapboxMatrix;
+import com.mapbox.api.matrix.v1.models.MatrixResponse;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
@@ -356,38 +358,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
             binding.llStopTime.tvStopTimes.setHasFixedSize(true);
 
 
-
-
-
-//            new Thread(() -> {
-//                int progress = 0;
-//                while (progress <= 100) {
-//                    final int finalProgress = progress;
-//                    requireActivity().runOnUiThread(() -> binding.llStopTime.trackingSeekbar.setProgress(finalProgress));
-//
-//                    try {
-//                        Thread.sleep(1500); // Delay for 300 milliseconds
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    progress += 1;
-//                }
-//            }).start();
-
-
-//            final List<Point> pointsList = new ArrayList<>();
-//            for (LatLng obj : coordinatesList) {
-//                pointsList.add(Point.fromLngLat(obj.getLongitude(), obj.getLatitude()));
-//            }
-
-//            double distanceToStart = TurfMeasurement.distance(Point.fromLngLat(latitude, longitude), pointsList.get(0), TurfConstants.UNIT_METERS);
-//            double distanceToEnd = TurfMeasurement.distance(Point.fromLngLat(latitude, longitude), pointsList.get(pointsList.size() - 1), TurfConstants.UNIT_METERS);
-//            double totalDistance = TurfMeasurement.distance(pointsList.get(0), pointsList.get(pointsList.size() - 1), TurfConstants.UNIT_METERS);
-//            int progress = (int) ((1 - (distanceToEnd / totalDistance)) * 100); // Calculate relative progress
-//            Log.e(TAG, "startDistance " + distanceToStart + "  ==>  endDistance  " + distanceToEnd + "  ==>  totalDistance  " + totalDistance);
-
-
+            //live tracking
             binding.llStopTime.trackingSeekbar.setCount(coordinatesList.size());
 
 
@@ -454,7 +425,7 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                 .overview("full")
                 .profile("driving-traffic")
                 .steps(true)
-                .enableRefresh(true)
+
                 .build();
 
 
@@ -500,13 +471,13 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                                     double legDuration = step.duration();
 
                                     // Check if startStop.getDuration() is null or empty
-                                    double previousDuration = (startStop.getStop_time() != null && !startStop.getStop_time().isEmpty()) ?
-                                            Double.parseDouble(startStop.getStop_time()) : 0.0;
+                                    double previousDuration = (startStop.getStop_time() != null && !startStop.getStop_time().isEmpty()) ? Double.parseDouble(startStop.getStop_time()) : 0.0;
 
                                     double stopDuration = legDuration - previousDuration;
 
                                     // Update the duration field of the start stop
-                                    startStop.setStop_time(Double.toString(stopDuration));
+//                                    startStop.setStop_time(Double.toString(stopDuration));
+                                    startStop.setStop_time(formatDuration(stopDuration));
 
                                     // Assuming you have a method to update the stop in your database
                                     stopsDao.updateStop(startStop);
@@ -532,6 +503,34 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                 t.printStackTrace();
             }
         });
+
+//        MapboxMatrix matrixClient = MapboxMatrix.builder()
+//                .accessToken(getString(R.string.mapbox_access_token))
+//                .coordinates(pointsList)
+//                .build();
+//
+//        matrixClient.enqueueCall(new Callback<MatrixResponse>() {
+//            @Override
+//            public void onResponse(Call<MatrixResponse> call, Response<MatrixResponse> response) {
+//                if (response.isSuccessful() && response.body() != null) {
+//                    MatrixResponse matrixResponse = response.body();
+//
+//                    Log.e(TAG, "onResponse: " + matrixResponse.toString());
+//
+//                } else {
+//                    try {
+//                        Log.e(TAG, "onResponseError: " + response.errorBody().string());
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<MatrixResponse> call, Throwable t) {
+//                t.printStackTrace();
+//            }
+//        });
     }
 
 
@@ -539,6 +538,14 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
         LatLng latLng = new LatLng(Double.parseDouble(stop.getLat()), Double.parseDouble(stop.getLng()));
         mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
+
+//    private String formatDuration(double durationSeconds) {
+//        int hours = (int) durationSeconds / 3600;
+//        int minutes = (int) (durationSeconds % 3600) / 60;
+//        int seconds = (int) durationSeconds % 60;
+//
+//        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+//    }
 
     @Override
     public void onResume() {

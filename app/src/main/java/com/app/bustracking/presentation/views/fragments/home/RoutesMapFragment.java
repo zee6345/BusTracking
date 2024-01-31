@@ -33,6 +33,7 @@ import com.app.bustracking.R;
 import com.app.bustracking.app.AppService;
 import com.app.bustracking.data.local.RoutesDao;
 import com.app.bustracking.data.local.StopsDao;
+import com.app.bustracking.data.local.TravelDao;
 import com.app.bustracking.data.responseModel.Route;
 import com.app.bustracking.data.responseModel.Stop;
 import com.app.bustracking.databinding.FragmentRoutesMapBinding;
@@ -138,6 +139,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
     };
     private StopsDao stopsDao;
     private RoutesDao routesDao;
+    private TravelDao travelDao;
     private Route route;
 
     private void updateMarkerOnMap(double lat, double lon) {
@@ -189,6 +191,7 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         //init dao
         routesDao = getAppDb().routesDao();
         stopsDao = getAppDb().stopsDao();
+        travelDao = getAppDb().travelDao();
 
 
         //fetch data from db
@@ -305,7 +308,8 @@ public class RoutesMapFragment extends BaseFragment implements OnMapReadyCallbac
         });
 
 
-        binding.llParent.ivIcon.setText(getStartingCharacters(route.getRoute_title() != null ? route.getRoute_title() : ""));
+//        binding.llParent.ivIcon.setText(getStartingCharacters(route.getRoute_title() != null ? route.getRoute_title() : ""));
+        binding.llParent.ivIcon.setText(travelDao.travelName(route.getTravel_id() != null ? route.getTravel_id() : 0));
         binding.llParent.ivHeader.setBackground(new ColorDrawable(Color.parseColor(route.getColor())));
 
 

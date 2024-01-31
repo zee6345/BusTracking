@@ -162,12 +162,11 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
 //            LocalBroadcastManager.getInstance(this)
 //                .sendBroadcast(intent)
 
-
 //            sendBroadcast(intent)
 
             try {
                 onLocationReceive.onLocationReceive(jsonString)
-            } catch (e: Exception) {
+            } catch (ignore: Exception) {
 
             }
 
@@ -178,4 +177,5 @@ class AppService : Service(), ConnectionEventListener, SubscriptionEventListener
         // Use regular expression to remove backslashes
         return jsonString.replace("\\\\", "")
     }
+
 }

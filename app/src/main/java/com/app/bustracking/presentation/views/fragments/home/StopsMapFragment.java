@@ -40,8 +40,6 @@ import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.directions.v5.models.LegStep;
-import com.mapbox.api.matrix.v1.MapboxMatrix;
-import com.mapbox.api.matrix.v1.models.MatrixResponse;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
@@ -70,8 +68,13 @@ import com.mapbox.turf.TurfMeasurement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -425,7 +428,6 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                 .overview("full")
                 .profile("driving-traffic")
                 .steps(true)
-
                 .build();
 
 
@@ -437,6 +439,39 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                     if (response.body() != null && !response.body().routes().isEmpty()) {
                         DirectionsRoute directionsRoute = response.body().routes().get(0);
                         List<LegStep> steps = directionsRoute.legs().get(0).steps();
+//                        DirectionsRoute rout = response.body().routes().get(0); // Assuming the first route is the preferred one
+
+//                        double distance = rout.distance(); // Distance in meters
+//                        long duration = rout.duration().longValue(); // Duration in seconds
+
+//                        System.out.println(distance + " meters");
+//                        System.out.println(formatDuration(duration) + " seconds");
+
+//                         now;
+//                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//                            LocalTime now = LocalTime.now();
+//                            LocalTime newTime = now.plusMinutes(duration);
+//                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm a");
+//                            System.out.println(formatter.format(newTime) + "");
+//
+//
+//
+//                        }
+
+//                        List<DirectionsRoute> routess = response.body().routes();
+//                        List<Double> distancess = new ArrayList<>();
+//                        List<Long> durationss = new ArrayList<>();
+//
+//                        for (DirectionsRoute route : routess) {
+//                            double distancee = route.distance(); // Distance in meters
+//                            long duratione = route.duration().longValue(); // Duration in seconds
+//
+////                            System.out.println(formatDuration(duratione) + " seconds");
+//                            distancess.add(distancee);
+//                            durationss.add(duratione);
+//                        }
+
+
 
 
                         LineString lineString = LineString.fromPolyline(directionsRoute.geometry(), 6);
@@ -472,15 +507,25 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
 
                                     // Check if startStop.getDuration() is null or empty
                                     double previousDuration = (startStop.getStop_time() != null && !startStop.getStop_time().isEmpty()) ? Double.parseDouble(startStop.getStop_time()) : 0.0;
+//                                    double stopDuration = previousDuration + legDuration;
 
-                                    double stopDuration = legDuration - previousDuration;
+
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                        LocalTime now = LocalTime.now();
+                                        LocalTime newTime = now.plusMinutes((long) legDuration);
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+                                        startStop.setStop_time(formatter.format(newTime));
+                                        stopsDao.updateStop(startStop);
+
+
+                                    }
 
                                     // Update the duration field of the start stop
 //                                    startStop.setStop_time(Double.toString(stopDuration));
-                                    startStop.setStop_time(formatDuration(stopDuration));
+
 
                                     // Assuming you have a method to update the stop in your database
-                                    stopsDao.updateStop(startStop);
 
 //                                    Log.e(TAG, "onResponse: " + startStop.getStopId() + " name ==> " + startStop.getStop_title() + " startStop ==> " + startStop.getStop_time());
 
@@ -488,6 +533,43 @@ public class StopsMapFragment extends BaseFragment implements OnLocationReceive 
                                     Log.e(TAG, "onResponse: " + startStop.getStopId() + " name ==> " + startStop.getStop_title() + " is null ");
                                 }
                             }
+
+//                            for (int i = 0; i < minSize; i++) {
+//                                LegStep step = steps.get(i);
+//                                Stop startStop = stops.get(i);
+//                                Stop endStop = stops.get(i + 1);
+//
+//                                if (startStop != null && endStop != null) {
+//                                    double legDuration = step.duration(); // Duration in minutes
+//
+//                                    String currentStopTime = startStop.getStop_time();
+//                                    if (currentStopTime != null && !currentStopTime.isEmpty()) {
+//                                        try {
+//                                            // Assuming the time format is something like "HH:mm"
+//                                            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+//                                            Date stopTime = sdf.parse(currentStopTime);
+//
+//                                            // Add leg duration to the stop time
+//                                            Calendar calendar = Calendar.getInstance();
+//                                            calendar.setTime(stopTime);
+//                                            calendar.add(Calendar.MINUTE, (int) legDuration);
+//
+//                                            // Format the new stop time back into a string
+//                                            String newStopTime = sdf.format(calendar.getTime());
+//
+//                                            // Update the stop time
+//                                            startStop.setStop_time(newStopTime + " minutes");
+//                                            stopsDao.updateStop(startStop);
+//
+//                                        } catch (Exception e) {
+//                                            e.printStackTrace(); // Handle parse exception
+//                                        }
+//                                    } else {
+//                                        Log.e(TAG, "onResponse: " + startStop.getStopId() + " name ==> " + startStop.getStop_title() + " is null ");
+//                                    }
+//                                }
+//                            }
+
                         }
 
 

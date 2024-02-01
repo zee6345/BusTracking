@@ -26,7 +26,7 @@ public interface StopsDao {
     @Query("select * from Stop where isFavourite=1")
     LiveData<List<Stop>> fetchAllFavouriteStops();
 
-    @Query("select * from Stop where route_id=:routeId")
+    @Query("select * from Stop where route_id=:routeId order by stop_time asc")
     LiveData<List<Stop>> fetchAllStopsWithObserver(int routeId);
 
     @Query("select * from Stop where stopId=:stopId")
@@ -43,6 +43,5 @@ public interface StopsDao {
 
     @Update
     void updateStop(Stop stop);
-
 
 }
